@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "113846780678",
+    "firebase_url": "https://smart-home-a2d96-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "smart-home-a2d96",
+    "storage_bucket": "smart-home-a2d96.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:113846780678:android:ba19aeae28380318c89487",
+        "android_client_info": {
+          "package_name": "com.ihdyo.smarthome"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChPQ2S-RNkkTA3D1uSSqsS0KVPzj_0o2o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
