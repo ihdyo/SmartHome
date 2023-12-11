@@ -1,13 +1,24 @@
 package com.ihdyo.smarthome.ui.home
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.ihdyo.smarthome.R
+import com.ihdyo.smarthome.model.IconModel
 
 class HomeViewModel : ViewModel() {
+    val items: MutableLiveData<List<IconModel>> = MutableLiveData()
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is Home Fragment"
+    init {
+        fetchData()
     }
-    val text: LiveData<String> = _text
+
+    private fun fetchData() {
+        val itemList = listOf(
+            IconModel(R.drawable.bx_tv),
+            IconModel(R.drawable.bx_bowl_hot),
+            IconModel(R.drawable.bx_bed),
+            IconModel(R.drawable.bx_bath)
+        )
+        items.value = itemList
+    }
 }

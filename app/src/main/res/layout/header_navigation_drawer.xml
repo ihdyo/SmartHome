@@ -1,19 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="bottom"
     android:orientation="vertical"
-    android:padding="@dimen/sp_md"
+    android:paddingHorizontal="@dimen/sp_md"
+    android:paddingTop="@dimen/sp_4xl"
+    android:paddingBottom="@dimen/sp_0"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
     <TextView
-        android:layout_width="match_parent"
+        android:id="@+id/text_slogan"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/slogan"
-        android:textStyle="bold"
-        android:textColor="?attr/colorOnSurface"
         android:fontFamily="@font/juliette_regular"
-        android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
+        android:text="@string/slogan"
+        android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+        android:textColor="?attr/colorOnSurface"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-</LinearLayout>
+    <TextView
+        android:id="@+id/text_username"
+        style="@style/TextAppearance.Material3.BodyMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/sp_sm"
+        android:text="@string/placeholder_username"
+        android:textAlignment="textStart"
+        android:textColor="?attr/colorOnSurface"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_slogan" />
+
+    <TextView
+        android:id="@+id/text_email"
+        style="@style/TextAppearance.Material3.LabelSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/placeholder_email"
+        android:textAlignment="textStart"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        app:layout_constraintStart_toStartOf="@+id/text_username"
+        app:layout_constraintTop_toBottomOf="@+id/text_username" />
+
+    <ImageView
+        android:id="@+id/icon_verification"
+        android:layout_width="@dimen/sp_md"
+        android:layout_height="@dimen/sp_md"
+        android:layout_marginStart="@dimen/sp_2xs"
+        android:contentDescription="@string/content_verificated"
+        android:src="@drawable/bxs_badge_check"
+        app:layout_constraintBottom_toBottomOf="@+id/text_username"
+        app:layout_constraintStart_toEndOf="@+id/text_username"
+        app:layout_constraintTop_toTopOf="@+id/text_username" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

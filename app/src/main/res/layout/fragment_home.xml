@@ -17,32 +17,17 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
 
-    <TextView
-        android:id="@+id/text_room_decoration"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/juliette_regular"
-        android:text="@string/placeholder_room"
-        android:elevation="-1dp"
-        android:textStyle="bold"
-        android:layout_marginTop="@dimen/sp_xl"
-        android:layout_marginEnd="@dimen/sp_xl"
-        android:textAppearance="@style/TextAppearance.Material3.DisplaySmall"
-        android:textColor="?attr/colorPrimary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/image_room" />
-
     <ImageView
         android:id="@+id/image_room"
         android:layout_width="@dimen/room"
         android:layout_height="@dimen/room"
         android:contentDescription="@string/content_room"
         android:elevation="-2dp"
-        android:layout_marginTop="@dimen/sp_4xl"
         android:scaleType="centerCrop"
         android:src="@drawable/img_kitchen"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_city" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/text_time"
@@ -57,12 +42,12 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/text_user"
+        android:id="@+id/text_username"
         style="@style/TextAppearance.Material3.TitleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textStyle="bold"
-        android:text="@string/placeholder_user"
+        android:text="@string/placeholder_username"
         android:textAlignment="textStart"
         app:layout_constraintBottom_toBottomOf="@+id/text_time"
         app:layout_constraintStart_toEndOf="@+id/text_time"
@@ -125,6 +110,9 @@
         android:id="@+id/rv_icon_room"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/sp_lg"
+        android:clipToPadding="false"
+        android:layout_gravity="center"
         android:layout_marginTop="@dimen/sp_4xl"
         android:clipChildren="false"
         app:layout_constraintEnd_toEndOf="@+id/rectangle"
@@ -137,14 +125,38 @@
         style="@style/TextAppearance.Material3.TitleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/sp_7xl"
         android:rotation="-90"
         android:text="@string/placeholder_room"
-        android:textAlignment="center"
+        android:textAlignment="textStart"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/rectangle"
         app:layout_constraintEnd_toEndOf="@+id/rectangle"
-        app:layout_constraintStart_toStartOf="@+id/rectangle"
-        app:layout_constraintTop_toBottomOf="@+id/rv_icon_room" />
+        app:layout_constraintStart_toStartOf="@+id/rectangle"/>
+
+    <TextView
+        android:id="@+id/text_room_decoration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="-1dp"
+        android:fontFamily="@font/juliette_regular"
+        android:text="@string/placeholder_room"
+        android:textAppearance="@style/TextAppearance.Material3.DisplaySmall"
+        android:textColor="?attr/colorPrimary"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/cardView"
+        app:layout_constraintTop_toTopOf="@+id/rv_icon_room" />
+
+    <TextView
+        android:id="@+id/text_room_floor"
+        style="@style/TextAppearance.Material3.LabelLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/placeholder_room_floor"
+        android:textAlignment="textEnd"
+        android:textColor="?attr/colorPrimary"
+        app:layout_constraintEnd_toEndOf="@+id/text_room_decoration"
+        app:layout_constraintTop_toTopOf="@+id/text_room_decoration" />
 
     <TextView
         android:id="@+id/text_power"
