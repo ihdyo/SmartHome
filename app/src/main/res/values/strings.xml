@@ -15,12 +15,12 @@
 
     <string name="placeholder_email">this@email.com</string>
     <string name="placeholder_username">This User</string>
-    <string name="placeholder_hello">Hello, </string>
+    <string name="placeholder_salute">Hello, </string>
     <string name="placeholder_city">This City</string>
     <string name="placeholder_room">This Room</string>
     <string name="placeholder_room_floor">0F</string>
-    <string name="placeholder_power_consumed">00Wh</string>
-    <string name="placeholder_schedule">00:00 – 00:00</string>
+    <string name="placeholder_power_consumed">00kWh</string>
+    <string name="placeholder_schedule">00:00</string>
 
     <string name="text_power">Power</string>
     <string name="text_schedule">Schedule</string>
@@ -29,6 +29,7 @@
 
     <string name="content_room">Room</string>
     <string name="content_schedule">Schedule</string>
+    <string name="content_close">Close</string>
     <string name="content_verificated">verificated</string>
 
 </resources>

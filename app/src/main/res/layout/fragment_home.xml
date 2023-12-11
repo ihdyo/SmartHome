@@ -30,13 +30,13 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/text_time"
+        android:id="@+id/text_salute"
         style="@style/TextAppearance.Material3.TitleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/sp_md"
         android:layout_marginStart="@dimen/sp_xl"
-        android:text="@string/placeholder_hello"
+        android:text="@string/placeholder_salute"
         android:textAlignment="textStart"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -49,9 +49,9 @@
         android:textStyle="bold"
         android:text="@string/placeholder_username"
         android:textAlignment="textStart"
-        app:layout_constraintBottom_toBottomOf="@+id/text_time"
-        app:layout_constraintStart_toEndOf="@+id/text_time"
-        app:layout_constraintTop_toTopOf="@+id/text_time" />
+        app:layout_constraintBottom_toBottomOf="@+id/text_salute"
+        app:layout_constraintStart_toEndOf="@+id/text_salute"
+        app:layout_constraintTop_toTopOf="@+id/text_salute" />
 
     <TextView
         android:id="@+id/text_city"
@@ -61,8 +61,8 @@
         android:textColor="?attr/colorOnSurfaceVariant"
         android:text="@string/placeholder_city"
         android:textAlignment="textStart"
-        app:layout_constraintStart_toStartOf="@+id/text_time"
-        app:layout_constraintTop_toBottomOf="@+id/text_time" />
+        app:layout_constraintStart_toStartOf="@+id/text_salute"
+        app:layout_constraintTop_toBottomOf="@+id/text_salute" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView"
@@ -74,7 +74,7 @@
         app:cardCornerRadius="@dimen/sp_7xl"
         app:layout_constraintBottom_toBottomOf="@+id/text_city"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/text_time">
+        app:layout_constraintTop_toTopOf="@+id/text_salute">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -94,7 +94,7 @@
                 android:src="@drawable/bxs_bolt" />
 
             <TextView
-                android:id="@+id/text_power_consumed"
+                android:id="@+id/text_power_consumed_total"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/placeholder_power_consumed"
@@ -190,6 +190,17 @@
         app:layout_constraintBottom_toTopOf="@+id/icon_schedule"
         app:layout_constraintEnd_toEndOf="@+id/icon_schedule" />
 
+    <ImageView
+        android:id="@+id/icon_close"
+        android:layout_width="@dimen/sp_md"
+        android:layout_height="@dimen/sp_md"
+        android:layout_marginEnd="@dimen/sp_2xs"
+        android:contentDescription="@string/content_close"
+        android:src="@drawable/bx_x"
+        app:layout_constraintBottom_toBottomOf="@+id/text_schedule_time"
+        app:layout_constraintEnd_toStartOf="@+id/text_schedule_time"
+        app:layout_constraintTop_toTopOf="@+id/text_schedule_time" />
+
     <TextView
         android:id="@+id/text_schedule_time"
         style="@style/TextAppearance.Material3.TitleMedium"
@@ -202,7 +213,7 @@
         app:layout_constraintEnd_toStartOf="@+id/icon_schedule"
         app:layout_constraintTop_toTopOf="@+id/icon_schedule" />
 
-    <ImageView
+    <ImageButton
         android:id="@+id/icon_schedule"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -210,11 +221,23 @@
         android:layout_marginBottom="@dimen/sp_lg"
         android:contentDescription="@string/content_schedule"
         android:src="@drawable/bx_alarm"
-        app:layout_constraintBottom_toTopOf="@+id/toggleButton"
+        android:background="@color/transparent"
+        app:layout_constraintBottom_toTopOf="@+id/toggle_automatic_manual"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <TextView
+        android:id="@+id/text_power_consumed"
+        style="@style/TextAppearance.Material3.LabelSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/placeholder_power_consumed"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="@+id/toggle_automatic_manual"
+        app:layout_constraintEnd_toEndOf="@+id/rectangle"
+        app:layout_constraintStart_toStartOf="@+id/rectangle" />
+
     <com.google.android.material.button.MaterialButtonToggleGroup
-        android:id="@+id/toggleButton"
+        android:id="@+id/toggle_automatic_manual"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/sp_xl"
@@ -224,14 +247,14 @@
         app:singleSelection="true">
 
         <Button
-            android:id="@+id/button1"
+            android:id="@+id/button_automatic"
             style="?attr/materialButtonOutlinedStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/text_automatic" />
 
         <Button
-            android:id="@+id/button2"
+            android:id="@+id/button_manual"
             style="?attr/materialButtonOutlinedStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

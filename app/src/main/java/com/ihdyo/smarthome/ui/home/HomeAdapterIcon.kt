@@ -1,19 +1,20 @@
 package com.ihdyo.smarthome.ui.home
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
-import android.content.Intent
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.ihdyo.smarthome.R
 import com.ihdyo.smarthome.model.IconModel
 
 class HomeAdapterIcon(private var items: List<IconModel>) : RecyclerView.Adapter<HomeAdapterIcon.ItemViewHolder>() {
+
+    private var activePosition: Int = RecyclerView.NO_POSITION
+
     @SuppressLint("NotifyDataSetChanged")
     fun setItems(items: List<IconModel>) {
         this.items = items
@@ -27,7 +28,7 @@ class HomeAdapterIcon(private var items: List<IconModel>) : RecyclerView.Adapter
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         val item = items[position]
-        holder.bind(item)
+        holder.bind(item, position)
     }
 
     override fun getItemCount(): Int {
@@ -36,24 +37,64 @@ class HomeAdapterIcon(private var items: List<IconModel>) : RecyclerView.Adapter
 
     inner class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val iconRoom: ImageButton = itemView.findViewById(R.id.icon_room)
+        private var currentPosition: Int = RecyclerView.NO_POSITION
 
         init {
             iconRoom.setOnClickListener {
-                iconRoom.setBackgroundResource(R.drawable.shape_squircle_active)
-                val resources = itemView.resources
-                val newHeight = resources.getDimensionPixelSize(R.dimen.sp_5xl)
-                val newWidth = resources.getDimensionPixelSize(R.dimen.sp_5xl)
-                val layoutParams = iconRoom.layoutParams
-                layoutParams.height = newHeight
-                layoutParams.width = newWidth
-                iconRoom.layoutParams = layoutParams
-                iconRoom.elevation = 4f
+                setActivePosition(currentPosition)
             }
         }
 
         @SuppressLint("SetTextI18n")
-        fun bind(item: IconModel) {
+        fun bind(item: IconModel, position: Int) {
+            currentPosition = position
+            val isActive = position == activePosition
+            updateButtonState(isActive)
+
             iconRoom.setImageResource(item.icon)
+        }
+
+        private fun setActivePosition(position: Int) {
+            val previousActivePosition = activePosition
+            activePosition = position
+            notifyItemChanged(previousActivePosition)
+            notifyItemChanged(activePosition)
+        }
+
+        private fun updateButtonState(isActive: Boolean) {
+            val resources = itemView.resources
+            val newHeight = if (isActive) resources.getDimensionPixelSize(R.dimen.sp_5xl) else resources.getDimensionPixelSize(R.dimen.sp_4xl)
+            val newWidth = if (isActive) resources.getDimensionPixelSize(R.dimen.sp_5xl) else resources.getDimensionPixelSize(R.dimen.sp_4xl)
+            val elevation = if (isActive) 36f else 0f
+
+            // Animate size changes
+            val heightAnimator = ObjectAnimator.ofInt(iconRoom.layoutParams.height, newHeight)
+            heightAnimator.addUpdateListener { valueAnimator ->
+                val animatedValue = valueAnimator.animatedValue as Int
+                val layoutParams = iconRoom.layoutParams
+                layoutParams.height = animatedValue
+                iconRoom.layoutParams = layoutParams
+            }
+
+            val widthAnimator = ObjectAnimator.ofInt(iconRoom.layoutParams.width, newWidth)
+            widthAnimator.addUpdateListener { valueAnimator ->
+                val animatedValue = valueAnimator.animatedValue as Int
+                val layoutParams = iconRoom.layoutParams
+                layoutParams.width = animatedValue
+                iconRoom.layoutParams = layoutParams
+            }
+
+            // Animate elevation changes
+            val elevationAnimator = ObjectAnimator.ofFloat(iconRoom, "elevation", iconRoom.elevation, elevation)
+
+            // Set up the animator duration and start them together
+            val animatorSet = AnimatorSet()
+            animatorSet.duration = 300 // Adjust the duration as needed
+            animatorSet.playTogether(heightAnimator, widthAnimator, elevationAnimator)
+            animatorSet.start()
+
+            // Change the background resource
+            if (isActive) iconRoom.setBackgroundResource(R.drawable.shape_squircle_active) else iconRoom.setBackgroundResource(R.drawable.shape_squircle_inactive)
         }
     }
 }
