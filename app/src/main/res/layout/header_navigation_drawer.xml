@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="bottom"
+    android:orientation="vertical"
+    android:padding="@dimen/sp_md"
+    android:theme="@style/ThemeOverlay.AppCompat.Dark">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/slogan"
+        android:textStyle="bold"
+        android:textColor="?attr/colorOnSurface"
+        android:fontFamily="@font/juliette_regular"
+        android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
+
+</LinearLayout>

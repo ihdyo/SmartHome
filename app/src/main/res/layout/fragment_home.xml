@@ -6,17 +6,225 @@
     android:layout_height="match_parent"
     tools:context=".ui.home.HomeFragment">
 
-    <TextView
-        android:id="@+id/text_home"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:textAlignment="center"
-        android:textSize="20sp"
+    <View
+        android:id="@+id/rectangle"
+        android:layout_width="@dimen/sp_7xl"
+        android:layout_height="match_parent"
+        android:background="?attr/colorSurface"
+        android:elevation="@dimen/sp_0"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/text_room_decoration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/juliette_regular"
+        android:text="@string/placeholder_room"
+        android:elevation="-1dp"
+        android:textStyle="bold"
+        android:layout_marginTop="@dimen/sp_xl"
+        android:layout_marginEnd="@dimen/sp_xl"
+        android:textAppearance="@style/TextAppearance.Material3.DisplaySmall"
+        android:textColor="?attr/colorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/image_room" />
+
+    <ImageView
+        android:id="@+id/image_room"
+        android:layout_width="@dimen/room"
+        android:layout_height="@dimen/room"
+        android:contentDescription="@string/content_room"
+        android:elevation="-2dp"
+        android:layout_marginTop="@dimen/sp_4xl"
+        android:scaleType="centerCrop"
+        android:src="@drawable/img_kitchen"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_city" />
+
+    <TextView
+        android:id="@+id/text_time"
+        style="@style/TextAppearance.Material3.TitleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/sp_md"
+        android:layout_marginStart="@dimen/sp_xl"
+        android:text="@string/placeholder_hello"
+        android:textAlignment="textStart"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/text_user"
+        style="@style/TextAppearance.Material3.TitleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:text="@string/placeholder_user"
+        android:textAlignment="textStart"
+        app:layout_constraintBottom_toBottomOf="@+id/text_time"
+        app:layout_constraintStart_toEndOf="@+id/text_time"
+        app:layout_constraintTop_toTopOf="@+id/text_time" />
+
+    <TextView
+        android:id="@+id/text_city"
+        style="@style/TextAppearance.Material3.BodySmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:text="@string/placeholder_city"
+        android:textAlignment="textStart"
+        app:layout_constraintStart_toStartOf="@+id/text_time"
+        app:layout_constraintTop_toBottomOf="@+id/text_time" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/sp_xl"
+        android:backgroundTint="?attr/colorPrimary"
+        android:elevation="@dimen/sp_0"
+        app:cardCornerRadius="@dimen/sp_7xl"
+        app:layout_constraintBottom_toBottomOf="@+id/text_city"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/text_time">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="@dimen/sp_sm"
+            android:layout_marginVertical="@dimen/sp_xs"
+            android:gravity="center"
+            android:orientation="horizontal"
+            tools:ignore="UseCompoundDrawables">
+
+            <ImageView
+                android:id="@+id/icon_wh"
+                android:layout_width="@dimen/sp_md"
+                android:layout_height="@dimen/sp_md"
+                android:layout_marginEnd="@dimen/sp_2xs"
+                android:importantForAccessibility="no"
+                android:src="@drawable/bxs_bolt" />
+
+            <TextView
+                android:id="@+id/text_power_consumed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/placeholder_power_consumed"
+                android:textAlignment="textEnd"
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                android:textColor="?attr/colorSurface" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_icon_room"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/sp_4xl"
+        android:clipChildren="false"
+        app:layout_constraintEnd_toEndOf="@+id/rectangle"
+        app:layout_constraintStart_toStartOf="@id/rectangle"
+        app:layout_constraintTop_toBottomOf="@+id/text_city"
+        tools:listitem="@layout/item_room" />
+
+    <TextView
+        android:id="@+id/text_room"
+        style="@style/TextAppearance.Material3.TitleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:rotation="-90"
+        android:text="@string/placeholder_room"
+        android:textAlignment="center"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/rectangle"
+        app:layout_constraintEnd_toEndOf="@+id/rectangle"
+        app:layout_constraintStart_toStartOf="@+id/rectangle"
+        app:layout_constraintTop_toBottomOf="@+id/rv_icon_room" />
+
+    <TextView
+        android:id="@+id/text_power"
+        style="@style/TextAppearance.Material3.LabelSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/text_power"
+        android:textAlignment="textEnd"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        app:layout_constraintBottom_toTopOf="@+id/switch_power"
+        app:layout_constraintEnd_toEndOf="@+id/switch_power" />
+
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/switch_power"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/sp_lg"
+        android:checked="true"
+        app:layout_constraintBottom_toTopOf="@+id/text_schedule"
+        app:layout_constraintEnd_toEndOf="@+id/text_schedule" />
+
+    <TextView
+        android:id="@+id/text_schedule"
+        style="@style/TextAppearance.Material3.LabelSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/sp_2xs"
+        android:text="@string/text_schedule"
+        android:textAlignment="textEnd"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        app:layout_constraintBottom_toTopOf="@+id/icon_schedule"
+        app:layout_constraintEnd_toEndOf="@+id/icon_schedule" />
+
+    <TextView
+        android:id="@+id/text_schedule_time"
+        style="@style/TextAppearance.Material3.TitleMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/sp_xs"
+        android:text="@string/placeholder_schedule"
+        android:textAlignment="textEnd"
+        app:layout_constraintBottom_toBottomOf="@+id/icon_schedule"
+        app:layout_constraintEnd_toStartOf="@+id/icon_schedule"
+        app:layout_constraintTop_toTopOf="@+id/icon_schedule" />
+
+    <ImageView
+        android:id="@+id/icon_schedule"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/sp_xl"
+        android:layout_marginBottom="@dimen/sp_lg"
+        android:contentDescription="@string/content_schedule"
+        android:src="@drawable/bx_alarm"
+        app:layout_constraintBottom_toTopOf="@+id/toggleButton"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/toggleButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/sp_xl"
+        android:layout_marginBottom="@dimen/sp_xl"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:singleSelection="true">
+
+        <Button
+            android:id="@+id/button1"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/text_automatic" />
+
+        <Button
+            android:id="@+id/button2"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/text_manual" />
+
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

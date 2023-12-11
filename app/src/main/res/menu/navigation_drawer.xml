@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/bx_home_alt_2"
+            android:title="@string/menu_home" />
+        <item
+            android:id="@+id/nav_tutorial"
+            android:icon="@drawable/bx_question_mark"
+            android:title="@string/menu_tutorial" />
+        <item
+            android:id="@+id/nav_campaign"
+            android:icon="@drawable/bx_news"
+            android:title="@string/menu_campaign" />
+        <item
+            android:id="@+id/nav_about"
+            android:icon="@drawable/bx_info_circle"
+            android:title="@string/menu_about" />
+    </group>
+</menu>

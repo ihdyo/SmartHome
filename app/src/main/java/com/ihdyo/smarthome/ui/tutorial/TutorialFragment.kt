@@ -1,4 +1,4 @@
-package com.ihdyo.smarthome.ui.gallery
+package com.ihdyo.smarthome.ui.tutorial
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,11 +7,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.ihdyo.smarthome.databinding.FragmentGalleryBinding
+import com.ihdyo.smarthome.databinding.FragmentTutorialBinding
 
-class GalleryFragment : Fragment() {
+class TutorialFragment : Fragment() {
 
-    private var _binding: FragmentGalleryBinding? = null
+    private var _binding: FragmentTutorialBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -22,14 +22,14 @@ class GalleryFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val galleryViewModel =
-            ViewModelProvider(this).get(GalleryViewModel::class.java)
+        val aboutViewModel =
+            ViewModelProvider(this).get(TutorialViewModel::class.java)
 
-        _binding = FragmentGalleryBinding.inflate(inflater, container, false)
+        _binding = FragmentTutorialBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val textView: TextView = binding.textGallery
-        galleryViewModel.text.observe(viewLifecycleOwner) {
+        val textView: TextView = binding.textTutorial
+        aboutViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
         }
         return root
