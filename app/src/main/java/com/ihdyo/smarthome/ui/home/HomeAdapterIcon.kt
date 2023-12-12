@@ -3,10 +3,13 @@ package com.ihdyo.smarthome.ui.home
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
+import android.content.res.ColorStateList
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.ihdyo.smarthome.R
 import com.ihdyo.smarthome.model.IconModel
@@ -52,6 +55,10 @@ class HomeAdapterIcon(private var items: List<IconModel>) : RecyclerView.Adapter
             updateButtonState(isActive)
 
             iconRoom.setImageResource(item.icon)
+
+            // Set color filter based on active state
+            val colorFilter = if (isActive) getThemeColor(com.google.android.material.R.attr.colorOnPrimary) else getThemeColor(com.google.android.material.R.attr.colorPrimary)
+            iconRoom.imageTintList = ColorStateList.valueOf(colorFilter)
         }
 
         private fun setActivePosition(position: Int) {
@@ -95,6 +102,13 @@ class HomeAdapterIcon(private var items: List<IconModel>) : RecyclerView.Adapter
 
             // Change the background resource
             if (isActive) iconRoom.setBackgroundResource(R.drawable.shape_squircle_active) else iconRoom.setBackgroundResource(R.drawable.shape_squircle_inactive)
+        }
+
+        private fun getThemeColor(attr: Int): Int {
+            val typedValue = TypedValue()
+            val theme = itemView.context.theme
+            theme.resolveAttribute(attr, typedValue, true)
+            return ContextCompat.getColor(itemView.context, typedValue.resourceId)
         }
     }
 }

@@ -23,9 +23,11 @@
     <string name="placeholder_schedule">00:00</string>
 
     <string name="text_power">Power</string>
-    <string name="text_schedule">Schedule</string>
-    <string name="text_automatic">Automatic</string>
-    <string name="text_manual">Manual</string>
+    <string name="text_from">From</string>
+    <string name="text_to">To</string>
+    <string name="text_mode">Mode</string>
+    <string name="text_automatic">A</string>
+    <string name="text_manual">M</string>
 
     <string name="content_room">Room</string>
     <string name="content_schedule">Schedule</string>

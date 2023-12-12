@@ -3,10 +3,12 @@ package com.ihdyo.smarthome.ui.home
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
 import android.text.format.DateFormat.is24HourFormat
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,7 +21,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.timepicker.MaterialTimePicker
-import com.google.android.material.timepicker.MaterialTimePicker.INPUT_MODE_KEYBOARD
+import com.google.android.material.timepicker.MaterialTimePicker.INPUT_MODE_CLOCK
 import com.google.android.material.timepicker.TimeFormat
 import com.ihdyo.smarthome.R
 import com.ihdyo.smarthome.databinding.FragmentHomeBinding
@@ -40,6 +42,9 @@ class HomeFragment : Fragment() {
     private lateinit var homeAdapterIcon: HomeAdapterIcon
 
     var fusedLocationProviderClient: FusedLocationProviderClient? = null
+    private var timePicker: String? = null
+    private var isTime: String? = null
+    private var isScheduleOn = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
@@ -86,31 +91,27 @@ class HomeFragment : Fragment() {
         }
 
         // Schedule
-        var isScheduleOn = false //retrieve
-
-//        when (isScheduleOn) {
-//            true -> {
-//                binding.iconSchedule //set to active and disable imagebutton from clicking
-//                // open 2x time picker, first pick "from" and second pick "to"
-//                binding.textScheduleTime.visibility = View.VISIBLE
-//                binding.textScheduleTime.text // insert time picker result here with format 00:00 - 00:00
-//                binding.iconClose.visibility = View.VISIBLE
-//
-//                binding.iconClose.setOnClickListener {
-//                    binding.iconSchedule //set to inactive and enable imagebutton from clicking
-//                    binding.textScheduleTime.visibility = View.GONE
-//                    binding.iconClose.visibility = View.GONE
-//                }
-//            }
-//            false -> {
-//                binding.iconSchedule //set to inactive and enable imagebutton from clicking
-//                binding.textScheduleTime.visibility = View.GONE
-//                binding.iconClose.visibility = View.GONE
-//            }
-//        }
+        isScheduleOn = false //retrieve
+        updateIconSchedule()
 
         binding.iconSchedule.setOnClickListener {
-            openTimePicker()
+            isScheduleOn = !isScheduleOn
+            updateIconSchedule()
+        }
+
+        // Time Picker
+        binding.textScheduleTimeFrom.setOnClickListener {
+            isTime = "Select Start Time"
+            openTimePicker { selectedTime ->
+                binding.textScheduleTimeFrom.text = selectedTime
+            }
+        }
+
+        binding.textScheduleTimeTo.setOnClickListener {
+            isTime = "Select Finish Time"
+            openTimePicker { selectedTime ->
+                binding.textScheduleTimeTo.text = selectedTime
+            }
         }
 
 
@@ -138,33 +139,40 @@ class HomeFragment : Fragment() {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun openTimePicker() {
+    private fun openTimePicker(callback: (String) -> Unit) {
         val isSystem24Hour = is24HourFormat(requireContext())
         val clockFormat = if (isSystem24Hour) TimeFormat.CLOCK_24H else TimeFormat.CLOCK_12H
 
         val picker =
             MaterialTimePicker.Builder()
+                .setInputMode(INPUT_MODE_CLOCK)
                 .setTimeFormat(clockFormat)
                 .setHour(12)
                 .setMinute(10)
-                .setTitleText("Select Appointment time")
+                .setTitleText(isTime)
                 .build()
         picker.show(childFragmentManager, "TAG")
 
         picker.addOnPositiveButtonClickListener {
             val hour = picker.hour
             val minute = picker.minute
-            binding.textScheduleTime.text = "$hour:$minute"
+
+            timePicker = "$hour:$minute"
+            callback(timePicker!!)
         }
-        picker.addOnNegativeButtonClickListener {
-            // call back code
+    }
+
+    private fun updateIconSchedule() {
+        val colorFilter: Int
+
+        if (isScheduleOn) {
+            val colorOnSurface = getThemeColor(com.google.android.material.R.attr.colorPrimary)
+            colorFilter = colorOnSurface
+        } else {
+            val colorPrimary = getThemeColor(com.google.android.material.R.attr.colorOnSurface)
+            colorFilter = colorPrimary
         }
-        picker.addOnCancelListener {
-            // call back code
-        }
-        picker.addOnDismissListener {
-            // call back code
-        }
+        binding.iconSchedule.setColorFilter(colorFilter)
     }
 
     private fun getLastLocation() {
@@ -189,5 +197,12 @@ class HomeFragment : Fragment() {
 
     private fun askPermission() {
         ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_CODE)
+    }
+
+    private fun getThemeColor(attr: Int): Int {
+        val typedValue = TypedValue()
+        val theme = requireContext().theme
+        theme.resolveAttribute(attr, typedValue, true)
+        return ContextCompat.getColor(requireContext(), typedValue.resourceId)
     }
 }
