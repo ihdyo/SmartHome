@@ -1,14 +1,28 @@
-<?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/action_preferences"
+        android:id="@+id/action_theme"
         android:orderInCategory="1"
-        android:title="@string/action_preferences"
+        android:title="@string/action_theme"
         app:showAsAction="ifRoom"
-        android:icon="@drawable/bx_slider_alt" />
+        android:icon="@drawable/bxs_adjust">
+        <menu>
+            <item
+                android:id="@+id/action_light_theme"
+                android:icon="@drawable/bx_sun"
+                android:title="@string/action_theme_light" />
+            <item
+                android:id="@+id/action_dark_theme"
+                android:icon="@drawable/bx_moon"
+                android:title="@string/action_theme_dark" />
+            <item
+                android:id="@+id/action_default_theme"
+                android:icon="@drawable/bx_brightness_half"
+                android:title="@string/action_theme_default" />
+        </menu>
+    </item>
 
     <item
         android:id="@+id/action_settings"

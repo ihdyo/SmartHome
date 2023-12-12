@@ -6,7 +6,8 @@
     android:layout_height="wrap_content"
     android:gravity="bottom"
     android:orientation="vertical"
-    android:paddingHorizontal="@dimen/sp_md"
+    android:paddingStart="@dimen/sp_md"
+    android:paddingEnd="@dimen/sp_0"
     android:paddingTop="@dimen/sp_4xl"
     android:paddingBottom="@dimen/sp_0"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
@@ -16,7 +17,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/juliette_regular"
-        android:text="@string/slogan"
+        android:text="@string/tagline"
         android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
         android:textColor="?attr/colorOnSurface"
         android:textStyle="bold"

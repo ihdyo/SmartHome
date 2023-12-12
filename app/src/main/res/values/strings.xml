@@ -1,10 +1,13 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="placeholder_blank" tools:ignore="TypographyEllipsis">...</string>
 
-    <string name="app_name">Light Ease</string>
-    <string name="slogan">Still in the House</string>
+    <string name="app_name">Lumos</string>
+    <string name="tagline">Still in the House</string>
 
-    <string name="action_preferences">Preferences</string>
+    <string name="action_theme">Theme</string>
+    <string name="action_theme_dark">Dark</string>
+    <string name="action_theme_light">Light</string>
+    <string name="action_theme_default">Default</string>
     <string name="action_settings">Settings</string>
 
     <string name="menu">Menu</string>
