@@ -24,9 +24,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Dynamic Color
-        DynamicColors.applyToActivitiesIfAvailable(application)
-
         // Navigation Drawer
         setSupportActionBar(binding.appBarMain.toolbar)
 
