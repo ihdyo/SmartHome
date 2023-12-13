@@ -54,7 +54,8 @@
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="@+id/toggle_mode"
         app:layout_constraintEnd_toEndOf="@+id/rectangle"
-        app:layout_constraintStart_toStartOf="@+id/rectangle" />
+        app:layout_constraintStart_toStartOf="@+id/rectangle"
+        app:layout_constraintTop_toTopOf="@+id/toggle_mode" />
 
     <ImageView
         android:id="@+id/image_room"
