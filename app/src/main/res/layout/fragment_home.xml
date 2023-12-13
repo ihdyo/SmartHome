@@ -36,7 +36,7 @@
         style="@style/TextAppearance.Material3.TitleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/sp_7xl"
+        android:layout_marginBottom="@dimen/sp_8xl"
         android:rotation="-90"
         android:text="@string/placeholder_room"
         android:textAlignment="textStart"
