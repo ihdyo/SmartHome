@@ -43,7 +43,6 @@ class HomeFragment : Fragment() {
 
     private var isTime: String? = null
 
-    @SuppressLint("SetTextI18n")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
@@ -53,21 +52,37 @@ class HomeFragment : Fragment() {
             homeAdapterIcon.setItems(items)
         }
 
-        // TODO (fetch from db)
-        binding.imageRoom.setImageResource(R.drawable.img_bedroom)
+        return root
+    }
 
-        val username = "Mamat" // retrieve
-        binding.textUsername.text = " $username!"
+    @SuppressLint("SetTextI18n")
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Recyclerview
+        homeAdapterIcon = HomeAdapterIcon(emptyList())
+        recyclerView = binding.rvIconRoom
+        recyclerView.apply {
+            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            adapter = homeAdapterIcon
+        }
+
+        // TODO (fetch from db)
+
+        binding.imageRoom.setImageResource(R.drawable.img_living_room)
+
+        val username = "Yo" // retrieve
+        binding.textUsername.text = " ${username}!"
 
         val totalTime = 100 // retrieve
         val totalTimeHour = totalTime / 1000 * 60
         val powerConsumed = (WATT_POWER * totalTimeHour).toString()
         val powerConsumedTotal = (WATT_POWER * powerConsumed.toInt() / 1000).toString()
 
-        binding.textPowerConsumed.text = "$powerConsumed Wh"
-        binding.textPowerConsumedTotal.text = "$powerConsumedTotal kWh"
+        binding.textPowerConsumed.text = "${powerConsumed}Wh"
+        binding.textPowerConsumedTotal.text = "${powerConsumedTotal}kWh"
 
-        val roomName = "Bedroom" // retrieve
+        val roomName = "Living Room" // retrieve
 
         binding.textRoom.text = roomName
         binding.textRoomDecoration.text = roomName
@@ -121,9 +136,6 @@ class HomeFragment : Fragment() {
         }
         binding.toggleMode.check(getCheckedButtonId(mode))
 
-
-
-
         // Time Picker
         binding.textScheduleTimeFrom.setOnClickListener {
             isTime = "Select Start Time"
@@ -137,22 +149,6 @@ class HomeFragment : Fragment() {
             openTimePicker { selectedTime ->
                 binding.textScheduleTimeTo.text = selectedTime
             }
-        }
-
-
-
-        return root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        // Recyclerview
-        homeAdapterIcon = HomeAdapterIcon(emptyList())
-        recyclerView = binding.rvIconRoom
-        recyclerView.apply {
-            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-            adapter = homeAdapterIcon
         }
     }
 

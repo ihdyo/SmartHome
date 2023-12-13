@@ -56,7 +56,6 @@ class HomeAdapterIcon(private var items: List<IconModel>) : RecyclerView.Adapter
 
             iconRoom.setImageResource(item.icon)
 
-            // Set color filter based on active state
             val colorFilter = if (isActive) getThemeColor(com.google.android.material.R.attr.colorOnPrimary) else getThemeColor(com.google.android.material.R.attr.colorPrimary)
             iconRoom.imageTintList = ColorStateList.valueOf(colorFilter)
         }
@@ -74,7 +73,6 @@ class HomeAdapterIcon(private var items: List<IconModel>) : RecyclerView.Adapter
             val newWidth = if (isActive) resources.getDimensionPixelSize(R.dimen.sp_5xl) else resources.getDimensionPixelSize(R.dimen.sp_4xl)
             val elevation = if (isActive) 36f else 0f
 
-            // Animate size changes
             val heightAnimator = ObjectAnimator.ofInt(iconRoom.layoutParams.height, newHeight)
             heightAnimator.addUpdateListener { valueAnimator ->
                 val animatedValue = valueAnimator.animatedValue as Int
@@ -90,17 +88,13 @@ class HomeAdapterIcon(private var items: List<IconModel>) : RecyclerView.Adapter
                 layoutParams.width = animatedValue
                 iconRoom.layoutParams = layoutParams
             }
-
-            // Animate elevation changes
             val elevationAnimator = ObjectAnimator.ofFloat(iconRoom, "elevation", iconRoom.elevation, elevation)
 
-            // Set up the animator duration and start them together
             val animatorSet = AnimatorSet()
             animatorSet.duration = 300 // Adjust the duration as needed
             animatorSet.playTogether(heightAnimator, widthAnimator, elevationAnimator)
             animatorSet.start()
 
-            // Change the background resource
             if (isActive) iconRoom.setBackgroundResource(R.drawable.shape_squircle_active) else iconRoom.setBackgroundResource(R.drawable.shape_squircle_inactive)
         }
 
