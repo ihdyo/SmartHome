@@ -69,28 +69,28 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/text_salute"
-        style="@style/TextAppearance.Material3.TitleLarge"
+        android:id="@+id/text_greeting"
+        style="@style/TextAppearance.Material3.TitleMedium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/sp_md"
         android:layout_marginStart="@dimen/sp_xl"
-        android:text="@string/placeholder_salute"
+        android:text="@string/placeholder_greeting"
         android:textAlignment="textStart"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/text_username"
-        style="@style/TextAppearance.Material3.TitleLarge"
+        style="@style/TextAppearance.Material3.TitleMedium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textStyle="bold"
         android:text="@string/placeholder_username"
         android:textAlignment="textStart"
-        app:layout_constraintBottom_toBottomOf="@+id/text_salute"
-        app:layout_constraintStart_toEndOf="@+id/text_salute"
-        app:layout_constraintTop_toTopOf="@+id/text_salute" />
+        app:layout_constraintBottom_toBottomOf="@+id/text_greeting"
+        app:layout_constraintStart_toEndOf="@+id/text_greeting"
+        app:layout_constraintTop_toTopOf="@+id/text_greeting" />
 
     <TextView
         android:id="@+id/text_city"
@@ -100,8 +100,8 @@
         android:textColor="?attr/colorOnSurfaceVariant"
         android:text="@string/placeholder_city"
         android:textAlignment="textStart"
-        app:layout_constraintStart_toStartOf="@+id/text_salute"
-        app:layout_constraintTop_toBottomOf="@+id/text_salute" />
+        app:layout_constraintStart_toStartOf="@+id/text_greeting"
+        app:layout_constraintTop_toBottomOf="@+id/text_greeting" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView"
@@ -113,7 +113,7 @@
         app:cardCornerRadius="@dimen/sp_7xl"
         app:layout_constraintBottom_toBottomOf="@+id/text_city"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/text_salute">
+        app:layout_constraintTop_toTopOf="@+id/text_greeting">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -245,8 +245,7 @@
         android:contentDescription="@string/content_schedule"
         android:src="@drawable/bx_alarm"
         app:layout_constraintBottom_toBottomOf="@+id/text_schedule_time_to"
-        app:layout_constraintEnd_toStartOf="@+id/text_schedule_time_to"
-        app:layout_constraintTop_toTopOf="@+id/text_schedule_time_to" />
+        app:layout_constraintEnd_toStartOf="@+id/text_schedule_time_to" />
 
     <TextView
         android:id="@+id/text_mode"

@@ -59,6 +59,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
+            R.id.action_settings -> {
+                findNavController(R.id.nav_host_fragment_content_main).navigate(R.id.nav_settings)
+                return true
+            }
             R.id.action_theme -> {
                 showThemeSubMenu(item)
                 return true

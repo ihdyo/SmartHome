@@ -10,11 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.ihdyo.smarthome.databinding.FragmentCampaignBinding
 
 class CampaignFragment : Fragment() {
-
     private var _binding: FragmentCampaignBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
 
     override fun onCreateView(

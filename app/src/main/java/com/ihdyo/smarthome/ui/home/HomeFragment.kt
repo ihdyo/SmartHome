@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
+import android.icu.text.SimpleDateFormat
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
@@ -26,6 +27,7 @@ import com.google.android.material.timepicker.TimeFormat
 import com.ihdyo.smarthome.R
 import com.ihdyo.smarthome.databinding.FragmentHomeBinding
 import java.io.IOException
+import java.util.Calendar
 import java.util.Locale
 
 class HomeFragment : Fragment() {
@@ -42,10 +44,11 @@ class HomeFragment : Fragment() {
     private lateinit var homeAdapterIcon: HomeAdapterIcon
 
     var fusedLocationProviderClient: FusedLocationProviderClient? = null
-    private var timePicker: String? = null
-    private var isTime: String? = null
-    private var isScheduleOn = false
 
+    private var isTime: String? = null
+    private var isScheduleOn: Boolean = false
+
+    @SuppressLint("SetTextI18n")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
@@ -58,17 +61,16 @@ class HomeFragment : Fragment() {
         // TODO (fetch from db)
         binding.imageRoom.setImageResource(R.drawable.img_bedroom)
 
-
-        binding.textSalute.text = "Good Morning" + ", " // retrieve
-        binding.textUsername.text = "Mamat" + "!" // retrieve
+        val username = "Mamat" // retrieve
+        binding.textUsername.text = " $username!"
 
         val totalTime = 100 // retrieve
         val totalTimeHour = totalTime / 1000 * 60
-        val powerConsumed = WATT_POWER * totalTimeHour
-        val powerConsumedTotal = WATT_POWER * powerConsumed / 1000
+        val powerConsumed = (WATT_POWER * totalTimeHour).toString()
+        val powerConsumedTotal = (WATT_POWER * powerConsumed.toInt() / 1000).toString()
 
-        binding.textPowerConsumed.text = powerConsumed.toString() + "Wh"
-        binding.textPowerConsumedTotal.text = powerConsumedTotal.toString() + "kWh"
+        binding.textPowerConsumed.text = "$powerConsumed Wh"
+        binding.textPowerConsumedTotal.text = "$powerConsumedTotal kWh"
 
         val roomName = "Bedroom" // retrieve
 
@@ -77,6 +79,16 @@ class HomeFragment : Fragment() {
 
         binding.textRoomFloor.text = "1F" // retrieve
         binding.textRoomFloor.text = "1F" // retrieve
+
+        // Time
+        getCurrentTime { formattedTime ->
+            binding.textGreeting.text = formattedTime
+        }
+
+        // Location
+        getLastLocation { city ->
+            binding.textCity.text = city
+        }
 
         // Power Switch
         var power = false //retrieve
@@ -115,6 +127,7 @@ class HomeFragment : Fragment() {
         }
 
 
+
         return root
     }
 
@@ -130,12 +143,26 @@ class HomeFragment : Fragment() {
         }
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-        getLastLocation()
+
+        getLastLocation { city ->
+            binding.textCity.text = city
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun getCurrentTime(callback: (String) -> Unit) {
+        val currentTime = Calendar.getInstance()
+        val greeting = when (currentTime.get(Calendar.HOUR_OF_DAY)) {
+            in 0..5 -> getString(R.string.text_greeting_night)
+            in 6..11 -> getString(R.string.text_greeting_morning)
+            in 12..17 -> getString(R.string.text_greeting_afternoon)
+            else -> getString(R.string.text_greeting_evening)
+        }
+        callback(greeting)
     }
 
     @SuppressLint("SetTextI18n")
@@ -157,8 +184,8 @@ class HomeFragment : Fragment() {
             val hour = picker.hour
             val minute = picker.minute
 
-            timePicker = "$hour:$minute"
-            callback(timePicker!!)
+            val timePicker = "$hour:$minute"
+            callback(timePicker)
         }
     }
 
@@ -175,21 +202,20 @@ class HomeFragment : Fragment() {
         binding.iconSchedule.setColorFilter(colorFilter)
     }
 
-    private fun getLastLocation() {
+    private fun getLastLocation(callback: (String?) -> Unit) {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            fusedLocationProviderClient!!.lastLocation.addOnSuccessListener { location ->
+            fusedLocationProviderClient?.lastLocation?.addOnSuccessListener { location ->
                 if (location != null) {
-                    val geocoder = Geocoder(requireActivity(), Locale("ID"))
-                    val addresses: List<Address>?
+                    val geocoder = Geocoder(requireActivity(), Locale.getDefault())
                     try {
-                        addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
-                        binding.textCity.text = addresses!![0].subAdminArea
+                        val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
+                        val locationCity = addresses!!.firstOrNull()?.subAdminArea
+                        callback(locationCity)
                     } catch (e: IOException) {
                         e.printStackTrace()
                     }
                 }
             }
-
         } else {
             askPermission()
         }

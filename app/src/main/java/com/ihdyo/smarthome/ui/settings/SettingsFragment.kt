@@ -1,4 +1,4 @@
-package com.ihdyo.smarthome.ui.tutorial
+package com.ihdyo.smarthome.ui.settings
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,10 +7,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.ihdyo.smarthome.databinding.FragmentTutorialBinding
+import com.ihdyo.smarthome.databinding.FragmentSettingsBinding
 
-class TutorialFragment : Fragment() {
-    private var _binding: FragmentTutorialBinding? = null
+class SettingsFragment : Fragment() {
+    private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -18,14 +18,14 @@ class TutorialFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val tutorialViewModel =
-            ViewModelProvider(this).get(TutorialViewModel::class.java)
+        val settingsViewModel =
+            ViewModelProvider(this).get(SettingsViewModel::class.java)
 
-        _binding = FragmentTutorialBinding.inflate(inflater, container, false)
+        _binding = FragmentSettingsBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val textView: TextView = binding.textTutorial
-        tutorialViewModel.text.observe(viewLifecycleOwner) {
+        val textView: TextView = binding.textSettings
+        settingsViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
         }
         return root
