@@ -16,7 +16,7 @@ import com.ihdyo.smarthome.model.IconModel
 
 class HomeAdapterIcon(private var items: List<IconModel>) : RecyclerView.Adapter<HomeAdapterIcon.ItemViewHolder>() {
 
-    private var activePosition: Int = RecyclerView.NO_POSITION
+    private var activePosition: Int = 0
 
     @SuppressLint("NotifyDataSetChanged")
     fun setItems(items: List<IconModel>) {

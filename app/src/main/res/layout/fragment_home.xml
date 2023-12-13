@@ -262,9 +262,10 @@
         <Button
             android:id="@+id/button_automatic"
             style="@style/Widget.App.Button.OutlinedButton.Custom"
+            android:paddingHorizontal="@dimen/sp_md"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
+            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
             android:text="@string/text_automatic" />
 
         <Button
@@ -273,14 +274,15 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:icon="@drawable/bx_alarm"
-            android:textAppearance="@style/TextAppearance.Material3.LabelSmall" />
+            android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
 
         <Button
             android:id="@+id/button_manual"
             style="@style/Widget.App.Button.OutlinedButton.Custom"
+            android:paddingHorizontal="@dimen/sp_md"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
+            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
             android:text="@string/text_manual" />
 
     </com.google.android.material.button.MaterialButtonToggleGroup>
