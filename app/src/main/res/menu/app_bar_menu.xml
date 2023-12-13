@@ -7,7 +7,7 @@
         android:orderInCategory="1"
         android:title="@string/action_theme"
         app:showAsAction="ifRoom"
-        android:icon="@drawable/bxs_adjust">
+        android:icon="@drawable/bx_adjust">
         <menu>
             <item
                 android:id="@+id/action_light_theme"

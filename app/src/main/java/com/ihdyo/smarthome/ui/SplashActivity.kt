@@ -1,5 +1,6 @@
 package com.ihdyo.smarthome.ui
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -9,10 +10,12 @@ import android.os.Bundle
 import android.os.Handler
 import android.provider.Settings
 import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityCompat
 import com.google.android.material.color.DynamicColors
 import com.ihdyo.smarthome.MainActivity
 import com.ihdyo.smarthome.R
 import com.ihdyo.smarthome.databinding.ActivitySplashBinding
+import com.ihdyo.smarthome.ui.home.HomeFragment
 
 @Suppress("DEPRECATION")
 @SuppressLint("CustomSplashScreen")
@@ -30,6 +33,7 @@ class SplashActivity : AppCompatActivity() {
             val activeNetwork = connectivityManager.activeNetworkInfo
 
             if (activeNetwork?.isConnected == true) {
+                askPermission()
                 startActivity(Intent(this, MainActivity::class.java))
                 finish()
             } else {
@@ -44,5 +48,11 @@ class SplashActivity : AppCompatActivity() {
                 builder.show()
             }
         }, 500)
+    }
+
+    private fun askPermission() {
+        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+            HomeFragment.REQUEST_CODE
+        )
     }
 }

@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.PopupMenu
 import com.ihdyo.smarthome.databinding.ActivityMainBinding
+import com.ihdyo.smarthome.preferences.AppPreferences
 
 class MainActivity : AppCompatActivity() {
 
@@ -68,15 +69,15 @@ class MainActivity : AppCompatActivity() {
                 return true
             }
             R.id.action_light_theme -> {
-                setThemeMode(AppCompatDelegate.MODE_NIGHT_NO)
+                setThemeMode(AppPreferences.ThemeMode.LIGHT)
                 return true
             }
             R.id.action_dark_theme -> {
-                setThemeMode(AppCompatDelegate.MODE_NIGHT_YES)
+                setThemeMode(AppPreferences.ThemeMode.DARK)
                 return true
             }
             R.id.action_default_theme -> {
-                setThemeMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+                setThemeMode(AppPreferences.ThemeMode.SYSTEM_DEFAULT)
                 return true
             }
             else -> return super.onOptionsItemSelected(item)
@@ -98,9 +99,23 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setThemeMode(mode: Int) {
-        AppCompatDelegate.setDefaultNightMode(mode)
-        appPreferences.isDarkModeEnabled = mode == AppCompatDelegate.MODE_NIGHT_YES
-        recreate()
+    private fun setThemeMode(themeMode: AppPreferences.ThemeMode) {
+        val appPreferences = AppPreferences(this)
+        appPreferences.themeMode = themeMode
+        updateTheme(themeMode)
+    }
+
+    private fun updateTheme(themeMode: AppPreferences.ThemeMode) {
+        when (themeMode) {
+            AppPreferences.ThemeMode.LIGHT -> {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
+            AppPreferences.ThemeMode.DARK -> {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            }
+            AppPreferences.ThemeMode.SYSTEM_DEFAULT -> {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+            }
+        }
     }
 }

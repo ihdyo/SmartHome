@@ -3,13 +3,9 @@ package com.ihdyo.smarthome.ui.home
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
-import android.content.res.ColorStateList
-import android.icu.text.SimpleDateFormat
-import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
 import android.text.format.DateFormat.is24HourFormat
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,8 +29,8 @@ import java.util.Locale
 class HomeFragment : Fragment() {
 
     companion object {
-        private val REQUEST_CODE = 100
-        private val WATT_POWER = 1
+        const val REQUEST_CODE = 100
+        const val WATT_POWER = 1
     }
 
     private var _binding: FragmentHomeBinding? = null
@@ -46,7 +42,6 @@ class HomeFragment : Fragment() {
     var fusedLocationProviderClient: FusedLocationProviderClient? = null
 
     private var isTime: String? = null
-    private var isScheduleOn: Boolean = false
 
     @SuppressLint("SetTextI18n")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -78,7 +73,6 @@ class HomeFragment : Fragment() {
         binding.textRoomDecoration.text = roomName
 
         binding.textRoomFloor.text = "1F" // retrieve
-        binding.textRoomFloor.text = "1F" // retrieve
 
         // Time
         getCurrentTime { formattedTime ->
@@ -86,6 +80,8 @@ class HomeFragment : Fragment() {
         }
 
         // Location
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+
         getLastLocation { city ->
             binding.textCity.text = city
         }
@@ -102,14 +98,31 @@ class HomeFragment : Fragment() {
             binding.switchPower.isChecked = false
         }
 
-        // Schedule
-        isScheduleOn = false //retrieve
-        updateIconSchedule()
-
-        binding.iconSchedule.setOnClickListener {
-            isScheduleOn = !isScheduleOn
-            updateIconSchedule()
+        // Mode
+        var mode = "automatic" // retrieve
+        updateUIForMode(getCheckedButtonId(mode))
+        binding.toggleMode.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (isChecked) {
+                when (checkedId) {
+                    R.id.button_automatic -> {
+                        mode = "automatic"
+                        updateUIForMode(checkedId)
+                    }
+                    R.id.button_schedule -> {
+                        mode = "schedule"
+                        updateUIForMode(checkedId)
+                    }
+                    R.id.button_manual -> {
+                        mode = "manual"
+                        updateUIForMode(checkedId)
+                    }
+                }
+            }
         }
+        binding.toggleMode.check(getCheckedButtonId(mode))
+
+
+
 
         // Time Picker
         binding.textScheduleTimeFrom.setOnClickListener {
@@ -140,12 +153,6 @@ class HomeFragment : Fragment() {
         recyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             adapter = homeAdapterIcon
-        }
-
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-
-        getLastLocation { city ->
-            binding.textCity.text = city
         }
     }
 
@@ -184,22 +191,50 @@ class HomeFragment : Fragment() {
             val hour = picker.hour
             val minute = picker.minute
 
-            val timePicker = "$hour:$minute"
+            val formattedHour = String.format("%02d", hour)
+            val formattedMinute = String.format("%02d", minute)
+
+            val timePicker = "$formattedHour:$formattedMinute"
             callback(timePicker)
         }
     }
 
-    private fun updateIconSchedule() {
-        val colorFilter: Int
-
-        if (isScheduleOn) {
-            val colorOnSurface = getThemeColor(com.google.android.material.R.attr.colorPrimary)
-            colorFilter = colorOnSurface
-        } else {
-            val colorPrimary = getThemeColor(com.google.android.material.R.attr.colorOnSurface)
-            colorFilter = colorPrimary
+    private fun getCheckedButtonId(mode: String): Int {
+        return when (mode) {
+            "automatic" -> R.id.button_automatic
+            "schedule" -> R.id.button_schedule
+            "manual" -> R.id.button_manual
+            else -> -1
         }
-        binding.iconSchedule.setColorFilter(colorFilter)
+    }
+
+    private fun updateUIForMode(checkedId: Int) {
+        when (checkedId) {
+            R.id.button_automatic -> {
+                binding.textPower.alpha = 0.5F
+                binding.switchPower.isEnabled = false
+                binding.textScheduleFrom.alpha = 0.5F
+                binding.textScheduleTimeFrom.isEnabled = false
+                binding.textScheduleTo.alpha = 0.5F
+                binding.textScheduleTimeTo.isEnabled = false
+            }
+            R.id.button_schedule -> {
+                binding.textPower.alpha = 0.5F
+                binding.switchPower.isEnabled = false
+                binding.textScheduleFrom.alpha = 1F
+                binding.textScheduleTimeFrom.isEnabled = true
+                binding.textScheduleTo.alpha = 1F
+                binding.textScheduleTimeTo.isEnabled = true
+            }
+            R.id.button_manual -> {
+                binding.textPower.alpha = 1F
+                binding.switchPower.isEnabled = true
+                binding.textScheduleFrom.alpha = 0.5F
+                binding.textScheduleTimeFrom.isEnabled = false
+                binding.textScheduleTo.alpha = 0.5F
+                binding.textScheduleTimeTo.isEnabled = false
+            }
+        }
     }
 
     private fun getLastLocation(callback: (String?) -> Unit) {
@@ -209,7 +244,7 @@ class HomeFragment : Fragment() {
                     val geocoder = Geocoder(requireActivity(), Locale.getDefault())
                     try {
                         val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
-                        val locationCity = addresses!!.firstOrNull()?.subAdminArea
+                        val locationCity = addresses!!.firstOrNull()?.adminArea
                         callback(locationCity)
                     } catch (e: IOException) {
                         e.printStackTrace()
@@ -223,12 +258,5 @@ class HomeFragment : Fragment() {
 
     private fun askPermission() {
         ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_CODE)
-    }
-
-    private fun getThemeColor(attr: Int): Int {
-        val typedValue = TypedValue()
-        val theme = requireContext().theme
-        theme.resolveAttribute(attr, typedValue, true)
-        return ContextCompat.getColor(requireContext(), typedValue.resourceId)
     }
 }

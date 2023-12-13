@@ -62,6 +62,7 @@
         android:layout_height="@dimen/room"
         android:contentDescription="@string/content_room"
         android:elevation="-2dp"
+        android:layout_marginEnd="@dimen/room_margin"
         android:scaleType="centerCrop"
         android:src="@drawable/img_kitchen"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -206,7 +207,7 @@
         style="@style/TextAppearance.Material3.TitleMedium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/sp_sm"
+        android:layout_marginBottom="@dimen/sp_xs"
         android:layout_marginEnd="@dimen/sp_xl"
         android:text="@string/placeholder_schedule"
         android:textAlignment="textEnd"
@@ -236,17 +237,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <ImageButton
-        android:id="@+id/icon_schedule"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/sp_md"
-        android:background="@color/transparent"
-        android:contentDescription="@string/content_schedule"
-        android:src="@drawable/bx_alarm"
-        app:layout_constraintBottom_toBottomOf="@+id/text_schedule_time_to"
-        app:layout_constraintEnd_toStartOf="@+id/text_schedule_time_to" />
-
     <TextView
         android:id="@+id/text_mode"
         style="@style/TextAppearance.Material3.LabelSmall"
@@ -272,16 +262,24 @@
         <Button
             android:id="@+id/button_automatic"
             style="@style/Widget.App.Button.OutlinedButton.Custom"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
             android:text="@string/text_automatic" />
 
         <Button
+            android:id="@+id/button_schedule"
+            style="@style/Widget.App.Button.OutlinedButton.Custom"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:icon="@drawable/bx_alarm"
+            android:textAppearance="@style/TextAppearance.Material3.LabelSmall" />
+
+        <Button
             android:id="@+id/button_manual"
             style="@style/Widget.App.Button.OutlinedButton.Custom"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
             android:text="@string/text_manual" />
 
