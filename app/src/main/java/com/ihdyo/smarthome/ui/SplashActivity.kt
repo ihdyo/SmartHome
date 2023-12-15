@@ -47,7 +47,7 @@ class SplashActivity : AppCompatActivity() {
                 builder.setNegativeButton(getString(R.string.prompt_connection_cancel)) { _, _ -> }
                 builder.show()
             }
-        }, 500)
+        }, 800)
     }
 
     private fun askPermission() {

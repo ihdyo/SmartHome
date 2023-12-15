@@ -13,7 +13,7 @@
             android:title="@string/menu_tutorial" />
         <item
             android:id="@+id/nav_campaign"
-            android:icon="@drawable/bx_news"
+            android:icon="@drawable/bx_leaf"
             android:title="@string/menu_campaign" />
         <item
             android:id="@+id/nav_about"

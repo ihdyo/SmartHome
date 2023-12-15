@@ -6,23 +6,38 @@
     android:layout_height="wrap_content"
     android:gravity="bottom"
     android:orientation="vertical"
-    android:paddingStart="@dimen/sp_md"
-    android:paddingEnd="@dimen/sp_0"
-    android:paddingTop="@dimen/sp_4xl"
+    android:padding="@dimen/sp_md"
     android:paddingBottom="@dimen/sp_0"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
     <TextView
-        android:id="@+id/text_slogan"
-        android:layout_width="wrap_content"
+        android:id="@+id/text_tagline"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="@font/juliette_regular"
-        android:text="@string/tagline"
+        android:text="@string/app_tagline"
         android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
         android:textColor="?attr/colorOnSurface"
         android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/text_tagline_translated"
+        style="@style/TextAppearance.Material3.LabelSmall"
+        android:layout_marginTop="@dimen/sp_md"
+        android:layout_marginEnd="@dimen/room_margin"
+        android:layout_width="@dimen/sp_7xl"
+        android:layout_height="wrap_content"
+        android:breakStrategy="balanced"
+        android:alpha="0.5"
+        android:rotation="90"
+        android:text="@string/app_tagline_translated"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        app:layout_constraintBottom_toBottomOf="@+id/text_tagline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/text_tagline" />
 
     <TextView
         android:id="@+id/text_username"
@@ -35,18 +50,7 @@
         android:textColor="?attr/colorOnSurface"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_slogan" />
-
-    <TextView
-        android:id="@+id/text_email"
-        style="@style/TextAppearance.Material3.LabelSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/placeholder_email"
-        android:textAlignment="textStart"
-        android:textColor="?attr/colorOnSurfaceVariant"
-        app:layout_constraintStart_toStartOf="@+id/text_username"
-        app:layout_constraintTop_toBottomOf="@+id/text_username" />
+        app:layout_constraintTop_toBottomOf="@+id/text_tagline" />
 
     <ImageView
         android:id="@+id/icon_verification"
@@ -58,5 +62,16 @@
         app:layout_constraintBottom_toBottomOf="@+id/text_username"
         app:layout_constraintStart_toEndOf="@+id/text_username"
         app:layout_constraintTop_toTopOf="@+id/text_username" />
+
+    <TextView
+        android:id="@+id/text_email"
+        style="@style/TextAppearance.Material3.LabelSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/placeholder_email"
+        android:textAlignment="textStart"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        app:layout_constraintStart_toStartOf="@+id/text_username"
+        app:layout_constraintTop_toBottomOf="@+id/text_username" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
