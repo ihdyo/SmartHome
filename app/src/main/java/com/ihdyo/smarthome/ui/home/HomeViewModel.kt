@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.storage.StorageException
 import com.ihdyo.smarthome.data.model.LampModel
 import com.ihdyo.smarthome.data.repository.LampRepository
+import com.ihdyo.smarthome.ui.home.HomeFragment.Companion.WATT_POWER
 import kotlinx.coroutines.launch
 
 class HomeViewModel(private val lampRepository: LampRepository) : ViewModel() {
@@ -21,6 +22,9 @@ class HomeViewModel(private val lampRepository: LampRepository) : ViewModel() {
 
     private val _lampImage = MutableLiveData<String>()
     val lampImage: LiveData<String> get() = _lampImage
+
+    private val _totalPowerConsumed = MutableLiveData<String>()
+    val totalPowerConsumed: LiveData<String> get() = _totalPowerConsumed
 
     @SuppressLint("NullSafeMutableLiveData")
     fun loadLampDetails(lampIds: List<String>) {
@@ -66,5 +70,17 @@ class HomeViewModel(private val lampRepository: LampRepository) : ViewModel() {
     // Set the selected lamp when a room icon is clicked
     fun setSelectedLamp(lamp: LampModel) {
         _selectedLamp.postValue(lamp)
+    }
+
+    suspend fun calculateTotalPowerConsumed() {
+        try {
+            val totalRuntime = lampRepository.getTotalRuntime()
+            val totalRuntimeHours = totalRuntime / 60 / 60
+            val totalPowerConsumed = (WATT_POWER * totalRuntimeHours).toString()
+
+            _totalPowerConsumed.postValue("${totalPowerConsumed}Wh")
+        } catch (e: Exception) {
+            Log.e("HomeViewModel", "Error calculating total power consumed", e)
+        }
     }
 }

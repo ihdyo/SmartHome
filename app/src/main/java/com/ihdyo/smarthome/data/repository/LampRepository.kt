@@ -57,4 +57,24 @@ class LampRepository(private val firestore: FirebaseFirestore, private val stora
         val storageRef = storage.reference.child(storagePath)
         return storageRef.downloadUrl.await().toString()
     }
+
+    suspend fun getTotalRuntime(): Int {
+        var totalRuntime = 0
+
+        try {
+            val querySnapshot = firestore.collection(LampRepository.COLLECTION_LAMPS).get().await()
+            for (document in querySnapshot.documents) {
+                val lamp = document.toObject(LampModel::class.java)
+                lamp?.totalRuntime?.let {
+                    totalRuntime += it
+                }
+            }
+        } catch (e: Exception) {
+            // Handle exceptions here (e.g., log or throw a custom exception)
+            Log.e("LampRepository", "Error fetching total runtime", e)
+        }
+
+        return totalRuntime
+    }
+
 }

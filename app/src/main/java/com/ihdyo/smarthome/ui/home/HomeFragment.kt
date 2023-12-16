@@ -17,8 +17,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
+import coil.request.CachePolicy
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
@@ -35,6 +38,7 @@ import com.ihdyo.smarthome.data.ViewModelFactory
 import com.ihdyo.smarthome.data.model.LampModel
 import com.ihdyo.smarthome.data.repository.LampRepository
 import com.ihdyo.smarthome.databinding.FragmentHomeBinding
+import kotlinx.coroutines.launch
 import java.io.IOException
 import java.util.Calendar
 import java.util.Locale
@@ -69,25 +73,18 @@ class HomeFragment : Fragment() {
                 val firstLamp = lamps.first()
                 homeViewModel.loadLampImage(firstLamp.roomIcon ?: "")
             }
-
             initRecyclerView(lamps)
         })
 
-        homeViewModel.lampImage.observe(viewLifecycleOwner, Observer { imageUrl ->
-            Glide.with(requireContext())
-                .load(imageUrl)
-                .into(binding.imageRoom)
-
-            binding.textTest.text = imageUrl.toString()
-        })
-
         homeViewModel.selectedLamp.observe(viewLifecycleOwner, Observer { selectedLamp ->
-            // Update other properties outside the RecyclerView
             updateOtherProperties(selectedLamp)
         })
 
-        homeViewModel.fetchLampDetails()
+        homeViewModel.totalPowerConsumed.observe(viewLifecycleOwner, Observer { totalPowerConsumed ->
+            binding.textPowerConsumedTotal.text = totalPowerConsumed
+        })
 
+        homeViewModel.fetchLampDetails()
 
         return root
     }
@@ -96,48 +93,9 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Recyclerview
-
-
-        // TODO (fetch from db)
-
-//        binding.imageRoom.setImageResource(R.drawable.img_living_room)
-
-        val storage = FirebaseStorage.getInstance()
-        val storageReference = storage.getReference("image/img_room_bathroom.png")
-
-//        storageReference.downloadUrl
-//            .addOnSuccessListener { uri: Uri? ->
-//                Glide.with(this)
-//                    .load(uri)
-//                    .apply(
-//                        RequestOptions()
-//                            .placeholder(R.drawable.ic_launcher_foreground)
-//                            .error(R.drawable.app_icon)
-//                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-//                    )
-//                    .into(binding.imageRoom)
-//            }
-
-
-
-        val username = "Yo" // retrieve
-        binding.textUsername.text = " ${username}!"
-
-        val totalTime = 100 // retrieve
-        val totalTimeHour = totalTime / 1000 * 60
-        val powerConsumed = (WATT_POWER * totalTimeHour).toString()
-        val powerConsumedTotal = (WATT_POWER * powerConsumed.toInt() / 1000).toString()
-
-        binding.textPowerConsumed.text = "${powerConsumed}Wh"
-        binding.textPowerConsumedTotal.text = "${powerConsumedTotal}kWh"
-
-//        val roomName = "Living Room" // retrieve
-//
-//        binding.textRoom.text = roomName
-//        binding.textRoomDecoration.text = roomName
-
-        binding.textRoomFloor.text = "1F" // retrieve
+        viewLifecycleOwner.lifecycleScope.launch {
+            homeViewModel.calculateTotalPowerConsumed()
+        }
 
         // Time
         getCurrentTime { formattedTime ->
@@ -146,26 +104,71 @@ class HomeFragment : Fragment() {
 
         // Location
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-
         getLastLocation { city ->
             binding.textCity.text = city
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    private fun initRecyclerView(lamps: List<LampModel>) {
+        // Initialize RecyclerView only once
+        if (!::lampIconAdapter.isInitialized) {
+            lampIconAdapter = LampIconAdapter(lamps, { selectedLamp ->
+                updateOtherProperties(selectedLamp)
+            }, homeViewModel)
+            binding.rvIconRoom.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            binding.rvIconRoom.adapter = lampIconAdapter
+        } else {
+            lampIconAdapter.setItems(lamps)
+        }
+    }
+
+
+    private fun updateOtherProperties(selectedLamp: LampModel) {
+
+        // Room Name
+        val roomName = selectedLamp.roomName
+        binding.textRoom.text = roomName
+        binding.textRoomDecoration.text = roomName
+
+        // Room Floor
+        binding.textRoomFloor.text = selectedLamp.roomFloor
+
+        // Room Image
+        binding.imageRoom.load(selectedLamp.roomImage) {
+            placeholder(R.drawable.bx_landscape)
+            error(R.drawable.bx_error)
+            crossfade(true)
+            memoryCachePolicy(CachePolicy.ENABLED)
+        }
+
+        // Total Runtime
+        val totalTime = selectedLamp.totalRuntime
+        val totalTimeHour = totalTime / 60 / 60
+        val powerConsumed = (WATT_POWER * totalTimeHour).toString()
+        binding.textPowerConsumed.text = "${powerConsumed}Wh"
 
         // Power Switch
-        var power = false //retrieve
+//        var power = selectedLamp.isPowerOn
+//
+//        binding.switchPower.isChecked = power == true
+//
+//        binding.switchPower.setOnCheckedChangeListener { _, isChecked ->
+//            power = isChecked
+//        }
+//        if (power == false) {
+//            binding.switchPower.isChecked = false
+//        }
 
-        binding.switchPower.isChecked = power
-
-        binding.switchPower.setOnCheckedChangeListener { _, isChecked ->
-            power = isChecked
-        }
-        if (power) {
-            binding.switchPower.isChecked = false
-        }
+//        updateOtherProperties(selectedLamp)
 
         // Mode
-        var mode = "automatic" // retrieve
-        updateUIForMode(getCheckedButtonId(mode))
+        var mode = selectedLamp.mode
+        updateUIForMode(getCheckedButtonId(mode!!))
         binding.toggleMode.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (isChecked) {
                 when (checkedId) {
@@ -184,7 +187,7 @@ class HomeFragment : Fragment() {
                 }
             }
         }
-        binding.toggleMode.check(getCheckedButtonId(mode))
+        binding.toggleMode.check(getCheckedButtonId(mode!!))
 
         // Time Picker
         binding.textScheduleTimeFrom.setOnClickListener {
@@ -200,30 +203,6 @@ class HomeFragment : Fragment() {
                 binding.textScheduleTimeTo.text = selectedTime
             }
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
-    private fun initRecyclerView(lamps: List<LampModel>) {
-        // Initialize RecyclerView only once
-        if (!::lampIconAdapter.isInitialized) {
-            lampIconAdapter = LampIconAdapter(lamps, { selectedLamp ->
-                updateOtherProperties(selectedLamp)
-            }, homeViewModel)
-            binding.rvIconRoom.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-            binding.rvIconRoom.adapter = lampIconAdapter
-        } else {
-            lampIconAdapter?.setItems(lamps)
-        }
-    }
-
-
-    private fun updateOtherProperties(selectedLamp: LampModel) {
-        binding.textRoom.text = selectedLamp.roomName
-        binding.textRoomDecoration.text = selectedLamp.roomName
     }
 
     private fun getCurrentTime(callback: (String) -> Unit) {
