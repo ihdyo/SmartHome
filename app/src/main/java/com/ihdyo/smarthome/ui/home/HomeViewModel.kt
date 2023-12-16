@@ -26,6 +26,10 @@ class HomeViewModel(private val lampRepository: LampRepository) : ViewModel() {
     private val _totalPowerConsumed = MutableLiveData<String>()
     val totalPowerConsumed: LiveData<String> get() = _totalPowerConsumed
 
+    private val _modeUpdateResult = MutableLiveData<Boolean>()
+    val modeUpdateResult: LiveData<Boolean>
+        get() = _modeUpdateResult
+
     @SuppressLint("NullSafeMutableLiveData")
     fun loadLampDetails(lampIds: List<String>) {
         viewModelScope.launch {
@@ -81,6 +85,20 @@ class HomeViewModel(private val lampRepository: LampRepository) : ViewModel() {
             _totalPowerConsumed.postValue("${totalPowerConsumed}Wh")
         } catch (e: Exception) {
             Log.e("HomeViewModel", "Error calculating total power consumed", e)
+        }
+    }
+
+    fun updateMode(selectedLamp: LampModel) {
+        viewModelScope.launch {
+            try {
+                // Call the repository method to update the mode
+                lampRepository.updateMode(selectedLamp)
+                _modeUpdateResult.postValue(true) // Update successful
+            } catch (e: Exception) {
+                _modeUpdateResult.postValue(false) // Update failed
+                // Handle exceptions (log, show error message, etc.)
+                Log.e("HomeViewModel", "Error updating mode", e)
+            }
         }
     }
 }

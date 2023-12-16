@@ -25,7 +25,7 @@ import com.ihdyo.smarthome.data.model.LampModel
 
 class LampIconAdapter(private var items: List<LampModel>, private val onItemClickListener: (LampModel) -> Unit, private val lampViewModel: HomeViewModel) : RecyclerView.Adapter<LampIconAdapter.ItemViewHolder>() {
 
-    private var activePosition: Int = 0
+    private var activePosition: Int = RecyclerView.NO_POSITION
 
     @SuppressLint("NotifyDataSetChanged")
     fun setItems(items: List<LampModel>) {

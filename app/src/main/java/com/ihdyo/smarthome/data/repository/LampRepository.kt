@@ -77,4 +77,21 @@ class LampRepository(private val firestore: FirebaseFirestore, private val stora
         return totalRuntime
     }
 
+    fun updateMode(lamp: LampModel) {
+        // Assuming you have a reference to the Firestore collection
+        // and the document ID is in the lamp.id property
+        val documentReference = firestore.collection(COLLECTION_LAMPS).document(lamp.id!!)
+
+        // Update the mode field in the document
+        documentReference.update("mode", lamp.mode)
+            .addOnSuccessListener {
+                // Handle success if needed
+            }
+            .addOnFailureListener { e ->
+                // Handle failure (log, show error message, etc.)
+                Log.e("LampRepository", "Error updating mode", e)
+                throw e
+            }
+    }
+
 }

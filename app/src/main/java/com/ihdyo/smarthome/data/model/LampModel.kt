@@ -1,16 +1,15 @@
 package com.ihdyo.smarthome.data.model
 
 import android.os.Parcelable
-import com.google.firebase.firestore.DocumentId
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class LampModel (
-    @DocumentId
-    val isAutomaticOn: Boolean? = null,
-    val isPowerOn: Boolean? = null,
-    val isScheduleOn: Boolean? = null,
-    val mode: String? = null,
+    val id: String = "",
+    var isAutomaticOn: Boolean? = null,
+    var isPowerOn: Boolean? = null,
+    var isScheduleOn: Boolean? = null,
+    var mode: String? = null,
     val roomFloor: String? = null,
     val roomIcon: String? = null,
     val roomImage: String? = null,

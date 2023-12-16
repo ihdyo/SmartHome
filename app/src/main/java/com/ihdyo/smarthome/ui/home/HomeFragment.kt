@@ -11,6 +11,7 @@ import android.text.format.DateFormat.is24HourFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -54,7 +55,6 @@ class HomeFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var homeViewModel: HomeViewModel
 
-    private lateinit var recyclerView: RecyclerView
     private lateinit var lampIconAdapter: LampIconAdapter
 
     var fusedLocationProviderClient: FusedLocationProviderClient? = null
@@ -84,6 +84,16 @@ class HomeFragment : Fragment() {
             binding.textPowerConsumedTotal.text = totalPowerConsumed
         })
 
+        homeViewModel.modeUpdateResult.observe(viewLifecycleOwner, Observer { isModeUpdateSuccessful ->
+            if (isModeUpdateSuccessful) {
+                // Mode update was successful, handle accordingly
+                Toast.makeText(requireContext(), "Mode updated successfully", Toast.LENGTH_SHORT).show()
+            } else {
+                // Mode update failed, handle accordingly
+                Toast.makeText(requireContext(), "Failed to update mode", Toast.LENGTH_SHORT).show()
+            }
+        })
+
         homeViewModel.fetchLampDetails()
 
         return root
@@ -93,9 +103,16 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Inside onViewCreated method
         viewLifecycleOwner.lifecycleScope.launch {
             homeViewModel.calculateTotalPowerConsumed()
+
+            // Ensure that selectedLamp is not null before calling updateMode
+            homeViewModel.selectedLamp.value?.let { selectedLamp ->
+                homeViewModel.updateMode(selectedLamp)
+            }
         }
+
 
         // Time
         getCurrentTime { formattedTime ->
@@ -167,27 +184,32 @@ class HomeFragment : Fragment() {
 //        updateOtherProperties(selectedLamp)
 
         // Mode
-        var mode = selectedLamp.mode
-        updateUIForMode(getCheckedButtonId(mode!!))
+        updateUIForMode(getCheckedButtonId(selectedLamp.mode!!), selectedLamp)
         binding.toggleMode.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (isChecked) {
                 when (checkedId) {
                     R.id.button_automatic -> {
-                        mode = "automatic"
-                        updateUIForMode(checkedId)
+                        selectedLamp.mode = "automatic"
+                        updateUIForMode(checkedId, selectedLamp)
+                        // Update the mode in Firestore
+                        homeViewModel.updateMode(selectedLamp)
                     }
                     R.id.button_schedule -> {
-                        mode = "schedule"
-                        updateUIForMode(checkedId)
+                        selectedLamp.mode = "schedule"
+                        updateUIForMode(checkedId, selectedLamp)
+                        // Update the mode in Firestore
+                        homeViewModel.updateMode(selectedLamp)
                     }
                     R.id.button_manual -> {
-                        mode = "manual"
-                        updateUIForMode(checkedId)
+                        selectedLamp.mode = "manual"
+                        updateUIForMode(checkedId, selectedLamp)
+                        // Update the mode in Firestore
+                        homeViewModel.updateMode(selectedLamp)
                     }
                 }
             }
         }
-        binding.toggleMode.check(getCheckedButtonId(mode!!))
+        binding.toggleMode.check(getCheckedButtonId(selectedLamp.mode!!))
 
         // Time Picker
         binding.textScheduleTimeFrom.setOnClickListener {
@@ -252,7 +274,7 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun updateUIForMode(checkedId: Int) {
+    private fun updateUIForMode(checkedId: Int, selectedLamp: LampModel) {
         when (checkedId) {
             R.id.button_automatic -> {
                 binding.textPower.alpha = 0.5F
@@ -261,6 +283,9 @@ class HomeFragment : Fragment() {
                 binding.textScheduleTimeFrom.isEnabled = false
                 binding.textScheduleTo.alpha = 0.5F
                 binding.textScheduleTimeTo.isEnabled = false
+
+                selectedLamp.isScheduleOn = false
+                selectedLamp.isAutomaticOn = true
             }
             R.id.button_schedule -> {
                 binding.textPower.alpha = 0.5F
@@ -269,6 +294,9 @@ class HomeFragment : Fragment() {
                 binding.textScheduleTimeFrom.isEnabled = true
                 binding.textScheduleTo.alpha = 1F
                 binding.textScheduleTimeTo.isEnabled = true
+
+                selectedLamp.isScheduleOn = true
+                selectedLamp.isAutomaticOn = true
             }
             R.id.button_manual -> {
                 binding.textPower.alpha = 1F
@@ -277,6 +305,9 @@ class HomeFragment : Fragment() {
                 binding.textScheduleTimeFrom.isEnabled = false
                 binding.textScheduleTo.alpha = 0.5F
                 binding.textScheduleTimeTo.isEnabled = false
+
+                selectedLamp.isScheduleOn = false
+                selectedLamp.isAutomaticOn = true
             }
         }
     }
