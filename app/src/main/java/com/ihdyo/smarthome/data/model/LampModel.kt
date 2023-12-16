@@ -19,4 +19,9 @@ data class LampModel (
     val totalRuntime: Int = 0, // ms
 
     var imageUrl: String? = null // Add this property for image URL
-) : Parcelable
+) : Parcelable {
+
+    fun updatePowerState(newState: Boolean?) {
+        isPowerOn = newState
+    }
+}

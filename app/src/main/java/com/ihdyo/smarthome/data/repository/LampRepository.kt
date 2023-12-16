@@ -117,4 +117,17 @@ class LampRepository(private val firestore: FirebaseFirestore, private val stora
                 throw e
             }
     }
+
+    fun updateLampPowerState(lamp: LampModel, callback: (Boolean) -> Unit) {
+        val lampReference = firestore.collection(COLLECTION_LAMPS).document(lamp.id)
+
+        lampReference.update(FIELD_IS_POWER_ON, lamp.isPowerOn)
+            .addOnSuccessListener {
+                callback(true)
+            }
+            .addOnFailureListener { exception ->
+                exception.printStackTrace()
+                callback(false)
+            }
+    }
 }

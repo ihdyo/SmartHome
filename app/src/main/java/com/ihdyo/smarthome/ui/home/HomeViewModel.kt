@@ -27,8 +27,12 @@ class HomeViewModel(private val lampRepository: LampRepository) : ViewModel() {
     val totalPowerConsumed: LiveData<String> get() = _totalPowerConsumed
 
     private val _modeUpdateResult = MutableLiveData<Boolean>()
-    val modeUpdateResult: LiveData<Boolean>
-        get() = _modeUpdateResult
+    val modeUpdateResult: LiveData<Boolean> get() = _modeUpdateResult
+
+    private val _isPowerOn = MutableLiveData<Boolean>()
+    val isPowerOn: LiveData<Boolean> get() = _isPowerOn
+
+    private var currentPowerState: Boolean = false
 
     @SuppressLint("NullSafeMutableLiveData")
     fun loadLampDetails(lampIds: List<String>) {
@@ -101,4 +105,21 @@ class HomeViewModel(private val lampRepository: LampRepository) : ViewModel() {
             }
         }
     }
+
+    fun updateIsPowerOn(isPowerOn: Boolean) {
+        if (isPowerOn != currentPowerState) {
+            selectedLamp.value?.let { lamp ->
+                lamp.isPowerOn = isPowerOn
+                lampRepository.updateLampPowerState(lamp) { isSuccess ->
+                    if (isSuccess) {
+                        _isPowerOn.postValue(isPowerOn)
+                        currentPowerState = isPowerOn // Update the current state
+                    } else {
+                        // Handle update failure if necessary
+                    }
+                }
+            }
+        }
+    }
+
 }

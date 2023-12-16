@@ -60,6 +60,7 @@ class HomeFragment : Fragment() {
     var fusedLocationProviderClient: FusedLocationProviderClient? = null
 
     private var isTime: String? = null
+    private var currentSwitchState: Boolean = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
@@ -91,6 +92,13 @@ class HomeFragment : Fragment() {
             } else {
                 // Mode update failed, handle accordingly
                 Toast.makeText(requireContext(), "Failed to update mode", Toast.LENGTH_SHORT).show()
+            }
+        })
+
+        homeViewModel.isPowerOn.observe(viewLifecycleOwner, Observer { isPowerOn ->
+            if (isPowerOn != currentSwitchState) {
+                updatePowerSwitchButton(isPowerOn)
+                currentSwitchState = isPowerOn
             }
         })
 
@@ -131,6 +139,12 @@ class HomeFragment : Fragment() {
         _binding = null
     }
 
+    private fun updatePowerSwitchButton(isPowerOn: Boolean) {
+        binding.switchPower.isChecked = isPowerOn
+        homeViewModel.updateIsPowerOn(isPowerOn)
+    }
+
+
     private fun initRecyclerView(lamps: List<LampModel>) {
         // Initialize RecyclerView only once
         if (!::lampIconAdapter.isInitialized) {
@@ -170,18 +184,14 @@ class HomeFragment : Fragment() {
         binding.textPowerConsumed.text = "${powerConsumed}Wh"
 
         // Power Switch
-//        var power = selectedLamp.isPowerOn
-//
-//        binding.switchPower.isChecked = power == true
-//
-//        binding.switchPower.setOnCheckedChangeListener { _, isChecked ->
-//            power = isChecked
-//        }
-//        if (power == false) {
-//            binding.switchPower.isChecked = false
-//        }
+        binding.switchPower.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                homeViewModel.updateIsPowerOn(true)
+            } else {
+                homeViewModel.updateIsPowerOn(false)
+            }
+        }
 
-//        updateOtherProperties(selectedLamp)
 
         // Mode
         updateUIForMode(getCheckedButtonId(selectedLamp.mode!!))
