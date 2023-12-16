@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -30,7 +31,7 @@ import com.google.android.material.timepicker.TimeFormat
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.ihdyo.smarthome.R
-import com.ihdyo.smarthome.data.LampViewModelFactory
+import com.ihdyo.smarthome.data.ViewModelFactory
 import com.ihdyo.smarthome.data.model.LampModel
 import com.ihdyo.smarthome.data.repository.LampRepository
 import com.ihdyo.smarthome.databinding.FragmentHomeBinding
@@ -47,6 +48,8 @@ class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+    private lateinit var homeViewModel: HomeViewModel
+
     private lateinit var recyclerView: RecyclerView
     private lateinit var lampIconAdapter: LampIconAdapter
 
@@ -58,31 +61,32 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val lampViewModel: LampViewModel by viewModels {
-            LampViewModelFactory(LampRepository(FirebaseFirestore.getInstance(), FirebaseStorage.getInstance()))
-        }
+        homeViewModel = ViewModelProvider(this, ViewModelFactory(LampRepository(FirebaseFirestore.getInstance(), FirebaseStorage.getInstance())))
+            .get(HomeViewModel::class.java)
 
-        // View Model
-        lampViewModel.lampDetails.observe(viewLifecycleOwner, Observer { lamps ->
+        homeViewModel.lampDetails.observe(viewLifecycleOwner, Observer { lamps ->
             if (lamps.isNotEmpty()) {
                 val firstLamp = lamps.first()
-                lampViewModel.loadLampImage(firstLamp.roomImage ?: "")
+                homeViewModel.loadLampImage(firstLamp.roomIcon ?: "")
             }
 
-            // Initialize RecyclerView with the fetched lamps
             initRecyclerView(lamps)
         })
 
-        // Observe changes in the lamp image URL
-        lampViewModel.lampImage.observe(viewLifecycleOwner, Observer { imageUrl ->
-            // Load the lamp image using Glide
+        homeViewModel.lampImage.observe(viewLifecycleOwner, Observer { imageUrl ->
             Glide.with(requireContext())
                 .load(imageUrl)
                 .into(binding.imageRoom)
+
+            binding.textTest.text = imageUrl.toString()
         })
 
-        // Fetch lamp details from Firestore
-        lampViewModel.fetchLampDetails()
+        homeViewModel.selectedLamp.observe(viewLifecycleOwner, Observer { selectedLamp ->
+            // Update other properties outside the RecyclerView
+            updateOtherProperties(selectedLamp)
+        })
+
+        homeViewModel.fetchLampDetails()
 
 
         return root
@@ -206,15 +210,16 @@ class HomeFragment : Fragment() {
     private fun initRecyclerView(lamps: List<LampModel>) {
         // Initialize RecyclerView only once
         if (!::lampIconAdapter.isInitialized) {
-            lampIconAdapter = LampIconAdapter(lamps) { selectedLamp ->
+            lampIconAdapter = LampIconAdapter(lamps, { selectedLamp ->
                 updateOtherProperties(selectedLamp)
-            }
+            }, homeViewModel)
             binding.rvIconRoom.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             binding.rvIconRoom.adapter = lampIconAdapter
         } else {
-            lampIconAdapter.setItems(lamps)
+            lampIconAdapter?.setItems(lamps)
         }
     }
+
 
     private fun updateOtherProperties(selectedLamp: LampModel) {
         binding.textRoom.text = selectedLamp.roomName

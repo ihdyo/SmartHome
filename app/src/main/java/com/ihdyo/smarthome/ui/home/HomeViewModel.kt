@@ -11,10 +11,13 @@ import com.ihdyo.smarthome.data.model.LampModel
 import com.ihdyo.smarthome.data.repository.LampRepository
 import kotlinx.coroutines.launch
 
-class LampViewModel(private val lampRepository: LampRepository) : ViewModel() {
+class HomeViewModel(private val lampRepository: LampRepository) : ViewModel() {
 
     private val _lampDetails = MutableLiveData<List<LampModel>>()
     val lampDetails: LiveData<List<LampModel>> get() = _lampDetails
+
+    private val _selectedLamp = MutableLiveData<LampModel>()
+    val selectedLamp: LiveData<LampModel> get() = _selectedLamp
 
     private val _lampImage = MutableLiveData<String>()
     val lampImage: LiveData<String> get() = _lampImage
@@ -24,41 +27,21 @@ class LampViewModel(private val lampRepository: LampRepository) : ViewModel() {
         viewModelScope.launch {
             try {
                 val lamps = lampRepository.getLampsById(lampIds)
-                // Check if the list is not null before posting the value
-                if (lamps != null) {
-                    _lampDetails.postValue(lamps)
-
-                    // Set the image URL of the first lamp for display
-                    if (lamps.isNotEmpty()) {
-                        _lampImage.postValue(lamps.first().roomImage)
-                    }
-                } else {
-                    // Handle the case where getLampsById returns null
-                    Log.d("LampViewModel", "Lamps list is null")
-                }
+                _lampDetails.postValue(lamps)
             } catch (e: Exception) {
-                // Handle the exception (e.g., log or show an error message)
-                Log.e("LampViewModel", "Error fetching lamp details", e)
+                Log.e("HomeViewModel", "Error fetching lamp details", e)
             }
         }
     }
 
-    // Use this function for a more general case where you fetch lamps without specific IDs
     @SuppressLint("NullSafeMutableLiveData")
     fun fetchLampDetails() {
         viewModelScope.launch {
             try {
-                val lamps = lampRepository.getLamps()  // Update this line based on your repository method
-                // Check if the list is not null before posting the value
+                val lamps = lampRepository.getLamps()
                 _lampDetails.postValue(lamps)
-
-                // Set the image URL of the first lamp for display
-                if (lamps.isNotEmpty()) {
-                    _lampImage.postValue(lamps.first().roomImage)
-                }
             } catch (e: Exception) {
-                // Handle the exception (e.g., log or show an error message)
-                Log.e("LampViewModel", "Error fetching lamp details", e)
+                Log.e("HomeViewModel", "Error fetching lamp details", e)
             }
         }
     }
@@ -66,23 +49,22 @@ class LampViewModel(private val lampRepository: LampRepository) : ViewModel() {
     fun loadLampImage(storagePath: String) {
         viewModelScope.launch {
             try {
-                // Update the LiveData with the image URL
                 val imageUrl = lampRepository.getLampImage(storagePath)
-
                 if (imageUrl.isNotEmpty()) {
                     _lampImage.postValue(imageUrl)
                 } else {
-                    // Handle the case where the image URL is empty
                     Log.e("LampViewModel", "Empty image URL for storage path: $storagePath")
                 }
             } catch (e: StorageException) {
-                // Handle the case where the object does not exist
                 Log.e("LampViewModel", "Object does not exist at location: $storagePath", e)
             } catch (e: Exception) {
-                // Handle other exceptions
                 Log.e("LampViewModel", "Error loading lamp image", e)
             }
         }
     }
 
+    // Set the selected lamp when a room icon is clicked
+    fun setSelectedLamp(lamp: LampModel) {
+        _selectedLamp.postValue(lamp)
+    }
 }

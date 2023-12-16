@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -19,9 +20,9 @@ import com.bumptech.glide.request.target.Target
 import com.ihdyo.smarthome.R
 import com.ihdyo.smarthome.data.model.LampModel
 
-class LampIconAdapter(private var items: List<LampModel>, private val onItemClickListener: (LampModel) -> Unit) : RecyclerView.Adapter<LampIconAdapter.ItemViewHolder>() {
+class LampIconAdapter(private var items: List<LampModel>, private val onItemClickListener: (LampModel) -> Unit, private val lampViewModel: HomeViewModel) : RecyclerView.Adapter<LampIconAdapter.ItemViewHolder>() {
 
-    private var activePosition: Int = RecyclerView.NO_POSITION
+    private var activePosition: Int = 0
 
     @SuppressLint("NotifyDataSetChanged")
     fun setItems(items: List<LampModel>) {
@@ -45,13 +46,28 @@ class LampIconAdapter(private var items: List<LampModel>, private val onItemClic
 
     inner class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val iconRoom: ImageButton = itemView.findViewById(R.id.icon_room)
+        private val textTest: TextView = itemView.findViewById(R.id.text_test)
         private var currentPosition: Int = RecyclerView.NO_POSITION
 
         init {
             iconRoom.setOnClickListener {
                 val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
-                    onItemClickListener(items[position])
+                    // Check if a different item is clicked
+                    if (position != activePosition) {
+                        // Update the active position
+                        val previousActivePosition = activePosition
+                        activePosition = position
+
+                        // Notify the adapter to rebind the items at the previous and current positions
+                        notifyItemChanged(previousActivePosition)
+                        notifyItemChanged(activePosition)
+
+                        // Handle item click
+                        val selectedLamp = items[position]
+                        onItemClickListener(selectedLamp)
+                        lampViewModel.setSelectedLamp(selectedLamp)
+                    }
                 }
             }
         }
@@ -63,15 +79,19 @@ class LampIconAdapter(private var items: List<LampModel>, private val onItemClic
             updateButtonState(isActive)
 
             // Load image using Glide
-            Glide.with(itemView.context.applicationContext)
-                .load(item.imageUrl)
+            Glide.with(itemView.context)
+                .load(item.roomIcon)
                 .apply(
                     RequestOptions()
-                        .placeholder(R.drawable.app_icon)
-                        .error(R.drawable.app_icon)
+                        .placeholder(R.drawable.bx_landscape)
+                        .error(R.drawable.bx_error)
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                 )
                 .into(iconRoom)
+
+            lampViewModel.loadLampImage(item.roomIcon!!)
+
+            textTest.text = item.roomIcon.toString()
 
             val colorFilter = if (isActive) getThemeColor(com.google.android.material.R.attr.colorOnPrimary) else getThemeColor(com.google.android.material.R.attr.colorPrimary)
             iconRoom.imageTintList = ColorStateList.valueOf(colorFilter)
@@ -101,7 +121,7 @@ class LampIconAdapter(private var items: List<LampModel>, private val onItemClic
             val elevationAnimator = ObjectAnimator.ofFloat(iconRoom, "elevation", iconRoom.elevation, elevation)
 
             val animatorSet = AnimatorSet()
-            animatorSet.duration = 300
+            animatorSet.duration = 0
             animatorSet.playTogether(heightAnimator, widthAnimator, elevationAnimator)
             animatorSet.start()
 
