@@ -184,29 +184,29 @@ class HomeFragment : Fragment() {
 //        updateOtherProperties(selectedLamp)
 
         // Mode
-        updateUIForMode(getCheckedButtonId(selectedLamp.mode!!), selectedLamp)
+        updateUIForMode(getCheckedButtonId(selectedLamp.mode!!))
         binding.toggleMode.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (isChecked) {
                 when (checkedId) {
                     R.id.button_automatic -> {
                         selectedLamp.mode = "automatic"
-                        updateUIForMode(checkedId, selectedLamp)
-                        // Update the mode in Firestore
-                        homeViewModel.updateMode(selectedLamp)
+                        selectedLamp.isAutomaticOn = true
+                        selectedLamp.isScheduleOn = false
                     }
                     R.id.button_schedule -> {
                         selectedLamp.mode = "schedule"
-                        updateUIForMode(checkedId, selectedLamp)
-                        // Update the mode in Firestore
-                        homeViewModel.updateMode(selectedLamp)
+                        selectedLamp.isAutomaticOn = false
+                        selectedLamp.isScheduleOn = true
                     }
                     R.id.button_manual -> {
                         selectedLamp.mode = "manual"
-                        updateUIForMode(checkedId, selectedLamp)
-                        // Update the mode in Firestore
-                        homeViewModel.updateMode(selectedLamp)
+                        selectedLamp.isAutomaticOn = false
+                        selectedLamp.isScheduleOn = false
                     }
                 }
+                updateUIForMode(checkedId)
+                // Update the mode in Firestore
+                homeViewModel.updateMode(selectedLamp)
             }
         }
         binding.toggleMode.check(getCheckedButtonId(selectedLamp.mode!!))
@@ -270,11 +270,11 @@ class HomeFragment : Fragment() {
             "automatic" -> R.id.button_automatic
             "schedule" -> R.id.button_schedule
             "manual" -> R.id.button_manual
-            else -> -1
+            else -> RecyclerView.NO_POSITION
         }
     }
 
-    private fun updateUIForMode(checkedId: Int, selectedLamp: LampModel) {
+    private fun updateUIForMode(checkedId: Int) {
         when (checkedId) {
             R.id.button_automatic -> {
                 binding.textPower.alpha = 0.5F
@@ -283,9 +283,6 @@ class HomeFragment : Fragment() {
                 binding.textScheduleTimeFrom.isEnabled = false
                 binding.textScheduleTo.alpha = 0.5F
                 binding.textScheduleTimeTo.isEnabled = false
-
-                selectedLamp.isScheduleOn = false
-                selectedLamp.isAutomaticOn = true
             }
             R.id.button_schedule -> {
                 binding.textPower.alpha = 0.5F
@@ -294,9 +291,6 @@ class HomeFragment : Fragment() {
                 binding.textScheduleTimeFrom.isEnabled = true
                 binding.textScheduleTo.alpha = 1F
                 binding.textScheduleTimeTo.isEnabled = true
-
-                selectedLamp.isScheduleOn = true
-                selectedLamp.isAutomaticOn = true
             }
             R.id.button_manual -> {
                 binding.textPower.alpha = 1F
@@ -305,9 +299,6 @@ class HomeFragment : Fragment() {
                 binding.textScheduleTimeFrom.isEnabled = false
                 binding.textScheduleTo.alpha = 0.5F
                 binding.textScheduleTimeTo.isEnabled = false
-
-                selectedLamp.isScheduleOn = false
-                selectedLamp.isAutomaticOn = true
             }
         }
     }

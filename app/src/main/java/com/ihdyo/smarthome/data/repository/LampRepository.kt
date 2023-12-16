@@ -10,6 +10,10 @@ class LampRepository(private val firestore: FirebaseFirestore, private val stora
 
     companion object {
         const val COLLECTION_LAMPS = "lamps"
+        const val FIELD_MODE = "mode"
+        const val FIELD_IS_POWER_ON = "isPowerOn"
+        const val FIELD_IS_SCHEDULE_ON = "isScheduleOn"
+        const val FIELD_IS_AUTOMATIC_ON = "isAutomaticOn"
     }
 
     // Updated method to fetch all lamps without specific IDs
@@ -80,10 +84,30 @@ class LampRepository(private val firestore: FirebaseFirestore, private val stora
     fun updateMode(lamp: LampModel) {
         // Assuming you have a reference to the Firestore collection
         // and the document ID is in the lamp.id property
-        val documentReference = firestore.collection(COLLECTION_LAMPS).document(lamp.id!!)
+        val documentReference = firestore.collection(COLLECTION_LAMPS).document(lamp.id)
 
         // Update the mode field in the document
-        documentReference.update("mode", lamp.mode)
+        documentReference.update(FIELD_MODE, lamp.mode)
+            .addOnSuccessListener {
+                // Handle success if needed
+            }
+            .addOnFailureListener { e ->
+                // Handle failure (log, show error message, etc.)
+                Log.e("LampRepository", "Error updating mode", e)
+                throw e
+            }
+
+        documentReference.update(FIELD_IS_AUTOMATIC_ON, lamp.isAutomaticOn)
+            .addOnSuccessListener {
+                // Handle success if needed
+            }
+            .addOnFailureListener { e ->
+                // Handle failure (log, show error message, etc.)
+                Log.e("LampRepository", "Error updating mode", e)
+                throw e
+            }
+
+        documentReference.update(FIELD_IS_SCHEDULE_ON, lamp.isScheduleOn)
             .addOnSuccessListener {
                 // Handle success if needed
             }
@@ -93,5 +117,4 @@ class LampRepository(private val firestore: FirebaseFirestore, private val stora
                 throw e
             }
     }
-
 }
