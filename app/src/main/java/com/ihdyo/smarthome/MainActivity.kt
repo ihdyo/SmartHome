@@ -14,8 +14,8 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.PopupMenu
+import com.ihdyo.smarthome.data.preferences.AppPreferences
 import com.ihdyo.smarthome.databinding.ActivityMainBinding
-import com.ihdyo.smarthome.preferences.AppPreferences
 
 class MainActivity : AppCompatActivity() {
 

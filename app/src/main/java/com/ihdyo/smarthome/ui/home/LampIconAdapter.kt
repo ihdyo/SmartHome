@@ -4,6 +4,7 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
+import android.graphics.drawable.Drawable
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -11,15 +12,19 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.Target
 import com.ihdyo.smarthome.R
-import com.ihdyo.smarthome.model.IconModel
+import com.ihdyo.smarthome.data.model.LampModel
 
-class HomeAdapterIcon(private var items: List<IconModel>) : RecyclerView.Adapter<HomeAdapterIcon.ItemViewHolder>() {
+class LampIconAdapter(private var items: List<LampModel>, private val onItemClickListener: (LampModel) -> Unit) : RecyclerView.Adapter<LampIconAdapter.ItemViewHolder>() {
 
-    private var activePosition: Int = 0
+    private var activePosition: Int = RecyclerView.NO_POSITION
 
     @SuppressLint("NotifyDataSetChanged")
-    fun setItems(items: List<IconModel>) {
+    fun setItems(items: List<LampModel>) {
         this.items = items
         notifyDataSetChanged()
     }
@@ -44,27 +49,32 @@ class HomeAdapterIcon(private var items: List<IconModel>) : RecyclerView.Adapter
 
         init {
             iconRoom.setOnClickListener {
-                setActivePosition(currentPosition)
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    onItemClickListener(items[position])
+                }
             }
         }
 
         @SuppressLint("SetTextI18n")
-        fun bind(item: IconModel, position: Int) {
+        fun bind(item: LampModel, position: Int) {
             currentPosition = position
             val isActive = position == activePosition
             updateButtonState(isActive)
 
-            iconRoom.setImageResource(item.icon)
+            // Load image using Glide
+            Glide.with(itemView.context.applicationContext)
+                .load(item.imageUrl)
+                .apply(
+                    RequestOptions()
+                        .placeholder(R.drawable.app_icon)
+                        .error(R.drawable.app_icon)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                )
+                .into(iconRoom)
 
             val colorFilter = if (isActive) getThemeColor(com.google.android.material.R.attr.colorOnPrimary) else getThemeColor(com.google.android.material.R.attr.colorPrimary)
             iconRoom.imageTintList = ColorStateList.valueOf(colorFilter)
-        }
-
-        private fun setActivePosition(position: Int) {
-            val previousActivePosition = activePosition
-            activePosition = position
-            notifyItemChanged(previousActivePosition)
-            notifyItemChanged(activePosition)
         }
 
         private fun updateButtonState(isActive: Boolean) {
@@ -91,7 +101,7 @@ class HomeAdapterIcon(private var items: List<IconModel>) : RecyclerView.Adapter
             val elevationAnimator = ObjectAnimator.ofFloat(iconRoom, "elevation", iconRoom.elevation, elevation)
 
             val animatorSet = AnimatorSet()
-            animatorSet.duration = 300 // Adjust the duration as needed
+            animatorSet.duration = 300
             animatorSet.playTogether(heightAnimator, widthAnimator, elevationAnimator)
             animatorSet.start()
 

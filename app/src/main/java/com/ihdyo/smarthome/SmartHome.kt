@@ -3,7 +3,7 @@ package com.ihdyo.smarthome
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.color.DynamicColors
-import com.ihdyo.smarthome.preferences.AppPreferences
+import com.ihdyo.smarthome.data.preferences.AppPreferences
 
 class SmartHome : Application() {
     override fun onCreate() {

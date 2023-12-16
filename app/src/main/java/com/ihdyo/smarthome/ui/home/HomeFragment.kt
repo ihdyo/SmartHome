@@ -3,7 +3,9 @@ package com.ihdyo.smarthome.ui.home
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.graphics.drawable.Drawable
 import android.location.Geocoder
+import android.net.Uri
 import android.os.Bundle
 import android.text.format.DateFormat.is24HourFormat
 import android.view.LayoutInflater
@@ -12,15 +14,25 @@ import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.Target
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.MaterialTimePicker.INPUT_MODE_CLOCK
 import com.google.android.material.timepicker.TimeFormat
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import com.ihdyo.smarthome.R
+import com.ihdyo.smarthome.data.LampViewModelFactory
+import com.ihdyo.smarthome.data.model.LampModel
+import com.ihdyo.smarthome.data.repository.LampRepository
 import com.ihdyo.smarthome.databinding.FragmentHomeBinding
 import java.io.IOException
 import java.util.Calendar
@@ -35,9 +47,8 @@ class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
-    private lateinit var homeViewModel: HomeViewModel
     private lateinit var recyclerView: RecyclerView
-    private lateinit var homeAdapterIcon: HomeAdapterIcon
+    private lateinit var lampIconAdapter: LampIconAdapter
 
     var fusedLocationProviderClient: FusedLocationProviderClient? = null
 
@@ -47,10 +58,32 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        homeViewModel = ViewModelProvider(this)[HomeViewModel::class.java]
-        homeViewModel.items.observe(viewLifecycleOwner) { items ->
-            homeAdapterIcon.setItems(items)
+        val lampViewModel: LampViewModel by viewModels {
+            LampViewModelFactory(LampRepository(FirebaseFirestore.getInstance(), FirebaseStorage.getInstance()))
         }
+
+        // View Model
+        lampViewModel.lampDetails.observe(viewLifecycleOwner, Observer { lamps ->
+            if (lamps.isNotEmpty()) {
+                val firstLamp = lamps.first()
+                lampViewModel.loadLampImage(firstLamp.roomImage ?: "")
+            }
+
+            // Initialize RecyclerView with the fetched lamps
+            initRecyclerView(lamps)
+        })
+
+        // Observe changes in the lamp image URL
+        lampViewModel.lampImage.observe(viewLifecycleOwner, Observer { imageUrl ->
+            // Load the lamp image using Glide
+            Glide.with(requireContext())
+                .load(imageUrl)
+                .into(binding.imageRoom)
+        })
+
+        // Fetch lamp details from Firestore
+        lampViewModel.fetchLampDetails()
+
 
         return root
     }
@@ -60,16 +93,29 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Recyclerview
-        homeAdapterIcon = HomeAdapterIcon(emptyList())
-        recyclerView = binding.rvIconRoom
-        recyclerView.apply {
-            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-            adapter = homeAdapterIcon
-        }
+
 
         // TODO (fetch from db)
 
-        binding.imageRoom.setImageResource(R.drawable.img_living_room)
+//        binding.imageRoom.setImageResource(R.drawable.img_living_room)
+
+        val storage = FirebaseStorage.getInstance()
+        val storageReference = storage.getReference("image/img_room_bathroom.png")
+
+//        storageReference.downloadUrl
+//            .addOnSuccessListener { uri: Uri? ->
+//                Glide.with(this)
+//                    .load(uri)
+//                    .apply(
+//                        RequestOptions()
+//                            .placeholder(R.drawable.ic_launcher_foreground)
+//                            .error(R.drawable.app_icon)
+//                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+//                    )
+//                    .into(binding.imageRoom)
+//            }
+
+
 
         val username = "Yo" // retrieve
         binding.textUsername.text = " ${username}!"
@@ -82,10 +128,10 @@ class HomeFragment : Fragment() {
         binding.textPowerConsumed.text = "${powerConsumed}Wh"
         binding.textPowerConsumedTotal.text = "${powerConsumedTotal}kWh"
 
-        val roomName = "Living Room" // retrieve
-
-        binding.textRoom.text = roomName
-        binding.textRoomDecoration.text = roomName
+//        val roomName = "Living Room" // retrieve
+//
+//        binding.textRoom.text = roomName
+//        binding.textRoomDecoration.text = roomName
 
         binding.textRoomFloor.text = "1F" // retrieve
 
@@ -155,6 +201,24 @@ class HomeFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun initRecyclerView(lamps: List<LampModel>) {
+        // Initialize RecyclerView only once
+        if (!::lampIconAdapter.isInitialized) {
+            lampIconAdapter = LampIconAdapter(lamps) { selectedLamp ->
+                updateOtherProperties(selectedLamp)
+            }
+            binding.rvIconRoom.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            binding.rvIconRoom.adapter = lampIconAdapter
+        } else {
+            lampIconAdapter.setItems(lamps)
+        }
+    }
+
+    private fun updateOtherProperties(selectedLamp: LampModel) {
+        binding.textRoom.text = selectedLamp.roomName
+        binding.textRoomDecoration.text = selectedLamp.roomName
     }
 
     private fun getCurrentTime(callback: (String) -> Unit) {
