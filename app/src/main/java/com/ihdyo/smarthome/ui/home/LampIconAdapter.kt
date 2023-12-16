@@ -13,6 +13,9 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import coil.decode.SvgDecoder
+import coil.load
+import coil.request.CachePolicy
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
@@ -46,7 +49,6 @@ class LampIconAdapter(private var items: List<LampModel>, private val onItemClic
 
     inner class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val iconRoom: ImageButton = itemView.findViewById(R.id.icon_room)
-        private val textTest: TextView = itemView.findViewById(R.id.text_test)
         private var currentPosition: Int = RecyclerView.NO_POSITION
 
         init {
@@ -79,19 +81,15 @@ class LampIconAdapter(private var items: List<LampModel>, private val onItemClic
             updateButtonState(isActive)
 
             // Load image using Glide
-            Glide.with(itemView.context)
-                .load(item.roomIcon)
-                .apply(
-                    RequestOptions()
-                        .placeholder(R.drawable.bx_landscape)
-                        .error(R.drawable.bx_error)
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                )
-                .into(iconRoom)
+            iconRoom.load(item.roomIcon) {
+                placeholder(R.drawable.bx_landscape)
+                error(R.drawable.bx_error)
+                crossfade(true)
+                decoder(SvgDecoder(itemView.context))
+                memoryCachePolicy(CachePolicy.ENABLED)
+            }
 
             lampViewModel.loadLampImage(item.roomIcon!!)
-
-            textTest.text = item.roomIcon.toString()
 
             val colorFilter = if (isActive) getThemeColor(com.google.android.material.R.attr.colorOnPrimary) else getThemeColor(com.google.android.material.R.attr.colorPrimary)
             iconRoom.imageTintList = ColorStateList.valueOf(colorFilter)
