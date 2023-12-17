@@ -55,32 +55,20 @@ class HomeFragment : Fragment() {
     var fusedLocationProviderClient: FusedLocationProviderClient? = null
 
     private var isTime: String? = null
-    private var currentSwitchState: Boolean = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        homeViewModel = ViewModelProvider(this, ViewModelFactory(LampRepository(FirebaseFirestore.getInstance(), FirebaseStorage.getInstance())))
-            .get(HomeViewModel::class.java)
+        homeViewModel = ViewModelProvider(this, ViewModelFactory(LampRepository(FirebaseFirestore.getInstance())))[HomeViewModel::class.java]
 
-        homeViewModel.lampDetails.observe(viewLifecycleOwner, Observer { lamps ->
-            if (lamps.isNotEmpty()) {
-                val firstLamp = lamps.first()
-                homeViewModel.loadLampImage(firstLamp.roomIcon ?: "")
-            }
+        homeViewModel.lampDetails.observe(viewLifecycleOwner) { lamps ->
             initRecyclerView(lamps)
-        })
+        }
 
-//        homeViewModel.selectedLamp.observe(viewLifecycleOwner, Observer { selectedLamp ->
-//            updateOtherProperties(selectedLamp)
-//        })
-
-        homeViewModel.totalPowerConsumed.observe(viewLifecycleOwner, Observer { totalPowerConsumed ->
-            binding.textPowerConsumedTotal.text = totalPowerConsumed
-        })
-
-        homeViewModel.fetchLampDetails()
+        homeViewModel.selectedLamp.observe(viewLifecycleOwner) { selectedLamp ->
+            updateOtherProperties(selectedLamp)
+        }
 
         return root
     }
@@ -89,10 +77,17 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Inside onViewCreated method
         viewLifecycleOwner.lifecycleScope.launch {
+            homeViewModel.fetchLampDetails()
             homeViewModel.calculateTotalPowerConsumed()
         }
+
+        homeViewModel.totalPowerConsumed.observe(viewLifecycleOwner){ totalPowerConsumed ->
+            binding.textPowerConsumedTotal.text = totalPowerConsumed
+        }
+
+
+
 
         // Time
         getCurrentTime { formattedTime ->
@@ -111,17 +106,9 @@ class HomeFragment : Fragment() {
         _binding = null
     }
 
-//    private fun updatePowerSwitchButton(isPowerOn: Boolean) {
-//        binding.switchPower.isChecked = isPowerOn
-//        homeViewModel.updateIsPowerOn(isPowerOn)
-//    }
-
-
     private fun initRecyclerView(lamps: List<LampModel>) {
-        // Initialize RecyclerView only once
         if (!::lampIconAdapter.isInitialized) {
             lampIconAdapter = LampIconAdapter(lamps, { selectedLamp ->
-                // Update other properties as needed
                 updateOtherProperties(selectedLamp)
             }, homeViewModel)
             binding.rvIconRoom.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
@@ -186,7 +173,7 @@ class HomeFragment : Fragment() {
             }
         }
         binding.switchPower.setOnCheckedChangeListener { _, isChecked ->
-            homeViewModel.updateIsPowerOn(isChecked)
+            homeViewModel.updatePowerState(isChecked)
         }
     }
 
@@ -197,7 +184,7 @@ class HomeFragment : Fragment() {
             isTime = "Select Start Time"
             openTimePicker { selectedTime ->
                 binding.textScheduleTimeFrom.text = selectedTime
-                homeViewModel.updateScheduleFrom(selectedLamp.id, selectedTime)
+                homeViewModel.updateScheduleFrom(selectedTime)
             }
         }
 
@@ -207,7 +194,7 @@ class HomeFragment : Fragment() {
             isTime = "Select Finish Time"
             openTimePicker { selectedTime ->
                 binding.textScheduleTimeTo.text = selectedTime
-                homeViewModel.updateScheduleTo(selectedLamp.id, selectedTime)
+                homeViewModel.updateScheduleTo(selectedTime)
             }
         }
     }
@@ -227,13 +214,15 @@ class HomeFragment : Fragment() {
     private fun openTimePicker(callback: (String) -> Unit) {
         val isSystem24Hour = is24HourFormat(requireContext())
         val clockFormat = if (isSystem24Hour) TimeFormat.CLOCK_24H else TimeFormat.CLOCK_12H
+        val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+        val currentMinute = Calendar.getInstance().get(Calendar.MINUTE)
 
         val picker =
             MaterialTimePicker.Builder()
                 .setInputMode(INPUT_MODE_CLOCK)
                 .setTimeFormat(clockFormat)
-                .setHour(12)
-                .setMinute(10)
+                .setHour(currentHour)
+                .setMinute(currentMinute)
                 .setTitleText(isTime)
                 .build()
         picker.show(childFragmentManager, "TAG")

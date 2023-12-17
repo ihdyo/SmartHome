@@ -85,7 +85,7 @@ class LampIconAdapter(private var items: List<LampModel>, private val onItemClic
                 memoryCachePolicy(CachePolicy.ENABLED)
             }
 
-            lampViewModel.loadLampImage(item.roomIcon!!)
+//            lampViewModel.loadLampImage(item.roomIcon!!)
 
             val colorFilter = if (isActive) getThemeColor(com.google.android.material.R.attr.colorOnPrimary) else getThemeColor(com.google.android.material.R.attr.colorPrimary)
             iconRoom.imageTintList = ColorStateList.valueOf(colorFilter)

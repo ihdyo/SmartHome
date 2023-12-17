@@ -17,8 +17,6 @@ data class LampModel (
     val scheduleFrom: String? = null,
     val scheduleTo: String? = null,
     val totalRuntime: Int = 0, // ms
-
-    var imageUrl: String? = null // Add this property for image URL
 ) : Parcelable {
     // Default values for optional properties
     companion object {

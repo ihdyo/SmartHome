@@ -6,7 +6,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.storage.StorageException
 import com.ihdyo.smarthome.R
 import com.ihdyo.smarthome.data.model.LampModel
 import com.ihdyo.smarthome.data.repository.LampRepository
@@ -33,20 +32,18 @@ class HomeViewModel(private val lampRepository: LampRepository) : ViewModel() {
     private val _isPowerOn = MutableLiveData<Boolean>()
     val isPowerOn: LiveData<Boolean> get() = _isPowerOn
 
+    private val _scheduleFrom = MutableLiveData<String>()
+    val scheduleFrom: LiveData<String> get() = _scheduleFrom
+
+    private val _scheduleTo = MutableLiveData<String>()
+    val scheduleTo: LiveData<String> get() = _scheduleTo
+
+
+
     private var currentPowerState: Boolean = false
 
-//    @SuppressLint("NullSafeMutableLiveData")
-//    fun loadLampDetails(lampIds: List<String>) {
-//        viewModelScope.launch {
-//            try {
-//                val lamps = lampRepository.getLampsById(lampIds)
-//                _lampDetails.postValue(lamps)
-//            } catch (e: Exception) {
-//                Log.e("HomeViewModel", "Error fetching lamp details", e)
-//            }
-//        }
-//    }
 
+    // Show all data from lamps
     @SuppressLint("NullSafeMutableLiveData")
     fun fetchLampDetails() {
         viewModelScope.launch {
@@ -54,108 +51,103 @@ class HomeViewModel(private val lampRepository: LampRepository) : ViewModel() {
                 val lamps = lampRepository.getLamps()
                 _lampDetails.postValue(lamps)
             } catch (e: Exception) {
-                Log.e("HomeViewModel", "Error fetching lamp details", e)
+                Log.e(this.javaClass.simpleName, "Error fetching lamp details", e)
             }
         }
     }
 
-    fun loadLampImage(storagePath: String) {
+    // Select lamp document when item clicked
+    fun setSelectedLamp(lamp: LampModel) {
+        viewModelScope.launch {
+            _selectedLamp.postValue(lamp)
+        }
+    }
+
+    // Calculate all power consumed
+    suspend fun calculateTotalPowerConsumed() {
         viewModelScope.launch {
             try {
-                val imageUrl = lampRepository.getLampImage(storagePath)
-                if (imageUrl.isNotEmpty()) {
-                    _lampImage.postValue(imageUrl)
-                } else {
-                    Log.e("LampViewModel", "Empty image URL for storage path: $storagePath")
-                }
-            } catch (e: StorageException) {
-                Log.e("LampViewModel", "Object does not exist at location: $storagePath", e)
+                val totalRuntime = lampRepository.getTotalRuntime()
+                val totalRuntimeHours = totalRuntime / 60 / 60
+                val totalPowerConsumed = (WATT_POWER * totalRuntimeHours).toString()
+
+                _totalPowerConsumed.postValue("${totalPowerConsumed}Wh")
             } catch (e: Exception) {
-                Log.e("LampViewModel", "Error loading lamp image", e)
+                Log.e(this.javaClass.simpleName, "Error calculating totalRuntime", e)
             }
         }
     }
 
-    // Set the selected lamp when a room icon is clicked
-    fun setSelectedLamp(lamp: LampModel) {
-        _selectedLamp.postValue(lamp)
-    }
-
-    suspend fun calculateTotalPowerConsumed() {
-        try {
-            val totalRuntime = lampRepository.getTotalRuntime()
-            val totalRuntimeHours = totalRuntime / 60 / 60
-            val totalPowerConsumed = (WATT_POWER * totalRuntimeHours).toString()
-
-            _totalPowerConsumed.postValue("${totalPowerConsumed}Wh")
-        } catch (e: Exception) {
-            Log.e("HomeViewModel", "Error calculating total power consumed", e)
-        }
-    }
-
+    // Update mode state
     fun updateMode(checkedId: Int) {
         viewModelScope.launch {
             try {
                 selectedLamp.value?.let { selectedLamp ->
-                    // Update the mode based on the checkedId
                     when (checkedId) {
                         R.id.button_automatic -> {
                             selectedLamp.mode = "automatic"
                             selectedLamp.isAutomaticOn = true
                             selectedLamp.isScheduleOn = false
                         }
+
                         R.id.button_schedule -> {
                             selectedLamp.mode = "schedule"
                             selectedLamp.isAutomaticOn = false
                             selectedLamp.isScheduleOn = true
                         }
+
                         R.id.button_manual -> {
                             selectedLamp.mode = "manual"
                             selectedLamp.isAutomaticOn = false
                             selectedLamp.isScheduleOn = false
                         }
-                        // Handle additional button ids as needed
                     }
-
-                    // Call the repository method to update the mode
-                    lampRepository.updateMode(selectedLamp)
-                    _modeUpdateResult.postValue(true) // Update successful
+                    lampRepository.putMode(selectedLamp)
+                    _modeUpdateResult.postValue(true)
                 }
             } catch (e: Exception) {
-                _modeUpdateResult.postValue(false) // Update failed
-                // Handle exceptions (log, show error message, etc.)
-                Log.e("HomeViewModel", "Error updating mode", e)
+                _modeUpdateResult.postValue(false)
+                Log.e(this.javaClass.simpleName, "Error updating mode", e)
             }
         }
     }
 
-    fun updateIsPowerOn(isPowerOn: Boolean) {
-        if (isPowerOn != currentPowerState) {
-            selectedLamp.value?.let { lamp ->
-                lamp.isPowerOn = isPowerOn
-                lampRepository.updateLampPowerState(lamp) { isSuccess ->
-                    if (isSuccess) {
-                        _isPowerOn.postValue(isPowerOn)
-                        currentPowerState = isPowerOn // Update the current state
-                    } else {
-                        // Handle update failure if necessary
+    // Update power state
+    fun updatePowerState(powerState: Boolean) {
+        viewModelScope.launch {
+            if (powerState != currentPowerState) {
+                selectedLamp.value?.let { lamp ->
+                    lamp.isPowerOn = powerState
+                    lampRepository.putIsPowerOn(lamp) { isSuccess ->
+                        if (isSuccess) {
+                            _isPowerOn.postValue(powerState)
+                            currentPowerState = powerState
+                        } else {
+                            Log.e(this.javaClass.simpleName, "Error updating power state")
+                        }
                     }
                 }
             }
         }
     }
 
-    fun updateScheduleFrom(lampId: String, scheduleFrom: String) {
+    // Update schedule start time
+    fun updateScheduleFrom(scheduleFrom: String) {
         viewModelScope.launch {
-            val isUpdateSuccessful = lampRepository.updateScheduleFrom(lampId, scheduleFrom)
-            // Handle the result if needed
+            selectedLamp.value?.let { lamp ->
+                _scheduleFrom.postValue(scheduleFrom)
+                lampRepository.putScheduleFrom(lamp)
+            }
         }
     }
 
-    fun updateScheduleTo(lampId: String, scheduleTo: String) {
+    // Update schedule finish time
+    fun updateScheduleTo(scheduleTo: String) {
         viewModelScope.launch {
-            val isUpdateSuccessful = lampRepository.updateScheduleTo(lampId, scheduleTo)
-            // Handle the result if needed
+            selectedLamp.value?.let { lamp ->
+                _scheduleTo.postValue(scheduleTo)
+                lampRepository.putScheduleTo(lamp)
+            }
         }
     }
 
