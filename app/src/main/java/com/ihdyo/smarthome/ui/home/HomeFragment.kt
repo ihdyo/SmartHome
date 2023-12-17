@@ -77,29 +77,12 @@ class HomeFragment : Fragment() {
             initRecyclerView(lamps)
         })
 
-        homeViewModel.selectedLamp.observe(viewLifecycleOwner, Observer { selectedLamp ->
-            updateOtherProperties(selectedLamp)
-        })
+//        homeViewModel.selectedLamp.observe(viewLifecycleOwner, Observer { selectedLamp ->
+//            updateOtherProperties(selectedLamp)
+//        })
 
         homeViewModel.totalPowerConsumed.observe(viewLifecycleOwner, Observer { totalPowerConsumed ->
             binding.textPowerConsumedTotal.text = totalPowerConsumed
-        })
-
-        homeViewModel.modeUpdateResult.observe(viewLifecycleOwner, Observer { isModeUpdateSuccessful ->
-            if (isModeUpdateSuccessful) {
-                // Mode update was successful, handle accordingly
-                Toast.makeText(requireContext(), "Mode updated successfully", Toast.LENGTH_SHORT).show()
-            } else {
-                // Mode update failed, handle accordingly
-                Toast.makeText(requireContext(), "Failed to update mode", Toast.LENGTH_SHORT).show()
-            }
-        })
-
-        homeViewModel.isPowerOn.observe(viewLifecycleOwner, Observer { isPowerOn ->
-            if (isPowerOn != currentSwitchState) {
-                updatePowerSwitchButton(isPowerOn)
-                currentSwitchState = isPowerOn
-            }
         })
 
         homeViewModel.fetchLampDetails()
@@ -114,13 +97,7 @@ class HomeFragment : Fragment() {
         // Inside onViewCreated method
         viewLifecycleOwner.lifecycleScope.launch {
             homeViewModel.calculateTotalPowerConsumed()
-
-            // Ensure that selectedLamp is not null before calling updateMode
-            homeViewModel.selectedLamp.value?.let { selectedLamp ->
-                homeViewModel.updateMode(selectedLamp)
-            }
         }
-
 
         // Time
         getCurrentTime { formattedTime ->
@@ -139,16 +116,17 @@ class HomeFragment : Fragment() {
         _binding = null
     }
 
-    private fun updatePowerSwitchButton(isPowerOn: Boolean) {
-        binding.switchPower.isChecked = isPowerOn
-        homeViewModel.updateIsPowerOn(isPowerOn)
-    }
+//    private fun updatePowerSwitchButton(isPowerOn: Boolean) {
+//        binding.switchPower.isChecked = isPowerOn
+//        homeViewModel.updateIsPowerOn(isPowerOn)
+//    }
 
 
     private fun initRecyclerView(lamps: List<LampModel>) {
         // Initialize RecyclerView only once
         if (!::lampIconAdapter.isInitialized) {
             lampIconAdapter = LampIconAdapter(lamps, { selectedLamp ->
+                // Update other properties as needed
                 updateOtherProperties(selectedLamp)
             }, homeViewModel)
             binding.rvIconRoom.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
@@ -184,42 +162,34 @@ class HomeFragment : Fragment() {
         binding.textPowerConsumed.text = "${powerConsumed}Wh"
 
         // Power Switch
-        binding.switchPower.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                homeViewModel.updateIsPowerOn(true)
-            } else {
-                homeViewModel.updateIsPowerOn(false)
-            }
-        }
+//        homeViewModel.isPowerOn.observe(viewLifecycleOwner) { isPowerOn ->
+//            if (isPowerOn != currentSwitchState) {
+//                updatePowerSwitchButton(isPowerOn)
+//                currentSwitchState = isPowerOn
+//            }
+//        }
+
 
 
         // Mode
-        updateUIForMode(getCheckedButtonId(selectedLamp.mode!!))
+        homeViewModel.selectedLamp.observe(viewLifecycleOwner) { selectedLamp ->
+            // Set the initial checked button based on selectedLamp.mode
+            val initialCheckedButtonId = getCheckedButtonId(selectedLamp.mode.toString())
+            binding.toggleMode.check(initialCheckedButtonId)
+
+            // Set the power switch state based on selectedLamp.isPowerOn
+            binding.switchPower.isChecked = selectedLamp.isPowerOn == true
+        }
         binding.toggleMode.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (isChecked) {
-                when (checkedId) {
-                    R.id.button_automatic -> {
-                        selectedLamp.mode = "automatic"
-                        selectedLamp.isAutomaticOn = true
-                        selectedLamp.isScheduleOn = false
-                    }
-                    R.id.button_schedule -> {
-                        selectedLamp.mode = "schedule"
-                        selectedLamp.isAutomaticOn = false
-                        selectedLamp.isScheduleOn = true
-                    }
-                    R.id.button_manual -> {
-                        selectedLamp.mode = "manual"
-                        selectedLamp.isAutomaticOn = false
-                        selectedLamp.isScheduleOn = false
-                    }
-                }
                 updateUIForMode(checkedId)
                 // Update the mode in Firestore
-                homeViewModel.updateMode(selectedLamp)
+                homeViewModel.updateMode(checkedId)
             }
         }
-        binding.toggleMode.check(getCheckedButtonId(selectedLamp.mode!!))
+        binding.switchPower.setOnCheckedChangeListener { _, isChecked ->
+            homeViewModel.updateIsPowerOn(isChecked)
+        }
 
         // Time Picker
         binding.textScheduleTimeFrom.setOnClickListener {
@@ -280,7 +250,7 @@ class HomeFragment : Fragment() {
             "automatic" -> R.id.button_automatic
             "schedule" -> R.id.button_schedule
             "manual" -> R.id.button_manual
-            else -> RecyclerView.NO_POSITION
+            else -> -1
         }
     }
 

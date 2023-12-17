@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.storage.StorageException
+import com.ihdyo.smarthome.R
 import com.ihdyo.smarthome.data.model.LampModel
 import com.ihdyo.smarthome.data.repository.LampRepository
 import com.ihdyo.smarthome.ui.home.HomeFragment.Companion.WATT_POWER
@@ -34,17 +35,17 @@ class HomeViewModel(private val lampRepository: LampRepository) : ViewModel() {
 
     private var currentPowerState: Boolean = false
 
-    @SuppressLint("NullSafeMutableLiveData")
-    fun loadLampDetails(lampIds: List<String>) {
-        viewModelScope.launch {
-            try {
-                val lamps = lampRepository.getLampsById(lampIds)
-                _lampDetails.postValue(lamps)
-            } catch (e: Exception) {
-                Log.e("HomeViewModel", "Error fetching lamp details", e)
-            }
-        }
-    }
+//    @SuppressLint("NullSafeMutableLiveData")
+//    fun loadLampDetails(lampIds: List<String>) {
+//        viewModelScope.launch {
+//            try {
+//                val lamps = lampRepository.getLampsById(lampIds)
+//                _lampDetails.postValue(lamps)
+//            } catch (e: Exception) {
+//                Log.e("HomeViewModel", "Error fetching lamp details", e)
+//            }
+//        }
+//    }
 
     @SuppressLint("NullSafeMutableLiveData")
     fun fetchLampDetails() {
@@ -92,12 +93,34 @@ class HomeViewModel(private val lampRepository: LampRepository) : ViewModel() {
         }
     }
 
-    fun updateMode(selectedLamp: LampModel) {
+    fun updateMode(checkedId: Int) {
         viewModelScope.launch {
             try {
-                // Call the repository method to update the mode
-                lampRepository.updateMode(selectedLamp)
-                _modeUpdateResult.postValue(true) // Update successful
+                selectedLamp.value?.let { selectedLamp ->
+                    // Update the mode based on the checkedId
+                    when (checkedId) {
+                        R.id.button_automatic -> {
+                            selectedLamp.mode = "automatic"
+                            selectedLamp.isAutomaticOn = true
+                            selectedLamp.isScheduleOn = false
+                        }
+                        R.id.button_schedule -> {
+                            selectedLamp.mode = "schedule"
+                            selectedLamp.isAutomaticOn = false
+                            selectedLamp.isScheduleOn = true
+                        }
+                        R.id.button_manual -> {
+                            selectedLamp.mode = "manual"
+                            selectedLamp.isAutomaticOn = false
+                            selectedLamp.isScheduleOn = false
+                        }
+                        // Handle additional button ids as needed
+                    }
+
+                    // Call the repository method to update the mode
+                    lampRepository.updateMode(selectedLamp)
+                    _modeUpdateResult.postValue(true) // Update successful
+                }
             } catch (e: Exception) {
                 _modeUpdateResult.postValue(false) // Update failed
                 // Handle exceptions (log, show error message, etc.)

@@ -34,27 +34,27 @@ class LampRepository(private val firestore: FirebaseFirestore, private val stora
         return lamps
     }
 
-    suspend fun getLampsById(lampIds: List<String>): List<LampModel> {
-        val lamps = mutableListOf<LampModel>()
-
-        for (lampId in lampIds) {
-            try {
-                val documentSnapshot = firestore.collection(COLLECTION_LAMPS).document(lampId).get().await()
-                if (documentSnapshot.exists()) {
-                    val lamp = documentSnapshot.toObject(LampModel::class.java)
-                    lamp?.let { lamps.add(it) }
-                } else {
-                    // Handle the case where the document does not exist
-                    // Log a message or handle it according to your needs
-                    Log.d("LampRepository", "Document does not exist for lampId: $lampId")
-                }
-            } catch (e: Exception) {
-                // Handle exceptions here (e.g., log or throw a custom exception)
-                Log.e("LampRepository", "Error fetching lamp details for lampId: $lampId", e)
-            }
-        }
-        return lamps
-    }
+//    suspend fun getLampsById(lampIds: List<String>): List<LampModel> {
+//        val lamps = mutableListOf<LampModel>()
+//
+//        for (lampId in lampIds) {
+//            try {
+//                val documentSnapshot = firestore.collection(COLLECTION_LAMPS).document(lampId).get().await()
+//                if (documentSnapshot.exists()) {
+//                    val lamp = documentSnapshot.toObject(LampModel::class.java)
+//                    lamp?.let { lamps.add(it) }
+//                } else {
+//                    // Handle the case where the document does not exist
+//                    // Log a message or handle it according to your needs
+//                    Log.d("LampRepository", "Document does not exist for lampId: $lampId")
+//                }
+//            } catch (e: Exception) {
+//                // Handle exceptions here (e.g., log or throw a custom exception)
+//                Log.e("LampRepository", "Error fetching lamp details for lampId: $lampId", e)
+//            }
+//        }
+//        return lamps
+//    }
 
 
     suspend fun getLampImage(storagePath: String): String {
