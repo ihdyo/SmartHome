@@ -72,9 +72,9 @@ class HomeFragment : Fragment() {
             initRecyclerView(lamps)
         })
 
-        homeViewModel.selectedLamp.observe(viewLifecycleOwner, Observer { selectedLamp ->
-            updateOtherProperties(selectedLamp)
-        })
+//        homeViewModel.selectedLamp.observe(viewLifecycleOwner, Observer { selectedLamp ->
+//            updateOtherProperties(selectedLamp)
+//        })
 
         homeViewModel.totalPowerConsumed.observe(viewLifecycleOwner, Observer { totalPowerConsumed ->
             binding.textPowerConsumedTotal.text = totalPowerConsumed
@@ -174,6 +174,9 @@ class HomeFragment : Fragment() {
 
             // Set the power switch state based on selectedLamp.isPowerOn
             binding.switchPower.isChecked = selectedLamp.isPowerOn == true
+
+            // Call the function to set up schedule time listeners
+            setupScheduleTimeListeners(selectedLamp)
         }
         binding.toggleMode.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (isChecked) {
@@ -185,19 +188,26 @@ class HomeFragment : Fragment() {
         binding.switchPower.setOnCheckedChangeListener { _, isChecked ->
             homeViewModel.updateIsPowerOn(isChecked)
         }
+    }
 
-        // Time Picker
+    private fun setupScheduleTimeListeners(selectedLamp: LampModel) {
+        // Schedule Time From
+        binding.textScheduleTimeFrom.text = selectedLamp.scheduleFrom
         binding.textScheduleTimeFrom.setOnClickListener {
             isTime = "Select Start Time"
             openTimePicker { selectedTime ->
                 binding.textScheduleTimeFrom.text = selectedTime
+                homeViewModel.updateScheduleFrom(selectedLamp.id, selectedTime)
             }
         }
 
+        // Schedule Time To
+        binding.textScheduleTimeTo.text = selectedLamp.scheduleTo
         binding.textScheduleTimeTo.setOnClickListener {
             isTime = "Select Finish Time"
             openTimePicker { selectedTime ->
                 binding.textScheduleTimeTo.text = selectedTime
+                homeViewModel.updateScheduleTo(selectedLamp.id, selectedTime)
             }
         }
     }

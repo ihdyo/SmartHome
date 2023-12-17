@@ -145,4 +145,18 @@ class HomeViewModel(private val lampRepository: LampRepository) : ViewModel() {
         }
     }
 
+    fun updateScheduleFrom(lampId: String, scheduleFrom: String) {
+        viewModelScope.launch {
+            val isUpdateSuccessful = lampRepository.updateScheduleFrom(lampId, scheduleFrom)
+            // Handle the result if needed
+        }
+    }
+
+    fun updateScheduleTo(lampId: String, scheduleTo: String) {
+        viewModelScope.launch {
+            val isUpdateSuccessful = lampRepository.updateScheduleTo(lampId, scheduleTo)
+            // Handle the result if needed
+        }
+    }
+
 }

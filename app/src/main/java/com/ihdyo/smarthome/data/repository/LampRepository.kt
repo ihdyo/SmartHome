@@ -14,6 +14,8 @@ class LampRepository(private val firestore: FirebaseFirestore, private val stora
         const val FIELD_IS_POWER_ON = "isPowerOn"
         const val FIELD_IS_SCHEDULE_ON = "isScheduleOn"
         const val FIELD_IS_AUTOMATIC_ON = "isAutomaticOn"
+        const val FIELD_SCHEDULE_FROM = "scheduleFrom"
+        const val FIELD_SCHEDULE_TO = "scheduleTo"
     }
 
     // Updated method to fetch all lamps without specific IDs
@@ -129,5 +131,27 @@ class LampRepository(private val firestore: FirebaseFirestore, private val stora
                 exception.printStackTrace()
                 callback(false)
             }
+    }
+
+    suspend fun updateScheduleFrom(lampId: String, scheduleFrom: String): Boolean {
+        return try {
+            firestore.collection(COLLECTION_LAMPS).document(lampId)
+                .update(FIELD_SCHEDULE_FROM, scheduleFrom)
+                .await()
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    suspend fun updateScheduleTo(lampId: String, scheduleTo: String): Boolean {
+        return try {
+            firestore.collection(COLLECTION_LAMPS).document(lampId)
+                .update(FIELD_SCHEDULE_TO, scheduleTo)
+                .await()
+            true
+        } catch (e: Exception) {
+            false
+        }
     }
 }
