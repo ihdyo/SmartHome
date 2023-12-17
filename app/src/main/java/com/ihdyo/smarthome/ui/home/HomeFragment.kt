@@ -23,10 +23,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.request.CachePolicy
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.Target
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.timepicker.MaterialTimePicker
@@ -47,7 +43,6 @@ import java.util.Locale
 class HomeFragment : Fragment() {
 
     companion object {
-        const val REQUEST_CODE = 100
         const val WATT_POWER = 1
     }
 
@@ -77,9 +72,9 @@ class HomeFragment : Fragment() {
             initRecyclerView(lamps)
         })
 
-//        homeViewModel.selectedLamp.observe(viewLifecycleOwner, Observer { selectedLamp ->
-//            updateOtherProperties(selectedLamp)
-//        })
+        homeViewModel.selectedLamp.observe(viewLifecycleOwner, Observer { selectedLamp ->
+            updateOtherProperties(selectedLamp)
+        })
 
         homeViewModel.totalPowerConsumed.observe(viewLifecycleOwner, Observer { totalPowerConsumed ->
             binding.textPowerConsumedTotal.text = totalPowerConsumed
@@ -298,11 +293,6 @@ class HomeFragment : Fragment() {
                 }
             }
         } else {
-            askPermission()
         }
-    }
-
-    private fun askPermission() {
-        ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_CODE)
     }
 }

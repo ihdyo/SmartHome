@@ -20,8 +20,16 @@ data class LampModel (
 
     var imageUrl: String? = null // Add this property for image URL
 ) : Parcelable {
+    // Default values for optional properties
+    companion object {
+        const val DEFAULT_MODE = "manual"
+        const val DEFAULT_BOOLEAN = false
+    }
 
-    fun updatePowerState(newState: Boolean?) {
-        isPowerOn = newState
+    init {
+        isAutomaticOn = DEFAULT_BOOLEAN
+        isPowerOn = DEFAULT_BOOLEAN
+        isScheduleOn = DEFAULT_BOOLEAN
+        mode = DEFAULT_MODE
     }
 }

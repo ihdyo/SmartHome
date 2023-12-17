@@ -16,10 +16,6 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.decode.SvgDecoder
 import coil.load
 import coil.request.CachePolicy
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.Target
 import com.ihdyo.smarthome.R
 import com.ihdyo.smarthome.data.model.LampModel
 
