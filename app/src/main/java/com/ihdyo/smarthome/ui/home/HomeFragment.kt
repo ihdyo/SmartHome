@@ -84,9 +84,13 @@ class HomeFragment : Fragment() {
         homeViewModel = ViewModelProvider(this, ViewModelFactory(LampRepository(FirebaseFirestore.getInstance())))[HomeViewModel::class.java]
 
         homeViewModel.fetchLampDetails().observe(viewLifecycleOwner) { lamps ->
+            if (!::lampIconAdapter.isInitialized) {
                 lampIconAdapter = LampIconAdapter(lamps, { selectedLamp -> updateOtherProperties(selectedLamp) }, homeViewModel)
                 binding.rvIconRoom.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
                 binding.rvIconRoom.adapter = lampIconAdapter
+            } else {
+                lampIconAdapter.setItems(lamps)
+            }
         }
 
         return root
