@@ -4,13 +4,11 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
-import android.graphics.drawable.Drawable
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import coil.decode.SvgDecoder
@@ -19,13 +17,16 @@ import coil.request.CachePolicy
 import com.ihdyo.smarthome.R
 import com.ihdyo.smarthome.data.model.LampModel
 
-class LampIconAdapter(private var items: List<LampModel>, private val onItemClickListener: (LampModel) -> Unit, private val lampViewModel: HomeViewModel) : RecyclerView.Adapter<LampIconAdapter.ItemViewHolder>() {
+class LampIconAdapter(
+    private var items: List<LampModel>,
+    private val onItemClickListener: (LampModel) -> Unit,
+    private val lampViewModel: HomeViewModel): RecyclerView.Adapter<LampIconAdapter.ItemViewHolder>() {
 
     private var activePosition: Int = RecyclerView.NO_POSITION
 
     @SuppressLint("NotifyDataSetChanged")
-    fun setItems(items: List<LampModel>) {
-        this.items = items
+    fun setItems(item: List<LampModel>) {
+        this.items = item
         notifyDataSetChanged()
     }
 
@@ -51,17 +52,13 @@ class LampIconAdapter(private var items: List<LampModel>, private val onItemClic
             iconRoom.setOnClickListener {
                 val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
-                    // Check if a different item is clicked
                     if (position != activePosition) {
-                        // Update the active position
                         val previousActivePosition = activePosition
                         activePosition = position
 
-                        // Notify the adapter to rebind the items at the previous and current positions
                         notifyItemChanged(previousActivePosition)
                         notifyItemChanged(activePosition)
 
-                        // Handle item click
                         val selectedLamp = items[position]
                         onItemClickListener(selectedLamp)
                         lampViewModel.setSelectedLamp(selectedLamp)
@@ -76,7 +73,6 @@ class LampIconAdapter(private var items: List<LampModel>, private val onItemClic
             val isActive = position == activePosition
             updateButtonState(isActive)
 
-            // Load image using Glide
             iconRoom.load(item.roomIcon) {
                 placeholder(R.drawable.bx_landscape)
                 error(R.drawable.bx_error)
@@ -84,8 +80,6 @@ class LampIconAdapter(private var items: List<LampModel>, private val onItemClic
                 decoder(SvgDecoder(itemView.context))
                 memoryCachePolicy(CachePolicy.ENABLED)
             }
-
-//            lampViewModel.loadLampImage(item.roomIcon!!)
 
             val colorFilter = if (isActive) getThemeColor(com.google.android.material.R.attr.colorOnPrimary) else getThemeColor(com.google.android.material.R.attr.colorPrimary)
             iconRoom.imageTintList = ColorStateList.valueOf(colorFilter)
