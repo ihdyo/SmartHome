@@ -1,6 +1,7 @@
 package com.ihdyo.smarthome.ui.home
 
 import android.annotation.SuppressLint
+import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -20,17 +21,28 @@ class HomeViewModel(private val lampRepository: LampRepository) : ViewModel() {
     private val _selectedLamp = MutableLiveData<LampModel>()
     val selectedLamp: LiveData<LampModel> get() = _selectedLamp
 
-    private val _lampImage = MutableLiveData<String>()
-    val lampImage: LiveData<String> get() = _lampImage
+
+
+    private val _mode = MutableLiveData<String>()
+    val mode: LiveData<String> get() = _mode
+
+    private val _selectedMode = MutableLiveData<Int>()
+    val selectedMode: LiveData<Int> get() = _selectedMode
+
+
+
+    private val _powerConsumed = MutableLiveData<String>()
+    val powerConsumed: LiveData<String> get() = _powerConsumed
 
     private val _totalPowerConsumed = MutableLiveData<String>()
     val totalPowerConsumed: LiveData<String> get() = _totalPowerConsumed
 
-    private val _modeUpdateResult = MutableLiveData<Boolean>()
-    val modeUpdateResult: LiveData<Boolean> get() = _modeUpdateResult
+
 
     private val _isPowerOn = MutableLiveData<Boolean>()
     val isPowerOn: LiveData<Boolean> get() = _isPowerOn
+
+
 
     private val _scheduleFrom = MutableLiveData<String>()
     val scheduleFrom: LiveData<String> get() = _scheduleFrom
@@ -39,116 +51,212 @@ class HomeViewModel(private val lampRepository: LampRepository) : ViewModel() {
     val scheduleTo: LiveData<String> get() = _scheduleTo
 
 
-
-    private var currentPowerState: Boolean = false
-
-
-    // Show all data from lamps
     @SuppressLint("NullSafeMutableLiveData")
-    fun fetchLampDetails() {
+    fun fetchLampDetails(): LiveData<List<LampModel>> {
         viewModelScope.launch {
             try {
-                val lamps = lampRepository.getLamps()
-                _lampDetails.postValue(lamps)
-            } catch (e: Exception) {
-                Log.e(this.javaClass.simpleName, "Error fetching lamp details", e)
+                lampRepository.getLamps { lamps ->
+                    _lampDetails.postValue(lamps)
+                }
+            } catch (exception: Exception) {
+                Log.e(this.javaClass.simpleName, "Error fetching lamp details", exception)
             }
         }
+        return _lampDetails
     }
 
-    // Select lamp document when item clicked
     fun setSelectedLamp(lamp: LampModel) {
         viewModelScope.launch {
             _selectedLamp.postValue(lamp)
         }
     }
 
-    // Calculate all power consumed
-    suspend fun calculateTotalPowerConsumed() {
-        viewModelScope.launch {
-            try {
-                val totalRuntime = lampRepository.getTotalRuntime()
-                val totalRuntimeHours = totalRuntime / 60 / 60
-                val totalPowerConsumed = (WATT_POWER * totalRuntimeHours).toString()
+    // ========================== POWER CONSUMED =========================== //
 
-                _totalPowerConsumed.postValue("${totalPowerConsumed}Wh")
-            } catch (e: Exception) {
-                Log.e(this.javaClass.simpleName, "Error calculating totalRuntime", e)
+    fun fetchPowerConsumed(lamp: LampModel) {
+        viewModelScope.launch {
+            lampRepository.getLampRuntime(lamp) { lampRuntime ->
+                if (lampRuntime != null) {
+                    try {
+                        Log.d(TAG, "Successfully fetched power consumed: $lampRuntime")
+
+                        val runtimeHours = lampRuntime.div(60).div(60)
+                        val powerConsumed = (WATT_POWER * runtimeHours).toString()
+
+                        _powerConsumed.postValue("${powerConsumed}Wh")
+                    } catch (exception: Exception) {
+                        Log.e(this.javaClass.simpleName, "Error calculating power consumed", exception)
+                    }
+                } else {
+                    Log.e(TAG, "Error fetching power consumed: lampRuntime is null.")
+                }
             }
         }
     }
 
-    // Update mode state
-    fun updateMode(checkedId: Int) {
+    fun fetchTotalPowerConsumed() {
+        viewModelScope.launch {
+            try {
+                Log.d(TAG, "Successfully calculated total power consumed: $totalPowerConsumed")
+
+                lampRepository.getTotalLampRuntime { totalLampRuntime ->
+                    val totalLampRuntimeHours = totalLampRuntime?.div(60)?.div(60) ?: 0
+                    val totalPowerConsumed = (WATT_POWER * totalLampRuntimeHours).toString()
+
+                    _totalPowerConsumed.postValue("${totalPowerConsumed}Wh")
+                }
+            } catch (exception: Exception) {
+                Log.e(this.javaClass.simpleName, "Error calculating totalLampRuntime", exception)
+            }
+        }
+    }
+
+    // ========================== SELECTED MODE =========================== //
+
+    fun fetchSelectedMode(lamp: LampModel) {
+        viewModelScope.launch {
+            lampRepository.getMode(lamp) { mode ->
+                if (mode != null) {
+                    Log.d(TAG, "Successfully fetched selected mode: $mode")
+                    _mode.postValue(mode)
+                    _selectedMode.postValue(mapSelectedModeToCheckedId(mode))
+                } else {
+                    Log.e(TAG, "Error fetching selected mode: mode is null.")
+                }
+            }
+        }
+    }
+
+    fun updateSelectedMode(checkedId: Int) {
         viewModelScope.launch {
             try {
                 selectedLamp.value?.let { selectedLamp ->
-                    when (checkedId) {
-                        R.id.button_automatic -> {
-                            selectedLamp.mode = "automatic"
-                            selectedLamp.isAutomaticOn = true
-                            selectedLamp.isScheduleOn = false
-                        }
-
-                        R.id.button_schedule -> {
-                            selectedLamp.mode = "schedule"
-                            selectedLamp.isAutomaticOn = false
-                            selectedLamp.isScheduleOn = true
-                        }
-
-                        R.id.button_manual -> {
-                            selectedLamp.mode = "manual"
-                            selectedLamp.isAutomaticOn = false
-                            selectedLamp.isScheduleOn = false
-                        }
-                    }
+                    updateLampProperties(selectedLamp, checkedId)
                     lampRepository.putMode(selectedLamp)
-                    _modeUpdateResult.postValue(true)
+                    _selectedMode.postValue(checkedId)
                 }
             } catch (e: Exception) {
-                _modeUpdateResult.postValue(false)
                 Log.e(this.javaClass.simpleName, "Error updating mode", e)
             }
         }
     }
 
-    // Update power state
-    fun updatePowerState(powerState: Boolean) {
+    private fun mapSelectedModeToCheckedId(mode: String): Int {
+        return when (mode) {
+            "automatic" -> R.id.button_automatic
+            "schedule" -> R.id.button_schedule
+            "manual" -> R.id.button_manual
+            else -> R.id.button_manual
+        }
+    }
+
+    private fun updateLampProperties(lamp: LampModel, checkedId: Int) {
+        when (checkedId) {
+            R.id.button_automatic -> {
+                lamp.mode = "automatic"
+                lamp.isAutomaticOn = true
+                lamp.isScheduleOn = false
+            }
+            R.id.button_schedule -> {
+                lamp.mode = "schedule"
+                lamp.isAutomaticOn = false
+                lamp.isScheduleOn = true
+            }
+            R.id.button_manual -> {
+                lamp.mode = "manual"
+                lamp.isAutomaticOn = false
+                lamp.isScheduleOn = false
+            }
+        }
+    }
+
+    // ========================== POWER STATE =========================== //
+
+    fun fetchPowerState(lamp: LampModel) {
         viewModelScope.launch {
-            if (powerState != currentPowerState) {
-                selectedLamp.value?.let { lamp ->
-                    lamp.isPowerOn = powerState
-                    lampRepository.putIsPowerOn(lamp) { isSuccess ->
-                        if (isSuccess) {
-                            _isPowerOn.postValue(powerState)
-                            currentPowerState = powerState
-                        } else {
-                            Log.e(this.javaClass.simpleName, "Error updating power state")
-                        }
+            lampRepository.getIsPowerOn(lamp) { isPowerOn ->
+                if (isPowerOn != null) {
+                    Log.d(TAG, "Successfully fetched power state: $isPowerOn")
+                    _isPowerOn.postValue(isPowerOn)
+                } else {
+                    Log.e(TAG, "Error fetching power state: isPowerOn is null.")
+                }
+            }
+        }
+    }
+
+    fun updatePowerState(lamp: LampModel) {
+        viewModelScope.launch {
+            lampRepository.putIsPowerOn(lamp) { success ->
+                if (success) {
+                    _isPowerOn.postValue(lamp.isPowerOn)
+                    Log.d(TAG, "Success updating power state")
+                } else {
+                    Log.e(TAG, "Error updating power state")
+                }
+            }
+        }
+    }
+
+    // =========================== SCHEDULE =========================== //
+
+    fun fetchScheduleStartTime(lamp: LampModel) {
+        viewModelScope.launch {
+            lampRepository.getScheduleFrom(lamp) { scheduleFrom ->
+                if (scheduleFrom != null) {
+                    Log.d(TAG, "Successfully fetched schedule start time: $scheduleFrom")
+                    _scheduleFrom.postValue(scheduleFrom)
+                } else {
+                    Log.e(TAG, "Error fetching schedule start time: scheduleFrom is null.")
+                }
+            }
+        }
+    }
+
+    fun fetchScheduleFinishTime(lamp: LampModel) {
+        viewModelScope.launch {
+            lampRepository.getScheduleTo(lamp) { scheduleTo ->
+                if (scheduleTo != null) {
+                    Log.d(TAG, "Successfully fetched schedule finish time: $scheduleTo")
+                    _scheduleTo.postValue(scheduleTo)
+                } else {
+                    Log.e(TAG, "Error fetching schedule finish time: scheduleTo time is null.")
+                }
+            }
+        }
+    }
+
+    fun updateScheduleStartTime(scheduleFrom: String) {
+        viewModelScope.launch {
+            selectedLamp.value?.let { lamp ->
+                val updatedLamp = lamp.copy(scheduleFrom = scheduleFrom)
+
+                lampRepository.putScheduleFrom(updatedLamp) { success, exception ->
+                    if (success) {
+                        _scheduleFrom.postValue(scheduleFrom)
+                        Log.d(TAG, "Success updating schedule start time")
+                    } else {
+                        Log.e(TAG, "Error updating schedule start time", exception)
                     }
                 }
             }
         }
     }
 
-    // Update schedule start time
-    fun updateScheduleFrom(scheduleFrom: String) {
+    fun updateScheduleFinishTime(scheduleTo: String) {
         viewModelScope.launch {
             selectedLamp.value?.let { lamp ->
-                _scheduleFrom.postValue(scheduleFrom)
-                lampRepository.putScheduleFrom(lamp)
+                val updatedLamp = lamp.copy(scheduleTo = scheduleTo)
+
+                lampRepository.putScheduleTo(updatedLamp) { success, exception ->
+                    if (success) {
+                        _scheduleTo.postValue(scheduleTo)
+                        Log.d(TAG, "Success updating schedule finish time")
+                    } else {
+                        Log.e(TAG, "Error updating schedule finish time", exception)
+                    }
+                }
             }
         }
     }
-
-    // Update schedule finish time
-    fun updateScheduleTo(scheduleTo: String) {
-        viewModelScope.launch {
-            selectedLamp.value?.let { lamp ->
-                _scheduleTo.postValue(scheduleTo)
-                lampRepository.putScheduleTo(lamp)
-            }
-        }
-    }
-
 }

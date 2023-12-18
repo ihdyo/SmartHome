@@ -1,16 +1,23 @@
 package com.ihdyo.smarthome.ui.home
 
 import android.Manifest
+import android.animation.ObjectAnimator
+import android.animation.TimeInterpolator
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.location.Geocoder
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.text.format.DateFormat.is24HourFormat
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.DecelerateInterpolator
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -37,9 +44,13 @@ import com.ihdyo.smarthome.data.repository.LampRepository
 import com.ihdyo.smarthome.databinding.FragmentHomeBinding
 import kotlinx.coroutines.launch
 import java.io.IOException
+import java.lang.Math.sqrt
 import java.util.Calendar
 import java.util.Locale
+import kotlin.math.pow
+import kotlin.math.sqrt
 
+@Suppress("NAME_SHADOWING", "DEPRECATION")
 class HomeFragment : Fragment() {
 
     companion object {
@@ -55,6 +66,16 @@ class HomeFragment : Fragment() {
     var fusedLocationProviderClient: FusedLocationProviderClient? = null
 
     private var isTime: String? = null
+    private var initialTouchX = 0f
+    private var initialTouchY = 0f
+    private var currentRotationX = 0f
+    private var currentRotationY = 0f
+    private var previousDistance = 0f
+    private val sensitivity = 0.001f // Adjust the sensitivity as needed
+    private val maxRotation = 5f // Adjust the maximum rotation in degrees
+    private val rotationThreshold = 0.5f // Adjust the threshold as needed
+    private val rotationDuration = 500L // Adjust the duration for rotation animation
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
@@ -62,32 +83,32 @@ class HomeFragment : Fragment() {
 
         homeViewModel = ViewModelProvider(this, ViewModelFactory(LampRepository(FirebaseFirestore.getInstance())))[HomeViewModel::class.java]
 
-        homeViewModel.lampDetails.observe(viewLifecycleOwner) { lamps ->
-            initRecyclerView(lamps)
-        }
-
-        homeViewModel.selectedLamp.observe(viewLifecycleOwner) { selectedLamp ->
-            updateOtherProperties(selectedLamp)
+        homeViewModel.fetchLampDetails().observe(viewLifecycleOwner) { lamps ->
+            if (!::lampIconAdapter.isInitialized) {
+                lampIconAdapter = LampIconAdapter(lamps, { selectedLamp -> updateOtherProperties(selectedLamp) }, homeViewModel)
+                binding.rvIconRoom.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+                binding.rvIconRoom.adapter = lampIconAdapter
+            } else {
+                lampIconAdapter.setItems(lamps)
+            }
         }
 
         return root
     }
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint("SetTextI18n", "ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         viewLifecycleOwner.lifecycleScope.launch {
-            homeViewModel.fetchLampDetails()
-            homeViewModel.calculateTotalPowerConsumed()
+            homeViewModel.selectedLamp.observe(viewLifecycleOwner) { selectedLamp ->
+                updateOtherProperties(selectedLamp)
+            }
+
+            homeViewModel.totalPowerConsumed.observe(viewLifecycleOwner){ totalPowerConsumed ->
+                binding.textPowerConsumedTotal.text = totalPowerConsumed
+            }
         }
-
-        homeViewModel.totalPowerConsumed.observe(viewLifecycleOwner){ totalPowerConsumed ->
-            binding.textPowerConsumedTotal.text = totalPowerConsumed
-        }
-
-
-
 
         // Time
         getCurrentTime { formattedTime ->
@@ -99,6 +120,26 @@ class HomeFragment : Fragment() {
         getLastLocation { city ->
             binding.textCity.text = city
         }
+
+        // Set up the floating animation with ease-in and ease-out effect
+//        startFloatingAnimation(binding.imageRoom, AccelerateDecelerateInterpolator())
+
+        // Set up the rotation on swipe gesture
+        binding.imageRoom.setOnTouchListener { _, event ->
+            handleTouch(event)
+        }
+
+        binding.swipeRefresh.setOnRefreshListener {
+            Handler().postDelayed({
+                val fragmentTransaction = requireFragmentManager().beginTransaction()
+                fragmentTransaction.detach(this)
+                fragmentTransaction.attach(this)
+                fragmentTransaction.commit()
+                homeViewModel.fetchLampDetails()
+                binding.swipeRefresh.isRefreshing = false
+            }, 300)
+        }
+
     }
 
     override fun onDestroyView() {
@@ -106,98 +147,86 @@ class HomeFragment : Fragment() {
         _binding = null
     }
 
-    private fun initRecyclerView(lamps: List<LampModel>) {
-        if (!::lampIconAdapter.isInitialized) {
-            lampIconAdapter = LampIconAdapter(lamps, { selectedLamp ->
-                updateOtherProperties(selectedLamp)
-            }, homeViewModel)
-            binding.rvIconRoom.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-            binding.rvIconRoom.adapter = lampIconAdapter
-        } else {
-            lampIconAdapter.setItems(lamps)
-        }
-    }
-
-
+    @SuppressLint("SetTextI18n")
     private fun updateOtherProperties(selectedLamp: LampModel) {
-
-        // Room Name
-        val roomName = selectedLamp.roomName
-        binding.textRoom.text = roomName
-        binding.textRoomDecoration.text = roomName
-
-        // Room Floor
-        binding.textRoomFloor.text = selectedLamp.roomFloor
-
-        // Room Image
-        binding.imageRoom.load(selectedLamp.roomImage) {
-            placeholder(R.drawable.bx_landscape)
-            error(R.drawable.bx_error)
-            crossfade(true)
-            memoryCachePolicy(CachePolicy.ENABLED)
-        }
-
-        // Total Runtime
-        val totalTime = selectedLamp.totalRuntime
-        val totalTimeHour = totalTime / 60 / 60
-        val powerConsumed = (WATT_POWER * totalTimeHour).toString()
-        binding.textPowerConsumed.text = "${powerConsumed}Wh"
-
-        // Power Switch
-//        homeViewModel.isPowerOn.observe(viewLifecycleOwner) { isPowerOn ->
-//            if (isPowerOn != currentSwitchState) {
-//                updatePowerSwitchButton(isPowerOn)
-//                currentSwitchState = isPowerOn
-//            }
-//        }
-
-
-
-        // Mode
         homeViewModel.selectedLamp.observe(viewLifecycleOwner) { selectedLamp ->
-            // Set the initial checked button based on selectedLamp.mode
-            val initialCheckedButtonId = getCheckedButtonId(selectedLamp.mode.toString())
-            binding.toggleMode.check(initialCheckedButtonId)
 
-            // Set the power switch state based on selectedLamp.isPowerOn
-            binding.switchPower.isChecked = selectedLamp.isPowerOn == true
+            // Room Name
+            val roomName = selectedLamp.roomName
+            binding.textRoom.text = roomName
+            binding.textRoomDecoration.text = roomName
+
+            // Room Floor
+            binding.textRoomFloor.text = selectedLamp.roomFloor
+
+            // Room Image
+            binding.imageRoom.load(selectedLamp.roomImage) {
+                placeholder(R.drawable.bx_landscape)
+                error(R.drawable.bx_error)
+                crossfade(true)
+                memoryCachePolicy(CachePolicy.ENABLED)
+            }
+
+            // Power Used
+            homeViewModel.fetchPowerConsumed(selectedLamp)
+            homeViewModel.powerConsumed.observe(viewLifecycleOwner) { powerConsumed ->
+                binding.textPowerConsumed.text = powerConsumed
+            }
+
+            // Mode State
+            val initialCheckedButtonId = getCheckedButtonId(homeViewModel.fetchSelectedMode(selectedLamp)
+                .toString())
+            binding.toggleMode.check(initialCheckedButtonId)
+            binding.toggleMode.addOnButtonCheckedListener { _, checkedId, isChecked ->
+                if (isChecked) {
+                    updateUIForMode(checkedId)
+                    homeViewModel.updateSelectedMode(checkedId)
+                }
+            }
+
+//            // In onViewCreated or onCreateView method
+            homeViewModel.isPowerOn.observe(viewLifecycleOwner) {
+                val initialPowerState = getCheckedButtonId(selectedLamp.mode)
+                binding.switchPower.isChecked = selectedLamp.isPowerOn
+            }
+
+            // Set the switch listener
+//            binding.switchPower.setOnCheckedChangeListener { _, isChecked ->
+//                setPowerState(isChecked)
+//                homeViewModel.updatePowerState(isChecked)
+//            }
+
+
+
 
             // Call the function to set up schedule time listeners
-            setupScheduleTimeListeners(selectedLamp)
-        }
-        binding.toggleMode.addOnButtonCheckedListener { _, checkedId, isChecked ->
-            if (isChecked) {
-                updateUIForMode(checkedId)
-                // Update the mode in Firestore
-                homeViewModel.updateMode(checkedId)
-            }
-        }
-        binding.switchPower.setOnCheckedChangeListener { _, isChecked ->
-            homeViewModel.updatePowerState(isChecked)
+//            setupScheduleTimeListeners(selectedLamp)
+
+
         }
     }
 
-    private fun setupScheduleTimeListeners(selectedLamp: LampModel) {
-        // Schedule Time From
-        binding.textScheduleTimeFrom.text = selectedLamp.scheduleFrom
-        binding.textScheduleTimeFrom.setOnClickListener {
-            isTime = "Select Start Time"
-            openTimePicker { selectedTime ->
-                binding.textScheduleTimeFrom.text = selectedTime
-                homeViewModel.updateScheduleFrom(selectedTime)
-            }
-        }
-
-        // Schedule Time To
-        binding.textScheduleTimeTo.text = selectedLamp.scheduleTo
-        binding.textScheduleTimeTo.setOnClickListener {
-            isTime = "Select Finish Time"
-            openTimePicker { selectedTime ->
-                binding.textScheduleTimeTo.text = selectedTime
-                homeViewModel.updateScheduleTo(selectedTime)
-            }
-        }
-    }
+//    private fun setupScheduleTimeListeners(selectedLamp: LampModel) {
+//        // Schedule Time From
+//        binding.textScheduleTimeFrom.text = selectedLamp.scheduleFrom
+//        binding.textScheduleTimeFrom.setOnClickListener {
+//            isTime = "Select Start Time"
+//            openTimePicker { selectedTime ->
+//                binding.textScheduleTimeFrom.text = selectedTime
+//                homeViewModel.updateScheduleFrom(selectedTime)
+//            }
+//        }
+//
+//        // Schedule Time To
+//        binding.textScheduleTimeTo.text = selectedLamp.scheduleTo
+//        binding.textScheduleTimeTo.setOnClickListener {
+//            isTime = "Select Finish Time"
+//            openTimePicker { selectedTime ->
+//                binding.textScheduleTimeTo.text = selectedTime
+//                homeViewModel.updateScheduleTo(selectedTime)
+//            }
+//        }
+//    }
 
     private fun getCurrentTime(callback: (String) -> Unit) {
         val currentTime = Calendar.getInstance()
@@ -293,5 +322,75 @@ class HomeFragment : Fragment() {
             }
         } else {
         }
+    }
+
+    private fun startFloatingAnimation(imageView: ImageView, interpolator: TimeInterpolator) {
+        val animator = ObjectAnimator.ofFloat(imageView, "translationY", -24f, 24f)
+        animator.interpolator = interpolator
+        animator.repeatCount = ObjectAnimator.INFINITE
+        animator.repeatMode = ObjectAnimator.REVERSE
+        animator.duration = 5000
+
+        // Start the animation
+        animator.start()
+    }
+
+    private fun handleTouch(event: MotionEvent): Boolean {
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {
+                initialTouchX = event.x
+                initialTouchY = event.y
+                previousDistance = 0f
+            }
+            MotionEvent.ACTION_MOVE -> {
+                val deltaX = event.x - initialTouchX
+                val deltaY = event.y - initialTouchY
+
+                val distance = sqrt(deltaX.pow(2) + deltaY.pow(2))
+
+                // Apply the threshold for smooth rotation
+                if (distance > rotationThreshold) {
+                    val rotationX = deltaY * sensitivity * calculateWeight(distance)
+                    val rotationY = deltaX * sensitivity * calculateWeight(distance)
+
+                    // Update the current rotation values
+                    currentRotationX += rotationX
+                    currentRotationY += rotationY
+
+                    // Limit rotation within a specific range
+                    currentRotationX = currentRotationX.coerceIn(-maxRotation, maxRotation)
+                    currentRotationY = currentRotationY.coerceIn(-maxRotation, maxRotation)
+
+                    // Rotate the image around the X and Y axes
+                    binding.imageRoom.rotationX = currentRotationX
+                    binding.imageRoom.rotationY = currentRotationY
+
+                    // Update the initial touch position for the next move
+                    initialTouchX = event.x
+                    initialTouchY = event.y
+                    previousDistance = distance
+                }
+            }
+            MotionEvent.ACTION_UP -> {
+                // Return to the initial state with a smooth animation
+                val rotationAnimatorX = ObjectAnimator.ofFloat(binding.imageRoom, "rotationX", 0f)
+                rotationAnimatorX.duration = rotationDuration
+                rotationAnimatorX.start()
+
+                val rotationAnimatorY = ObjectAnimator.ofFloat(binding.imageRoom, "rotationY", 0f)
+                rotationAnimatorY.duration = rotationDuration
+                rotationAnimatorY.start()
+
+                // Reset the current rotation values
+                currentRotationX = 0f
+                currentRotationY = 0f
+            }
+        }
+        return true
+    }
+
+    private fun calculateWeight(distance: Float): Float {
+        // Adjust this function to control the effect of the distance on the rotation
+        return 1 / (1 + distance / 100)
     }
 }
