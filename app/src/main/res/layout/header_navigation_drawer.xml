@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:gravity="bottom"
     android:orientation="vertical"
+    android:clipToPadding="false"
     android:padding="@dimen/sp_md"
     android:paddingBottom="@dimen/sp_0"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
@@ -26,8 +27,8 @@
     <TextView
         android:id="@+id/text_tagline_translated"
         style="@style/TextAppearance.Material3.LabelSmall"
-        android:layout_marginTop="@dimen/sp_md"
-        android:layout_marginEnd="@dimen/room_margin"
+        android:layout_marginTop="@dimen/sp_sm"
+        android:layout_marginEnd="@dimen/tagline_margin"
         android:layout_width="@dimen/sp_7xl"
         android:layout_height="wrap_content"
         android:breakStrategy="balanced"

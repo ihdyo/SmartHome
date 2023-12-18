@@ -84,13 +84,9 @@ class HomeFragment : Fragment() {
         homeViewModel = ViewModelProvider(this, ViewModelFactory(LampRepository(FirebaseFirestore.getInstance())))[HomeViewModel::class.java]
 
         homeViewModel.fetchLampDetails().observe(viewLifecycleOwner) { lamps ->
-            if (!::lampIconAdapter.isInitialized) {
                 lampIconAdapter = LampIconAdapter(lamps, { selectedLamp -> updateOtherProperties(selectedLamp) }, homeViewModel)
                 binding.rvIconRoom.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
                 binding.rvIconRoom.adapter = lampIconAdapter
-            } else {
-                lampIconAdapter.setItems(lamps)
-            }
         }
 
         return root
@@ -102,6 +98,7 @@ class HomeFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             homeViewModel.selectedLamp.observe(viewLifecycleOwner) { selectedLamp ->
+                homeViewModel.setSelectedLamp(selectedLamp)
                 updateOtherProperties(selectedLamp)
             }
 
@@ -131,10 +128,6 @@ class HomeFragment : Fragment() {
 
         binding.swipeRefresh.setOnRefreshListener {
             Handler().postDelayed({
-                val fragmentTransaction = requireFragmentManager().beginTransaction()
-                fragmentTransaction.detach(this)
-                fragmentTransaction.attach(this)
-                fragmentTransaction.commit()
                 homeViewModel.fetchLampDetails()
                 binding.swipeRefresh.isRefreshing = false
             }, 300)

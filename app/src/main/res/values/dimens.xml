@@ -17,4 +17,5 @@
     <dimen name="splash">360dp</dimen>
     <dimen name="room_margin">-24dp</dimen>
     <dimen name="room">640dp</dimen>
+    <dimen name="tagline_margin">-36dp</dimen>
 </resources>

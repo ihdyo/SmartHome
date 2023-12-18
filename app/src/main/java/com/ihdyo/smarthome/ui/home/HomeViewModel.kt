@@ -167,6 +167,11 @@ class HomeViewModel(private val lampRepository: LampRepository) : ViewModel() {
                 lamp.isAutomaticOn = false
                 lamp.isScheduleOn = false
             }
+            else -> {
+                lamp.mode = "manual"
+                lamp.isAutomaticOn = false
+                lamp.isScheduleOn = false
+            }
         }
     }
 
