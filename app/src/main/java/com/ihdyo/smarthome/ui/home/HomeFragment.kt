@@ -5,9 +5,8 @@ import android.animation.ObjectAnimator
 import android.animation.TimeInterpolator
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
-import android.graphics.drawable.Drawable
+import android.icu.text.SimpleDateFormat
 import android.location.Geocoder
-import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.text.format.DateFormat.is24HourFormat
@@ -16,18 +15,12 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
-import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
-import android.widget.Toast
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.request.CachePolicy
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -36,7 +29,6 @@ import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.MaterialTimePicker.INPUT_MODE_CLOCK
 import com.google.android.material.timepicker.TimeFormat
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
 import com.ihdyo.smarthome.R
 import com.ihdyo.smarthome.data.ViewModelFactory
 import com.ihdyo.smarthome.data.model.LampModel
@@ -44,13 +36,12 @@ import com.ihdyo.smarthome.data.repository.LampRepository
 import com.ihdyo.smarthome.databinding.FragmentHomeBinding
 import kotlinx.coroutines.launch
 import java.io.IOException
-import java.lang.Math.sqrt
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-@Suppress("NAME_SHADOWING", "DEPRECATION")
 class HomeFragment : Fragment() {
 
     companion object {
@@ -63,7 +54,7 @@ class HomeFragment : Fragment() {
 
     private lateinit var lampIconAdapter: LampIconAdapter
 
-    var fusedLocationProviderClient: FusedLocationProviderClient? = null
+    private var fusedLocationProviderClient: FusedLocationProviderClient? = null
 
     private var isTime: String? = null
     private var initialTouchX = 0f
@@ -83,16 +74,6 @@ class HomeFragment : Fragment() {
 
         homeViewModel = ViewModelProvider(this, ViewModelFactory(LampRepository(FirebaseFirestore.getInstance())))[HomeViewModel::class.java]
 
-        homeViewModel.fetchLampDetails().observe(viewLifecycleOwner) { lamps ->
-            if (!::lampIconAdapter.isInitialized) {
-                lampIconAdapter = LampIconAdapter(lamps, { selectedLamp -> updateOtherProperties(selectedLamp) }, homeViewModel)
-                binding.rvIconRoom.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-                binding.rvIconRoom.adapter = lampIconAdapter
-            } else {
-                lampIconAdapter.setItems(lamps)
-            }
-        }
-
         return root
     }
 
@@ -100,16 +81,29 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewLifecycleOwner.lifecycleScope.launch {
+        lifecycleScope.launch {
+            homeViewModel.fetchLampDetails().observe(viewLifecycleOwner) { lamps ->
+                recyclerViewInit(lamps)
+            }
+
             homeViewModel.selectedLamp.observe(viewLifecycleOwner) { selectedLamp ->
                 homeViewModel.setSelectedLamp(selectedLamp)
+
+                homeViewModel.fetchPowerConsumed(selectedLamp)
+                homeViewModel.fetchSelectedMode(selectedLamp)
+                homeViewModel.fetchPowerState(selectedLamp)
+                homeViewModel.fetchScheduleStartTime(selectedLamp)
+                homeViewModel.fetchScheduleFinishTime(selectedLamp)
+
                 updateOtherProperties(selectedLamp)
             }
 
-            homeViewModel.totalPowerConsumed.observe(viewLifecycleOwner){ totalPowerConsumed ->
+            homeViewModel.fetchTotalPowerConsumed()
+            homeViewModel.totalPowerConsumed.observe(viewLifecycleOwner) { totalPowerConsumed ->
                 binding.textPowerConsumedTotal.text = totalPowerConsumed
             }
         }
+
 
         // Time
         getCurrentTime { formattedTime ->
@@ -122,10 +116,9 @@ class HomeFragment : Fragment() {
             binding.textCity.text = city
         }
 
-        // Set up the floating animation with ease-in and ease-out effect
-//        startFloatingAnimation(binding.imageRoom, AccelerateDecelerateInterpolator())
+        // Image
+        startFloatingAnimation(binding.imageRoom, AccelerateDecelerateInterpolator())
 
-        // Set up the rotation on swipe gesture
         binding.imageRoom.setOnTouchListener { _, event ->
             handleTouch(event)
         }
@@ -136,7 +129,6 @@ class HomeFragment : Fragment() {
                 binding.swipeRefresh.isRefreshing = false
             }, 300)
         }
-
     }
 
     override fun onDestroyView() {
@@ -144,63 +136,75 @@ class HomeFragment : Fragment() {
         _binding = null
     }
 
-    @SuppressLint("SetTextI18n")
-    private fun updateOtherProperties(selectedLamp: LampModel) {
-        homeViewModel.selectedLamp.observe(viewLifecycleOwner) { selectedLamp ->
-
-            // Room Name
-            val roomName = selectedLamp.roomName
-            binding.textRoom.text = roomName
-            binding.textRoomDecoration.text = roomName
-
-            // Room Floor
-            binding.textRoomFloor.text = selectedLamp.roomFloor
-
-            // Room Image
-            binding.imageRoom.load(selectedLamp.roomImage) {
-                placeholder(R.drawable.bx_landscape)
-                error(R.drawable.bx_error)
-                crossfade(true)
-                memoryCachePolicy(CachePolicy.ENABLED)
-            }
-
-            // Power Used
-            homeViewModel.fetchPowerConsumed(selectedLamp)
-            homeViewModel.powerConsumed.observe(viewLifecycleOwner) { powerConsumed ->
-                binding.textPowerConsumed.text = powerConsumed
-            }
-
-            // Mode State
-            val initialCheckedButtonId = getCheckedButtonId(homeViewModel.fetchSelectedMode(selectedLamp)
-                .toString())
-            binding.toggleMode.check(initialCheckedButtonId)
-            binding.toggleMode.addOnButtonCheckedListener { _, checkedId, isChecked ->
-                if (isChecked) {
-                    updateUIForMode(checkedId)
-                    homeViewModel.updateSelectedMode(checkedId)
-                }
-            }
-
-//            // In onViewCreated or onCreateView method
-            homeViewModel.isPowerOn.observe(viewLifecycleOwner) {
-                val initialPowerState = getCheckedButtonId(selectedLamp.mode)
-                binding.switchPower.isChecked = selectedLamp.isPowerOn
-            }
-
-            // Set the switch listener
-//            binding.switchPower.setOnCheckedChangeListener { _, isChecked ->
-//                setPowerState(isChecked)
-//                homeViewModel.updatePowerState(isChecked)
-//            }
-
-
-
-
-            // Call the function to set up schedule time listeners
-//            setupScheduleTimeListeners(selectedLamp)
-
-
+    private fun recyclerViewInit(lamps: List<LampModel>) {
+        if (!::lampIconAdapter.isInitialized) {
+            lampIconAdapter = LampIconAdapter(lamps, { selectedLamp -> updateOtherProperties(selectedLamp) }, homeViewModel)
+            binding.rvIconRoom.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            binding.rvIconRoom.adapter = lampIconAdapter
+        } else {
+            lampIconAdapter.setItems(lamps)
         }
+    }
+
+    @SuppressLint("SetTextI18n", "SimpleDateFormat")
+    private fun updateOtherProperties(selectedLamp: LampModel) {
+        // Room Name
+        val roomName = selectedLamp.roomName
+        binding.textRoom.text = roomName
+        binding.textRoomDecoration.text = roomName
+
+        // Room Floor
+        binding.textRoomFloor.text = selectedLamp.roomFloor
+
+        // Room Image
+        binding.imageRoom.load(selectedLamp.roomImage) {
+            placeholder(R.drawable.bx_landscape)
+            error(R.drawable.bx_error)
+            crossfade(true)
+            memoryCachePolicy(CachePolicy.ENABLED)
+        }
+
+        // Power Used
+        homeViewModel.powerConsumed.observe(viewLifecycleOwner) { powerConsumed ->
+            binding.textPowerConsumed.text = powerConsumed.toString()
+        }
+
+        // Mode State
+        binding.toggleMode.addOnButtonCheckedListener { _, checkedId, _ ->
+            homeViewModel.updateSelectedMode(checkedId)
+        }
+        homeViewModel.mode.observe(viewLifecycleOwner) { mode ->
+            binding.textTest.text = mode
+        }
+        homeViewModel.selectedMode.observe(viewLifecycleOwner) { selectedModeId ->
+            binding.toggleMode.check(selectedModeId)
+        }
+
+        // Switch Power
+        binding.switchPower.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked != homeViewModel.isPowerOn.value) {
+                homeViewModel.updatePowerState(isChecked)
+            }
+        }
+        homeViewModel.isPowerOn.observe(viewLifecycleOwner) { isPowerOn ->
+            if (binding.switchPower.isChecked != isPowerOn) {
+                binding.switchPower.isChecked = isPowerOn
+            }
+        }
+
+
+
+        // Schedule
+        homeViewModel.scheduleFrom.observe(viewLifecycleOwner) { scheduleFrom ->
+            binding.textScheduleTimeFrom.text = scheduleFrom
+        }
+
+        homeViewModel.scheduleTo.observe(viewLifecycleOwner) { scheduleTo ->
+            binding.textScheduleTimeTo.text = scheduleTo
+        }
+
+
+
     }
 
 //    private fun setupScheduleTimeListeners(selectedLamp: LampModel) {
@@ -328,7 +332,6 @@ class HomeFragment : Fragment() {
         animator.repeatMode = ObjectAnimator.REVERSE
         animator.duration = 5000
 
-        // Start the animation
         animator.start()
     }
 
@@ -387,7 +390,6 @@ class HomeFragment : Fragment() {
     }
 
     private fun calculateWeight(distance: Float): Float {
-        // Adjust this function to control the effect of the distance on the rotation
         return 1 / (1 + distance / 100)
     }
 }

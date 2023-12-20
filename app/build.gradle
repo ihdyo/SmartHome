@@ -59,9 +59,11 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth-ktx:22.3.0'
     implementation 'com.google.firebase:firebase-database-ktx:20.3.0'
     implementation 'com.google.firebase:firebase-firestore-ktx:24.10.0'
-    implementation 'com.google.firebase:firebase-storage-ktx:20.3.0'
 
     // Coil
     implementation 'io.coil-kt:coil:1.4.0'
     implementation 'io.coil-kt:coil-svg:1.4.0'
+
+    // Leak Canary
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.8.1'
 }
