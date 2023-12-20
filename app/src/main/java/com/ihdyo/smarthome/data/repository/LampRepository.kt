@@ -4,8 +4,6 @@ import android.content.ContentValues.TAG
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.ihdyo.smarthome.data.model.LampModel
-import kotlinx.coroutines.tasks.await
-
 class LampRepository(firestore: FirebaseFirestore) {
 
     companion object {
@@ -22,22 +20,24 @@ class LampRepository(firestore: FirebaseFirestore) {
     private val collectionRef = firestore.collection(COLLECTION_LAMPS)
 
     //  ===================================================== REQUEST METHOD: GET ===================================================== //
-    suspend fun getLamps(): List<LampModel> {
-        return try {
-            val querySnapshot = collectionRef.get().await()
+    fun getLamps(callback: (List<LampModel>) -> Unit) {
+        collectionRef.addSnapshotListener { snapshot, exception ->
+            if (exception != null) {
+                Log.e(TAG, "Error fetching lamp details", exception)
+                callback(emptyList())
+                return@addSnapshotListener
+            }
+            Log.d(TAG, "Success fetching lamp details")
 
             val lamps = mutableListOf<LampModel>()
-            for (document in querySnapshot.documents) {
+            for (document in snapshot!!.documents) {
                 val lamp = document.toObject(LampModel::class.java)
                 lamp?.let {
                     lamps.add(it)
                 }
             }
+            callback(lamps)
 
-            lamps
-        } catch (e: Exception) {
-            Log.e(TAG, "Error fetching lamp details", e)
-            emptyList()
         }
     }
 
@@ -180,39 +180,45 @@ class LampRepository(firestore: FirebaseFirestore) {
             }
     }
 
-    fun putIsPowerOn(lamp: LampModel) {
+    fun putIsPowerOn(lamp: LampModel, callback: (Boolean) -> Unit) {
         val document = collectionRef.document(lamp.id)
 
         document.update(FIELD_IS_POWER_ON, lamp.isPowerOn)
             .addOnSuccessListener {
                 Log.d(TAG, "Success updating power state")
+                callback(true)
             }
             .addOnFailureListener { exception ->
                 Log.e(TAG, "Error updating power state", exception)
+                callback(false)
             }
     }
 
-    fun putScheduleFrom(lamp: LampModel) {
+    fun putScheduleFrom(lamp: LampModel, callback: (Boolean, Exception?) -> Unit) {
         val document = collectionRef.document(lamp.id)
 
         document.update(FIELD_SCHEDULE_FROM, lamp.scheduleFrom)
             .addOnSuccessListener {
                 Log.d(TAG, "Success updating schedule start time")
+                callback(true, null)
             }
             .addOnFailureListener { exception ->
                 Log.e(TAG, "Error updating schedule start time", exception)
+                callback(false, exception)
             }
     }
 
-    fun putScheduleTo(lamp: LampModel) {
+    fun putScheduleTo(lamp: LampModel, callback: (Boolean, Exception?) -> Unit) {
         val document = collectionRef.document(lamp.id)
 
         document.update(FIELD_SCHEDULE_TO, lamp.scheduleTo)
             .addOnSuccessListener {
                 Log.d(TAG, "Success updating schedule finish time")
+                callback(true, null)
             }
             .addOnFailureListener { exception ->
                 Log.e(TAG, "Error updating schedule finish time", exception)
+                callback(false, exception)
             }
     }
 }

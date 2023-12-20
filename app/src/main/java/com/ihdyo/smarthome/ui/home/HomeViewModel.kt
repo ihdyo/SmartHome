@@ -55,8 +55,9 @@ class HomeViewModel(private val lampRepository: LampRepository) : ViewModel() {
     fun fetchLampDetails(): LiveData<List<LampModel>> {
         viewModelScope.launch {
             try {
-                val lamps = lampRepository.getLamps()
-                _lampDetails.postValue(lamps)
+                lampRepository.getLamps { lamps ->
+                    _lampDetails.postValue(lamps)
+                }
             } catch (exception: Exception) {
                 Log.e(this.javaClass.simpleName, "Error fetching lamp details", exception)
             }
@@ -189,15 +190,15 @@ class HomeViewModel(private val lampRepository: LampRepository) : ViewModel() {
         }
     }
 
-    fun updatePowerState(isChecked: Boolean) {
+    fun updatePowerState(lamp: LampModel) {
         viewModelScope.launch {
-            try {
-                selectedLamp.value?.let { selectedLamp ->
-                    lampRepository.putIsPowerOn(selectedLamp)
-                    _isPowerOn.postValue(isChecked)
+            lampRepository.putIsPowerOn(lamp) { success ->
+                if (success) {
+                    _isPowerOn.postValue(lamp.isPowerOn)
+                    Log.d(TAG, "Success updating power state")
+                } else {
+                    Log.e(TAG, "Error updating power state")
                 }
-            } catch (e: Exception) {
-                Log.e(this.javaClass.simpleName, "Error updating power state", e)
             }
         }
     }
@@ -232,26 +233,34 @@ class HomeViewModel(private val lampRepository: LampRepository) : ViewModel() {
 
     fun updateScheduleStartTime(scheduleFrom: String) {
         viewModelScope.launch {
-            try {
-                selectedLamp.value?.let { selectedLamp ->
-                    lampRepository.putScheduleFrom(selectedLamp)
-                    _scheduleFrom.postValue(scheduleFrom)
+            selectedLamp.value?.let { lamp ->
+                val updatedLamp = lamp.copy(scheduleFrom = scheduleFrom)
+
+                lampRepository.putScheduleFrom(updatedLamp) { success, exception ->
+                    if (success) {
+                        _scheduleFrom.postValue(scheduleFrom)
+                        Log.d(TAG, "Success updating schedule start time")
+                    } else {
+                        Log.e(TAG, "Error updating schedule start time", exception)
+                    }
                 }
-            } catch (e: Exception) {
-                Log.e(this.javaClass.simpleName, "Error updating schedule start time", e)
             }
         }
     }
 
     fun updateScheduleFinishTime(scheduleTo: String) {
         viewModelScope.launch {
-            try {
-                selectedLamp.value?.let { selectedLamp ->
-                    lampRepository.putScheduleTo(selectedLamp)
-                    _scheduleTo.postValue(scheduleTo)
+            selectedLamp.value?.let { lamp ->
+                val updatedLamp = lamp.copy(scheduleTo = scheduleTo)
+
+                lampRepository.putScheduleTo(updatedLamp) { success, exception ->
+                    if (success) {
+                        _scheduleTo.postValue(scheduleTo)
+                        Log.d(TAG, "Success updating schedule finish time")
+                    } else {
+                        Log.e(TAG, "Error updating schedule finish time", exception)
+                    }
                 }
-            } catch (e: Exception) {
-                Log.e(this.javaClass.simpleName, "Error updating schedule finish time", e)
             }
         }
     }
