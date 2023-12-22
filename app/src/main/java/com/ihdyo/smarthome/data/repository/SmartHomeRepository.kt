@@ -1,0 +1,308 @@
+package com.ihdyo.smarthome.data.repository
+
+import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import com.google.firebase.firestore.FirebaseFirestore
+import com.ihdyo.smarthome.data.model.RoomModel
+import com.ihdyo.smarthome.data.model.UserModel
+
+class SmartHomeRepository() {
+
+    companion object {
+        const val COLLECTION_USERS = "users"
+        const val COLLECTION_ROOMS = "rooms"
+        const val COLLECTION_LAMPS = "lamps"
+        const val FIELD_MODE = "mode"
+        const val FIELD_IS_POWER_ON = "isPowerOn"
+        const val FIELD_IS_SCHEDULE_ON = "isScheduleOn"
+        const val FIELD_IS_AUTOMATIC_ON = "isAutomaticOn"
+        const val FIELD_SCHEDULE_FROM = "scheduleFrom"
+        const val FIELD_SCHEDULE_TO = "scheduleTo"
+        const val FIELD_LAMP_RUNTIME = "lampRuntime"
+
+        private const val TAG = "SmartHomeRepository"
+    }
+
+    //  ===================================================== REQUEST METHOD: GET ===================================================== //
+
+    private val firestore = FirebaseFirestore.getInstance()
+
+    fun getUser(userId: String): LiveData<UserModel> {
+        val userLiveData = MutableLiveData<UserModel>()
+
+        firestore.collection("users")
+            .document(userId)
+            .get()
+            .addOnSuccessListener { documentSnapshot ->
+                if (documentSnapshot.exists()) {
+                    val userModel = documentSnapshot.toObject(UserModel::class.java)
+                    userModel?.let {
+                        userLiveData.postValue(it)
+                    }
+                } else {
+                    Log.e(TAG, "Document does not exist")
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.e(TAG, "Error getting user data", exception)
+            }
+
+        return userLiveData
+    }
+
+    fun getRooms(userId: String): LiveData<List<RoomModel>> {
+        val roomsLiveData = MutableLiveData<List<RoomModel>>()
+
+        firestore.collection("users")
+            .document(userId)
+            .collection("rooms")
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                val roomsList = mutableListOf<RoomModel>()
+                for (document in querySnapshot.documents) {
+                    val roomModel = document.toObject(RoomModel::class.java)
+                    roomModel?.let {
+                        roomsList.add(it)
+                    }
+                }
+                roomsLiveData.postValue(roomsList)
+            }
+            .addOnFailureListener { exception ->
+                Log.e(TAG, "Error getting rooms data", exception)
+            }
+
+        return roomsLiveData
+    }
+
+
+
+    // Update functions for Lamp attributes
+    fun putIsPowerOn(userId: String, roomId: String, isPowerOn: Boolean) {
+        updateLampField(userId, roomId, "isPowerOn", isPowerOn)
+    }
+
+    fun putIsAutomaticOn(userId: String, roomId: String, isAutomaticOn: Boolean) {
+        updateLampField(userId, roomId, "isAutomaticOn", isAutomaticOn)
+    }
+
+    // Add similar functions for lampBrightness, lampSchedule, and lampSelectedMode
+
+    // Helper function for updating lamp fields
+    private fun updateLampField(userId: String, roomId: String, field: String, value: Any) {
+        firestore.collection("users")
+            .document(userId)
+            .collection("rooms")
+            .document(roomId)
+            .update(field, value)
+            .addOnSuccessListener {
+                Log.d(TAG, "Successfully updated $field")
+            }
+            .addOnFailureListener { exception ->
+                Log.e(TAG, "Error updating $field", exception)
+            }
+    }
+
+
+
+
+
+
+
+
+
+
+//    suspend fun getLamps(): List<LampModel> {
+//        return try {
+//            val querySnapshot = collectionRef.get().await()
+//
+//            val lamps = mutableListOf<LampModel>()
+//            for (document in querySnapshot.documents) {
+//                val lamp = document.toObject(LampModel::class.java)
+//                lamp?.let {
+//                    lamps.add(it)
+//                }
+//            }
+//
+//            lamps
+//        } catch (e: Exception) {
+//            Log.e(TAG, "Error fetching lamp details", e)
+//            emptyList()
+//        }
+//    }
+
+//    fun getMode(lamp: LampModel, callback: (String?) -> Unit) {
+//        val document = collectionRef.document(lamp.id)
+//
+//        document.addSnapshotListener { snapshot, exception ->
+//            if (exception != null) {
+//                Log.e(TAG, "Error fetching selected mode", exception)
+//                callback(null)
+//                return@addSnapshotListener
+//            }
+//
+//            Log.d(TAG, "Success fetching selected mode")
+//
+//            val mode = snapshot?.getString(FIELD_MODE)
+//            callback(mode)
+//        }
+//    }
+//
+//    fun getIsPowerOn(lamp: LampModel, callback: (Boolean?) -> Unit) {
+//        val document = collectionRef.document(lamp.id)
+//
+//        document.addSnapshotListener { snapshot, exception ->
+//            if (exception != null) {
+//                Log.e(TAG, "Error fetching power state", exception)
+//                callback(null)
+//                return@addSnapshotListener
+//            }
+//
+//            Log.d(TAG, "Success fetching power state")
+//
+//            val isPowerOn = snapshot?.getBoolean(FIELD_IS_POWER_ON) ?: false
+//            callback(isPowerOn)
+//        }
+//    }
+//
+//    fun getScheduleFrom(lamp: LampModel, callback: (String?) -> Unit) {
+//        val document = collectionRef.document(lamp.id)
+//
+//        document.addSnapshotListener { snapshot, exception ->
+//            if (exception != null) {
+//                Log.e(TAG, "Error fetching schedule start time", exception)
+//                callback(null)
+//                return@addSnapshotListener
+//            }
+//
+//            Log.d(TAG, "Success fetching schedule start time")
+//
+//            val scheduleFrom = snapshot?.getString(FIELD_SCHEDULE_FROM)
+//            callback(scheduleFrom)
+//        }
+//    }
+//
+//    fun getScheduleTo(lamp: LampModel, callback: (String?) -> Unit) {
+//        val document = collectionRef.document(lamp.id)
+//
+//        document.addSnapshotListener { snapshot, exception ->
+//            if (exception != null) {
+//                Log.e(TAG, "Error fetching schedule finish time", exception)
+//                callback(null)
+//                return@addSnapshotListener
+//            }
+//
+//            Log.d(TAG, "Success fetching schedule finish time")
+//
+//            val scheduleTo = snapshot?.getString(FIELD_SCHEDULE_TO)
+//            callback(scheduleTo)
+//        }
+//    }
+//
+//    fun getLampRuntime(lamp: LampModel, callback: (Int?) -> Unit) {
+//        val document = collectionRef.document(lamp.id)
+//
+//        document.addSnapshotListener { snapshot, exception ->
+//            if (exception != null) {
+//                Log.e(TAG, "Error fetching lamp runtime", exception)
+//                callback(null)
+//                return@addSnapshotListener
+//            }
+//
+//            Log.d(TAG, "Success fetching lamp runtime")
+//
+//            val lampRuntime = snapshot?.getLong(FIELD_LAMP_RUNTIME)?.toInt()
+//            callback(lampRuntime)
+//        }
+//    }
+//
+//    fun getTotalLampRuntime(callback: (Int?) -> Unit) {
+//        collectionRef.addSnapshotListener { snapshot, exception ->
+//            if (exception != null) {
+//                Log.e(TAG, "Error calculating total lamp runtime", exception)
+//                callback(null)
+//                return@addSnapshotListener
+//            }
+//
+//            Log.d(TAG, "Success calculating total lamp runtime")
+//
+//            var totalRuntime = 0
+//
+//            for (document in snapshot!!.documents) {
+//                val lamp = document.toObject(LampModel::class.java)
+//                lamp?.lampRuntime?.let {
+//                    totalRuntime += it
+//                }
+//            }
+//            callback(totalRuntime)
+//        }
+//    }
+
+    //  ===================================================== REQUEST METHOD: PUT ===================================================== //
+//    fun putMode(lamp: LampModel) {
+//        val document = collectionRef.document(lamp.id)
+//
+//        document.update(FIELD_MODE, lamp.mode)
+//            .addOnSuccessListener {
+//                Log.d(TAG, "Success updating selected mode")
+//            }
+//            .addOnFailureListener { exception ->
+//                Log.e(TAG, "Error updating selected mode", exception)
+//                throw exception
+//            }
+//
+//        document.update(FIELD_IS_AUTOMATIC_ON, lamp.isAutomaticOn)
+//            .addOnSuccessListener {
+//                Log.d(TAG, "Success updating automatic state")
+//            }
+//            .addOnFailureListener { exception ->
+//                Log.e(TAG, "Error updating automatic state", exception)
+//                throw exception
+//            }
+//
+//        document.update(FIELD_IS_SCHEDULE_ON, lamp.isScheduleOn)
+//            .addOnSuccessListener {
+//                Log.d(TAG, "Success updating schedule state")
+//            }
+//            .addOnFailureListener { exception ->
+//                Log.e(TAG, "Error updating schedule state", exception)
+//                throw exception
+//            }
+//    }
+//
+//    fun putIsPowerOn(lamp: LampModel) {
+//        val document = collectionRef.document(lamp.id)
+//
+//        document.update(FIELD_IS_POWER_ON, lamp.isPowerOn)
+//            .addOnSuccessListener {
+//                Log.d(TAG, "Success updating power state")
+//            }
+//            .addOnFailureListener { exception ->
+//                Log.e(TAG, "Error updating power state", exception)
+//            }
+//    }
+//
+//    fun putScheduleFrom(lamp: LampModel) {
+//        val document = collectionRef.document(lamp.id)
+//
+//        document.update(FIELD_SCHEDULE_FROM, lamp.scheduleFrom)
+//            .addOnSuccessListener {
+//                Log.d(TAG, "Success updating schedule start time")
+//            }
+//            .addOnFailureListener { exception ->
+//                Log.e(TAG, "Error updating schedule start time", exception)
+//            }
+//    }
+//
+//    fun putScheduleTo(lamp: LampModel) {
+//        val document = collectionRef.document(lamp.id)
+//
+//        document.update(FIELD_SCHEDULE_TO, lamp.scheduleTo)
+//            .addOnSuccessListener {
+//                Log.d(TAG, "Success updating schedule finish time")
+//            }
+//            .addOnFailureListener { exception ->
+//                Log.e(TAG, "Error updating schedule finish time", exception)
+//            }
+//    }
+}

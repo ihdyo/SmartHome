@@ -15,17 +15,18 @@ import coil.decode.SvgDecoder
 import coil.load
 import coil.request.CachePolicy
 import com.ihdyo.smarthome.R
-import com.ihdyo.smarthome.data.model.LampModel
+import com.ihdyo.smarthome.data.model.RoomModel
 
-class LampIconAdapter(
-    private var items: List<LampModel>,
-    private val onItemClickListener: (LampModel) -> Unit,
-    private val lampViewModel: HomeViewModel): RecyclerView.Adapter<LampIconAdapter.ItemViewHolder>() {
+class RoomAdapter(
+    private var items: List<RoomModel>,
+    private val onItemClickListener: (RoomModel) -> Unit,
+    private val homeViewModel: HomeViewModel
+    ): RecyclerView.Adapter<RoomAdapter.ItemViewHolder>() {
 
     private var activePosition: Int = RecyclerView.NO_POSITION
 
     @SuppressLint("NotifyDataSetChanged")
-    fun setItems(item: List<LampModel>) {
+    fun setItems(item: List<RoomModel>) {
         this.items = item
         notifyDataSetChanged()
     }
@@ -59,16 +60,16 @@ class LampIconAdapter(
                         notifyItemChanged(previousActivePosition)
                         notifyItemChanged(activePosition)
 
-                        val selectedLamp = items[position]
-                        onItemClickListener(selectedLamp)
-                        lampViewModel.setSelectedLamp(selectedLamp)
+                        val selectedRoom = items[position]
+                        onItemClickListener(selectedRoom)
+                        homeViewModel.setSelectedRoom(selectedRoom)
                     }
                 }
             }
         }
 
         @SuppressLint("SetTextI18n")
-        fun bind(item: LampModel, position: Int) {
+        fun bind(item: RoomModel, position: Int) {
             currentPosition = position
             val isActive = position == activePosition
             updateButtonState(isActive)

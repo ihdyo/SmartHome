@@ -5,7 +5,6 @@ import android.animation.ObjectAnimator
 import android.animation.TimeInterpolator
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
-import android.icu.text.SimpleDateFormat
 import android.location.Geocoder
 import android.os.Bundle
 import android.os.Handler
@@ -28,16 +27,14 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.MaterialTimePicker.INPUT_MODE_CLOCK
 import com.google.android.material.timepicker.TimeFormat
-import com.google.firebase.firestore.FirebaseFirestore
 import com.ihdyo.smarthome.R
 import com.ihdyo.smarthome.data.ViewModelFactory
-import com.ihdyo.smarthome.data.model.LampModel
-import com.ihdyo.smarthome.data.repository.LampRepository
+import com.ihdyo.smarthome.data.model.RoomModel
+import com.ihdyo.smarthome.data.repository.SmartHomeRepository
 import com.ihdyo.smarthome.databinding.FragmentHomeBinding
 import kotlinx.coroutines.launch
 import java.io.IOException
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -52,7 +49,7 @@ class HomeFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var homeViewModel: HomeViewModel
 
-    private lateinit var lampIconAdapter: LampIconAdapter
+    private lateinit var roomAdapter: RoomAdapter
 
     private var fusedLocationProviderClient: FusedLocationProviderClient? = null
 
@@ -67,42 +64,59 @@ class HomeFragment : Fragment() {
     private val rotationThreshold = 0.5f // Adjust the threshold as needed
     private val rotationDuration = 500L // Adjust the duration for rotation animation
 
+    private val UID = "n5BwXDohfZPzXVS3EjalXgwjGcI3"
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        val root: View = binding.root
 
-        homeViewModel = ViewModelProvider(this, ViewModelFactory(LampRepository(FirebaseFirestore.getInstance())))[HomeViewModel::class.java]
-
-        return root
+        return binding.root
     }
 
     @SuppressLint("SetTextI18n", "ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        lifecycleScope.launch {
-            homeViewModel.fetchLampDetails().observe(viewLifecycleOwner) { lamps ->
-                recyclerViewInit(lamps)
-            }
+        homeViewModel = ViewModelProvider(this, ViewModelFactory(SmartHomeRepository()))[HomeViewModel::class.java]
 
-            homeViewModel.selectedLamp.observe(viewLifecycleOwner) { selectedLamp ->
-                homeViewModel.setSelectedLamp(selectedLamp)
+        // Observe user data
+        homeViewModel.userLiveData.observe(viewLifecycleOwner) { user ->
+            binding.textUsername.text = user?.userName
+        }
 
-                homeViewModel.fetchPowerConsumed(selectedLamp)
-                homeViewModel.fetchSelectedMode(selectedLamp)
-                homeViewModel.fetchPowerState(selectedLamp)
-                homeViewModel.fetchScheduleStartTime(selectedLamp)
-                homeViewModel.fetchScheduleFinishTime(selectedLamp)
-
-                updateOtherProperties(selectedLamp)
-            }
-
-            homeViewModel.fetchTotalPowerConsumed()
-            homeViewModel.totalPowerConsumed.observe(viewLifecycleOwner) { totalPowerConsumed ->
-                binding.textPowerConsumedTotal.text = totalPowerConsumed
+        // Observe rooms data
+        homeViewModel.roomsLiveData.observe(viewLifecycleOwner) { rooms ->
+            if (rooms != null) {
+                recyclerViewInit(rooms)
             }
         }
+
+        // Fetch user data
+        homeViewModel.fetchUserData(UID)
+
+        // Fetch rooms data
+        homeViewModel.fetchRooms(UID)
+
+
+
+
+//        lifecycleScope.launch {
+//            homeViewModel.fetchRooms(UID).observe(viewLifecycleOwner) { lamps ->
+//                recyclerViewInit(lamps)
+//            }
+//
+//            homeViewModel.selectedRoom.observe(viewLifecycleOwner) { selectedRoom ->
+//                homeViewModel.setSelectedLamp(selectedRoom)
+//                updateOtherProperties(selectedRoom)
+//            }
+//
+//            homeViewModel.fetchTotalPowerConsumed()
+//            homeViewModel.totalPowerConsumed.observe(viewLifecycleOwner) { totalPowerConsumed ->
+//            }
+//        }
 
 
         // Time
@@ -125,7 +139,7 @@ class HomeFragment : Fragment() {
 
         binding.swipeRefresh.setOnRefreshListener {
             Handler().postDelayed({
-                homeViewModel.fetchLampDetails()
+                homeViewModel.fetchRooms(UID)
                 binding.swipeRefresh.isRefreshing = false
             }, 300)
         }
@@ -136,94 +150,93 @@ class HomeFragment : Fragment() {
         _binding = null
     }
 
-    private fun recyclerViewInit(lamps: List<LampModel>) {
-        if (!::lampIconAdapter.isInitialized) {
-            lampIconAdapter = LampIconAdapter(lamps, { selectedLamp -> updateOtherProperties(selectedLamp) }, homeViewModel)
+    private fun recyclerViewInit(rooms: List<RoomModel>) {
+        if (!::roomAdapter.isInitialized) {
+            roomAdapter = RoomAdapter(rooms, { selectedRoom -> updateOtherProperties(selectedRoom) }, homeViewModel)
             binding.rvIconRoom.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-            binding.rvIconRoom.adapter = lampIconAdapter
+            binding.rvIconRoom.adapter = roomAdapter
         } else {
-            lampIconAdapter.setItems(lamps)
+            roomAdapter.setItems(rooms)
         }
     }
 
     @SuppressLint("SetTextI18n", "SimpleDateFormat")
-    private fun updateOtherProperties(selectedLamp: LampModel) {
+    private fun updateOtherProperties(selectedRoom: RoomModel) {
         // Room Name
-        val roomName = selectedLamp.roomName
+        val roomName = selectedRoom.roomName
         binding.textRoom.text = roomName
         binding.textRoomDecoration.text = roomName
 
         // Room Floor
-        binding.textRoomFloor.text = selectedLamp.roomFloor
+        binding.textRoomFloor.text = "${selectedRoom.roomFloor}F"
 
         // Room Image
-        binding.imageRoom.load(selectedLamp.roomImage) {
+        binding.imageRoom.load(selectedRoom.roomImage) {
             placeholder(R.drawable.bx_landscape)
             error(R.drawable.bx_error)
             crossfade(true)
             memoryCachePolicy(CachePolicy.ENABLED)
         }
 
-        // Power Used
-        homeViewModel.powerConsumed.observe(viewLifecycleOwner) { powerConsumed ->
-            binding.textPowerConsumed.text = powerConsumed.toString()
-        }
-
-        // Mode State
-        binding.toggleMode.addOnButtonCheckedListener { _, checkedId, _ ->
-            homeViewModel.updateSelectedMode(checkedId)
-        }
-        homeViewModel.mode.observe(viewLifecycleOwner) { mode ->
-            binding.textTest.text = mode
-        }
-        homeViewModel.selectedMode.observe(viewLifecycleOwner) { selectedModeId ->
-            binding.toggleMode.check(selectedModeId)
-        }
-
-        // Switch Power
-        binding.switchPower.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked != homeViewModel.isPowerOn.value) {
-                homeViewModel.updatePowerState(isChecked)
-            }
-        }
-        homeViewModel.isPowerOn.observe(viewLifecycleOwner) { isPowerOn ->
-            if (binding.switchPower.isChecked != isPowerOn) {
-                binding.switchPower.isChecked = isPowerOn
-            }
-        }
-
-
-
-        // Schedule
-        homeViewModel.scheduleFrom.observe(viewLifecycleOwner) { scheduleFrom ->
-            binding.textScheduleTimeFrom.text = scheduleFrom
-        }
-
-        homeViewModel.scheduleTo.observe(viewLifecycleOwner) { scheduleTo ->
-            binding.textScheduleTimeTo.text = scheduleTo
-        }
+//        // Power Used
+//        homeViewModel.powerConsumed.observe(viewLifecycleOwner) { powerConsumed ->
+//        }
+//
+//        // Mode State
+//        binding.toggleMode.addOnButtonCheckedListener { _, checkedId, _ ->
+//            homeViewModel.updateSelectedMode(checkedId)
+//        }
+//        homeViewModel.mode.observe(viewLifecycleOwner) { mode ->
+//            binding.textTest.text = mode
+//        }
+//        homeViewModel.selectedMode.observe(viewLifecycleOwner) { selectedModeId ->
+//            binding.toggleMode.check(selectedModeId)
+//        }
+//
+//        // Switch Power
+//        binding.switchPower.setOnCheckedChangeListener { _, isChecked ->
+//            if (isChecked != homeViewModel.isPowerOn.value) {
+//                homeViewModel.updatePowerState(isChecked)
+//            }
+//        }
+//        homeViewModel.isPowerOn.observe(viewLifecycleOwner) { isPowerOn ->
+//            if (binding.switchPower.isChecked != isPowerOn) {
+//                binding.switchPower.isChecked = isPowerOn
+//            }
+//        }
+//
+//
+//
+//        // Schedule
+//        homeViewModel.scheduleFrom.observe(viewLifecycleOwner) { scheduleFrom ->
+//            binding.textScheduleFrom.text = scheduleFrom
+//        }
+//
+//        homeViewModel.scheduleTo.observe(viewLifecycleOwner) { scheduleTo ->
+//            binding.textScheduleTo.text = scheduleTo
+//        }
 
 
 
     }
 
-//    private fun setupScheduleTimeListeners(selectedLamp: LampModel) {
+//    private fun setupScheduleTimeListeners(selectedRoom: RoomModel) {
 //        // Schedule Time From
-//        binding.textScheduleTimeFrom.text = selectedLamp.scheduleFrom
-//        binding.textScheduleTimeFrom.setOnClickListener {
+//        binding.textScheduleFrom.text = selectedRoom.scheduleFrom
+//        binding.textScheduleFrom.setOnClickListener {
 //            isTime = "Select Start Time"
 //            openTimePicker { selectedTime ->
-//                binding.textScheduleTimeFrom.text = selectedTime
+//                binding.textScheduleFrom.text = selectedTime
 //                homeViewModel.updateScheduleFrom(selectedTime)
 //            }
 //        }
 //
 //        // Schedule Time To
-//        binding.textScheduleTimeTo.text = selectedLamp.scheduleTo
-//        binding.textScheduleTimeTo.setOnClickListener {
+//        binding.textScheduleTo.text = selectedRoom.scheduleTo
+//        binding.textScheduleTo.setOnClickListener {
 //            isTime = "Select Finish Time"
 //            openTimePicker { selectedTime ->
-//                binding.textScheduleTimeTo.text = selectedTime
+//                binding.textScheduleTo.text = selectedTime
 //                homeViewModel.updateScheduleTo(selectedTime)
 //            }
 //        }
@@ -281,28 +294,25 @@ class HomeFragment : Fragment() {
     private fun updateUIForMode(checkedId: Int) {
         when (checkedId) {
             R.id.button_automatic -> {
-                binding.textPower.alpha = 0.5F
                 binding.switchPower.isEnabled = false
                 binding.textScheduleFrom.alpha = 0.5F
-                binding.textScheduleTimeFrom.isEnabled = false
+                binding.textScheduleFrom.isEnabled = false
                 binding.textScheduleTo.alpha = 0.5F
-                binding.textScheduleTimeTo.isEnabled = false
+                binding.textScheduleTo.isEnabled = false
             }
             R.id.button_schedule -> {
-                binding.textPower.alpha = 0.5F
                 binding.switchPower.isEnabled = false
                 binding.textScheduleFrom.alpha = 1F
-                binding.textScheduleTimeFrom.isEnabled = true
+                binding.textScheduleFrom.isEnabled = true
                 binding.textScheduleTo.alpha = 1F
-                binding.textScheduleTimeTo.isEnabled = true
+                binding.textScheduleTo.isEnabled = true
             }
             R.id.button_manual -> {
-                binding.textPower.alpha = 1F
                 binding.switchPower.isEnabled = true
                 binding.textScheduleFrom.alpha = 0.5F
-                binding.textScheduleTimeFrom.isEnabled = false
+                binding.textScheduleFrom.isEnabled = false
                 binding.textScheduleTo.alpha = 0.5F
-                binding.textScheduleTimeTo.isEnabled = false
+                binding.textScheduleTo.isEnabled = false
             }
         }
     }

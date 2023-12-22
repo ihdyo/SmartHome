@@ -31,7 +31,6 @@
         android:layout_marginEnd="@dimen/tagline_margin"
         android:layout_width="@dimen/sp_7xl"
         android:layout_height="wrap_content"
-        android:breakStrategy="balanced"
         android:alpha="0.5"
         android:rotation="90"
         android:text="@string/app_tagline_translated"
@@ -58,11 +57,11 @@
         android:layout_width="@dimen/sp_md"
         android:layout_height="@dimen/sp_md"
         android:layout_marginStart="@dimen/sp_2xs"
-        android:contentDescription="@string/content_verificated"
         android:src="@drawable/bxs_badge_check"
         app:layout_constraintBottom_toBottomOf="@+id/text_username"
         app:layout_constraintStart_toEndOf="@+id/text_username"
-        app:layout_constraintTop_toTopOf="@+id/text_username" />
+        app:layout_constraintTop_toTopOf="@+id/text_username"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/text_email"

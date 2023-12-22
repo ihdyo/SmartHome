@@ -11,304 +11,283 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <View
+            android:id="@+id/rectangle"
+            android:layout_width="@dimen/sp_7xl"
+            android:layout_height="match_parent"
+            android:background="?attr/colorSurface"
+            android:elevation="@dimen/sp_0"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_icon_room"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/sp_7xl"
+            android:layout_gravity="center"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:paddingBottom="@dimen/sp_lg"
+            tools:orientation="vertical"
+            tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="@+id/rectangle"
+            app:layout_constraintStart_toStartOf="@id/rectangle"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:listitem="@layout/item_room" />
+
         <TextView
-            android:id="@+id/text_test"
+            android:id="@+id/text_room"
+            style="@style/TextAppearance.Material3.TitleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/sp_8xl"
+            android:rotation="-90"
+            android:text="@string/placeholder_room"
+            android:textAlignment="textStart"
+            android:textColor="?attr/colorOnPrimaryContainer"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/rectangle"
+            app:layout_constraintEnd_toEndOf="@+id/rectangle"
+            app:layout_constraintStart_toStartOf="@+id/rectangle"/>
+
+        <TextView
+            android:id="@+id/text_power_consumed"
+            style="@style/TextAppearance.Material3.LabelSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/placeholder_power_consumed"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toBottomOf="@+id/toggle_mode"
+            app:layout_constraintEnd_toEndOf="@+id/rectangle"
+            app:layout_constraintStart_toStartOf="@+id/rectangle"
+            app:layout_constraintTop_toTopOf="@+id/toggle_mode" />
+
+        <ImageView
+            android:id="@+id/image_room"
+            android:layout_width="@dimen/room"
+            android:layout_height="@dimen/room"
+            android:layout_marginEnd="@dimen/room_margin"
+            android:elevation="-2dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/img_house"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/text_greeting"
             style="@style/TextAppearance.Material3.TitleMedium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:elevation="@dimen/sp_xl"
-            android:text="@string/placeholder_username"
+            android:layout_marginTop="@dimen/sp_md"
+            android:layout_marginStart="@dimen/sp_xl"
+            android:text="@string/placeholder_greeting"
             android:textAlignment="textStart"
-            android:textColor="?attr/colorError"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-    <View
-        android:id="@+id/rectangle"
-        android:layout_width="@dimen/sp_7xl"
-        android:layout_height="match_parent"
-        android:background="?attr/colorSurface"
-        android:elevation="@dimen/sp_0"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        <TextView
+            android:id="@+id/text_username"
+            style="@style/TextAppearance.Material3.TitleMedium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="@string/placeholder_username"
+            android:textAlignment="textStart"
+            app:layout_constraintBottom_toBottomOf="@+id/text_greeting"
+            app:layout_constraintStart_toEndOf="@+id/text_greeting"
+            app:layout_constraintTop_toTopOf="@+id/text_greeting" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_icon_room"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/sp_7xl"
-        android:layout_gravity="center"
-        android:orientation="vertical"
-        android:clipChildren="false"
-        android:clipToPadding="false"
-        android:paddingBottom="@dimen/sp_lg"
-        app:layout_constraintEnd_toEndOf="@+id/rectangle"
-        app:layout_constraintStart_toStartOf="@id/rectangle"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:listitem="@layout/item_room" />
+        <TextView
+            android:id="@+id/text_city"
+            style="@style/TextAppearance.Material3.BodySmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:text="@string/placeholder_city"
+            android:textAlignment="textStart"
+            app:layout_constraintStart_toStartOf="@+id/text_greeting"
+            app:layout_constraintTop_toBottomOf="@+id/text_greeting" />
 
-    <TextView
-        android:id="@+id/text_room"
-        style="@style/TextAppearance.Material3.TitleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/sp_8xl"
-        android:rotation="-90"
-        android:text="@string/placeholder_room"
-        android:textAlignment="textStart"
-        android:textColor="?attr/colorOnPrimaryContainer"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@id/rectangle"
-        app:layout_constraintEnd_toEndOf="@+id/rectangle"
-        app:layout_constraintStart_toStartOf="@+id/rectangle"/>
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/sp_xl"
+            android:backgroundTint="?attr/colorPrimary"
+            android:elevation="@dimen/sp_0"
+            app:cardCornerRadius="@dimen/sp_7xl"
+            app:layout_constraintBottom_toBottomOf="@+id/text_city"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/text_greeting">
 
-    <TextView
-        android:id="@+id/text_power_consumed"
-        style="@style/TextAppearance.Material3.LabelSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/placeholder_power_consumed"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toBottomOf="@+id/toggle_mode"
-        app:layout_constraintEnd_toEndOf="@+id/rectangle"
-        app:layout_constraintStart_toStartOf="@+id/rectangle"
-        app:layout_constraintTop_toTopOf="@+id/toggle_mode" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="@dimen/sp_sm"
+                android:layout_marginVertical="@dimen/sp_xs"
+                android:gravity="center"
+                android:orientation="horizontal"
+                tools:ignore="UseCompoundDrawables">
 
-    <ImageView
-        android:id="@+id/image_room"
-        android:layout_width="@dimen/room"
-        android:layout_height="@dimen/room"
-        android:contentDescription="@string/content_room"
-        android:layout_marginEnd="@dimen/room_margin"
-        android:elevation="-2dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/img_house"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+                <ImageView
+                    android:id="@+id/icon_wh"
+                    android:layout_width="@dimen/sp_md"
+                    android:layout_height="@dimen/sp_md"
+                    android:layout_marginEnd="@dimen/sp_2xs"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/bxs_bolt" />
 
-    <TextView
-        android:id="@+id/text_greeting"
-        style="@style/TextAppearance.Material3.TitleMedium"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/sp_md"
-        android:layout_marginStart="@dimen/sp_xl"
-        android:text="@string/placeholder_greeting"
-        android:textAlignment="textStart"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+                <TextView
+                    android:id="@+id/text_power_consumed_total"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/placeholder_power_consumed"
+                    android:textAlignment="textEnd"
+                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                    android:textColor="?attr/colorSurface" />
 
-    <TextView
-        android:id="@+id/text_username"
-        style="@style/TextAppearance.Material3.TitleMedium"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textStyle="bold"
-        android:text="@string/placeholder_username"
-        android:textAlignment="textStart"
-        app:layout_constraintBottom_toBottomOf="@+id/text_greeting"
-        app:layout_constraintStart_toEndOf="@+id/text_greeting"
-        app:layout_constraintTop_toTopOf="@+id/text_greeting" />
+            </LinearLayout>
 
-    <TextView
-        android:id="@+id/text_city"
-        style="@style/TextAppearance.Material3.BodySmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="?attr/colorOnSurfaceVariant"
-        android:text="@string/placeholder_city"
-        android:textAlignment="textStart"
-        app:layout_constraintStart_toStartOf="@+id/text_greeting"
-        app:layout_constraintTop_toBottomOf="@+id/text_greeting" />
+        </androidx.cardview.widget.CardView>
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/sp_xl"
-        android:backgroundTint="?attr/colorPrimary"
-        android:elevation="@dimen/sp_0"
-        app:cardCornerRadius="@dimen/sp_7xl"
-        app:layout_constraintBottom_toBottomOf="@+id/text_city"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/text_greeting">
+        <TextView
+            android:id="@+id/text_room_decoration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:elevation="-1dp"
+            android:fontFamily="@font/juliette_regular"
+            android:text="@string/placeholder_room"
+            android:textAppearance="@style/TextAppearance.Material3.DisplaySmall"
+            android:textColor="?attr/colorPrimary"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/cardView"
+            app:layout_constraintTop_toTopOf="@+id/rv_icon_room" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginHorizontal="@dimen/sp_sm"
-            android:layout_marginVertical="@dimen/sp_xs"
-            android:gravity="center"
-            android:orientation="horizontal"
-            tools:ignore="UseCompoundDrawables">
+        <TextView
+            android:id="@+id/text_room_floor"
+            style="@style/TextAppearance.Material3.LabelLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/sp_3xl"
+            android:text="@string/placeholder_room_floor"
+            android:textAlignment="textEnd"
+            android:textColor="?attr/colorPrimary"
+            app:layout_constraintEnd_toEndOf="@+id/text_room_decoration"
+            app:layout_constraintTop_toTopOf="@+id/text_room_decoration" />
 
-            <ImageView
-                android:id="@+id/icon_wh"
-                android:layout_width="@dimen/sp_md"
-                android:layout_height="@dimen/sp_md"
-                android:layout_marginEnd="@dimen/sp_2xs"
-                android:importantForAccessibility="no"
-                android:src="@drawable/bxs_bolt" />
+        <com.google.android.material.slider.Slider
+            android:layout_width="@dimen/switch_width"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/switch_margin"
+            app:thumbElevation="@dimen/sp_0"
+            android:rotation="-90"
+            android:valueFrom="0.0"
+            android:valueTo="10.0"
+            android:value="10.0"
+            android:stepSize="1.0"
+            app:tickVisible="false"
+            app:layout_constraintBottom_toTopOf="@+id/switch_power"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_room_decoration" />
 
-            <TextView
-                android:id="@+id/text_power_consumed_total"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/placeholder_power_consumed"
-                android:textAlignment="textEnd"
-                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-                android:textColor="?attr/colorSurface" />
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/switch_power"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/sp_xl"
+            android:checked="false"
+            app:thumbIcon="@drawable/bx_power_off"
+            app:layout_constraintBottom_toTopOf="@+id/text_from"
+            app:layout_constraintEnd_toEndOf="@+id/text_from" />
 
-        </LinearLayout>
+        <TextView
+            android:id="@+id/text_from"
+            style="@style/TextAppearance.Material3.LabelSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/text_from"
+            android:textAlignment="textEnd"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            app:layout_constraintBottom_toTopOf="@+id/text_schedule_from"
+            app:layout_constraintEnd_toEndOf="@+id/text_schedule_from" />
 
-    </androidx.cardview.widget.CardView>
+        <TextView
+            android:id="@+id/text_schedule_from"
+            style="@style/TextAppearance.Material3.TitleMedium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/sp_xs"
+            android:layout_marginEnd="@dimen/sp_xl"
+            android:text="@string/placeholder_schedule"
+            android:textAlignment="textEnd"
+            app:layout_constraintBottom_toTopOf="@+id/text_to"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-    <TextView
-        android:id="@+id/text_room_decoration"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:elevation="-1dp"
-        android:fontFamily="@font/juliette_regular"
-        android:text="@string/placeholder_room"
-        android:textAppearance="@style/TextAppearance.Material3.DisplaySmall"
-        android:textColor="?attr/colorPrimary"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/cardView"
-        app:layout_constraintTop_toTopOf="@+id/rv_icon_room" />
+        <TextView
+            android:id="@+id/text_to"
+            style="@style/TextAppearance.Material3.LabelSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/text_to"
+            android:textAlignment="textEnd"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            app:layout_constraintBottom_toTopOf="@+id/text_schedule_to"
+            app:layout_constraintEnd_toEndOf="@+id/text_schedule_to" />
 
-    <TextView
-        android:id="@+id/text_room_floor"
-        style="@style/TextAppearance.Material3.LabelLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/sp_3xl"
-        android:text="@string/placeholder_room_floor"
-        android:textAlignment="textEnd"
-        android:textColor="?attr/colorPrimary"
-        app:layout_constraintEnd_toEndOf="@+id/text_room_decoration"
-        app:layout_constraintTop_toTopOf="@+id/text_room_decoration" />
+        <TextView
+            android:id="@+id/text_schedule_to"
+            style="@style/TextAppearance.Material3.TitleMedium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/sp_xl"
+            android:layout_marginEnd="@dimen/sp_xl"
+            android:text="@string/placeholder_schedule"
+            android:textAlignment="textEnd"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-    <TextView
-        android:id="@+id/text_power"
-        style="@style/TextAppearance.Material3.LabelSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/text_power"
-        android:textAlignment="textEnd"
-        android:textColor="?attr/colorOnSurfaceVariant"
-        app:layout_constraintBottom_toTopOf="@+id/switch_power"
-        app:layout_constraintEnd_toEndOf="@+id/switch_power" />
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/toggle_mode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/sp_xl"
+            android:layout_marginBottom="@dimen/sp_xl"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/rectangle"
+            app:singleSelection="true">
 
-    <com.google.android.material.materialswitch.MaterialSwitch
-        android:id="@+id/switch_power"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/sp_xl"
-        android:checked="false"
-        app:layout_constraintBottom_toTopOf="@+id/text_schedule_from"
-        app:layout_constraintEnd_toEndOf="@+id/text_schedule_from" />
+            <Button
+                android:id="@+id/button_automatic"
+                style="@style/Widget.App.Button.OutlinedButton.Custom"
+                android:paddingHorizontal="@dimen/sp_md"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                android:text="@string/text_automatic" />
 
-    <TextView
-        android:id="@+id/text_schedule_from"
-        style="@style/TextAppearance.Material3.LabelSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/text_from"
-        android:textAlignment="textEnd"
-        android:textColor="?attr/colorOnSurfaceVariant"
-        app:layout_constraintBottom_toTopOf="@+id/text_schedule_time_from"
-        app:layout_constraintEnd_toEndOf="@+id/text_schedule_time_from" />
+            <Button
+                android:id="@+id/button_schedule"
+                style="@style/Widget.App.Button.OutlinedButton.Custom"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:icon="@drawable/bx_alarm"
+                android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
 
-    <TextView
-        android:id="@+id/text_schedule_time_from"
-        style="@style/TextAppearance.Material3.TitleMedium"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/sp_xs"
-        android:layout_marginEnd="@dimen/sp_xl"
-        android:text="@string/placeholder_schedule"
-        android:textAlignment="textEnd"
-        app:layout_constraintBottom_toTopOf="@+id/text_schedule_to"
-        app:layout_constraintEnd_toEndOf="parent" />
+            <Button
+                android:id="@+id/button_manual"
+                style="@style/Widget.App.Button.OutlinedButton.Custom"
+                android:paddingHorizontal="@dimen/sp_md"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                android:text="@string/text_manual" />
 
-    <TextView
-        android:id="@+id/text_schedule_to"
-        style="@style/TextAppearance.Material3.LabelSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/text_to"
-        android:textAlignment="textEnd"
-        android:textColor="?attr/colorOnSurfaceVariant"
-        app:layout_constraintBottom_toTopOf="@+id/text_schedule_time_to"
-        app:layout_constraintEnd_toEndOf="@+id/text_schedule_time_to" />
-
-    <TextView
-        android:id="@+id/text_schedule_time_to"
-        style="@style/TextAppearance.Material3.TitleMedium"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/sp_xl"
-        android:layout_marginEnd="@dimen/sp_xl"
-        android:text="@string/placeholder_schedule"
-        android:textAlignment="textEnd"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <TextView
-        android:id="@+id/text_mode"
-        style="@style/TextAppearance.Material3.LabelSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/text_mode"
-        android:layout_marginBottom="@dimen/sp_2xs"
-        android:textAlignment="textEnd"
-        android:textColor="?attr/colorOnSurfaceVariant"
-        app:layout_constraintBottom_toTopOf="@+id/toggle_mode"
-        app:layout_constraintStart_toStartOf="@+id/toggle_mode" />
-
-    <com.google.android.material.button.MaterialButtonToggleGroup
-        android:id="@+id/toggle_mode"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/sp_xl"
-        android:layout_marginBottom="@dimen/sp_xl"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/rectangle"
-        app:singleSelection="true">
-
-        <Button
-            android:id="@+id/button_automatic"
-            style="@style/Widget.App.Button.OutlinedButton.Custom"
-            android:paddingHorizontal="@dimen/sp_md"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
-            android:text="@string/text_automatic" />
-
-        <Button
-            android:id="@+id/button_schedule"
-            style="@style/Widget.App.Button.OutlinedButton.Custom"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:icon="@drawable/bx_alarm"
-            android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
-
-        <Button
-            android:id="@+id/button_manual"
-            style="@style/Widget.App.Button.OutlinedButton.Custom"
-            android:paddingHorizontal="@dimen/sp_md"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
-            android:text="@string/text_manual" />
-
-    </com.google.android.material.button.MaterialButtonToggleGroup>
+        </com.google.android.material.button.MaterialButtonToggleGroup>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

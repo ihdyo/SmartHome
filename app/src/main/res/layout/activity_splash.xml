@@ -23,13 +23,13 @@
         android:id="@+id/image_splash_background"
         android:layout_width="@dimen/splash"
         android:layout_height="@dimen/splash"
-        android:contentDescription="@string/content_room"
         android:scaleType="centerCrop"
         android:src="@drawable/app_icon"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/text_app_name"

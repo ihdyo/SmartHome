@@ -13,7 +13,6 @@
         android:layout_height="@dimen/sp_4xl"
         android:layout_margin="@dimen/sp_md"
         android:background="@drawable/shape_squircle_inactive"
-        android:contentDescription="@string/content_room"
         android:elevation="@dimen/sp_0"
         android:outlineSpotShadowColor="?attr/colorPrimary"
         android:src="@drawable/bx_bowl_hot"
@@ -21,6 +20,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:targetApi="p" />
+        tools:targetApi="p"
+        tools:ignore="ContentDescription" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

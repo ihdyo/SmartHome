@@ -1,5 +1,6 @@
 <resources>
     <dimen name="sp_0">0dp</dimen>
+    <dimen name="sp_3xs">2dp</dimen>
     <dimen name="sp_2xs">4dp</dimen>
     <dimen name="sp_xs">8dp</dimen>
     <dimen name="sp_sm">12dp</dimen>
@@ -14,8 +15,10 @@
     <dimen name="sp_7xl">96dp</dimen>
     <dimen name="sp_8xl">124dp</dimen>
 
-    <dimen name="splash">360dp</dimen>
     <dimen name="room_margin">-24dp</dimen>
-    <dimen name="room">640dp</dimen>
     <dimen name="tagline_margin">-36dp</dimen>
+    <dimen name="switch_margin">-124dp</dimen>
+    <dimen name="switch_width">296dp</dimen>
+    <dimen name="splash">360dp</dimen>
+    <dimen name="room">640dp</dimen>
 </resources>
