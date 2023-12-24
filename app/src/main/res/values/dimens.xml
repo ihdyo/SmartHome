@@ -15,7 +15,6 @@
     <dimen name="sp_7xl">96dp</dimen>
     <dimen name="sp_8xl">124dp</dimen>
 
-    <dimen name="room_margin">-24dp</dimen>
     <dimen name="tagline_margin">-36dp</dimen>
     <dimen name="switch_margin">-124dp</dimen>
     <dimen name="switch_width">296dp</dimen>

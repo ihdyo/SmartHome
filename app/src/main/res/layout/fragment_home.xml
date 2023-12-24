@@ -69,7 +69,6 @@
             android:id="@+id/image_room"
             android:layout_width="@dimen/room"
             android:layout_height="@dimen/room"
-            android:layout_marginEnd="@dimen/room_margin"
             android:elevation="-2dp"
             android:scaleType="centerCrop"
             android:src="@drawable/img_house"

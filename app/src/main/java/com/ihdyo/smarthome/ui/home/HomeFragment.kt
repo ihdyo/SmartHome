@@ -95,10 +95,13 @@ class HomeFragment : Fragment() {
         }
 
         // Fetch user data
-        homeViewModel.fetchUserData(UID)
+        homeViewModel.fetchUser(UID)
 
         // Fetch rooms data
         homeViewModel.fetchRooms(UID)
+
+        // Fetch lamps data
+        homeViewModel.fetchLamps(UID)
 
 
 
@@ -139,7 +142,6 @@ class HomeFragment : Fragment() {
 
         binding.swipeRefresh.setOnRefreshListener {
             Handler().postDelayed({
-                homeViewModel.fetchRooms(UID)
                 binding.swipeRefresh.isRefreshing = false
             }, 300)
         }
