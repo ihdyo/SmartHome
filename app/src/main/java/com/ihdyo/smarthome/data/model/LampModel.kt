@@ -9,7 +9,7 @@ data class LampModel (
     var lampBrightness: Int = 0,
     var lampIsAutomaticOn: Boolean? = false,
     var lampIsPowerOn: Boolean? = false,
-    var lampRuntime: Int = 0,
+    val lampRuntime: Int = 0,
     var lampSchedule: LampSchedule = LampSchedule("", ""),
     var lampSelectedMode: String = "manual",
     val lampWattPower: Int = 0

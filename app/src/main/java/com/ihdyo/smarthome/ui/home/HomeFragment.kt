@@ -86,7 +86,9 @@ class HomeFragment : Fragment() {
 
         // Observe user data
         homeViewModel.userLiveData.observe(viewLifecycleOwner) { user ->
-//            binding.textUsername.text = user?.userName
+            val fullName = user?.userName
+            val firstName = fullName?.split(" ")?.firstOrNull()
+            binding.textUsername.text = firstName
         }
 
         // Observe rooms data
@@ -190,15 +192,16 @@ class HomeFragment : Fragment() {
         binding.sliderLampBrightness.addOnChangeListener { _, value, fromUser ->
             if (fromUser) {
                 homeViewModel.updateLampBrightness(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), value.toInt())
-                binding.textUsername.text = selectedRoom.RID.toString()
             }
         }
-
-
 
         // Lamp Switch Power
         binding.switchPower.isChecked = selectedLamp.lampIsPowerOn!!
 
+        binding.switchPower.setOnCheckedChangeListener { _, isChecked ->
+            selectedLamp.lampIsPowerOn = isChecked
+            homeViewModel.updateLampIsPowerOn(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), isChecked)
+        }
 
     }
 

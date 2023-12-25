@@ -78,15 +78,22 @@ class SmartHomeRepository() {
         updateLampField(userId, roomId, lampId, "lampBrightness", lampBrightness)
     }
 
-    fun putIsPowerOn(userId: String, roomId: String, lampId: String, isPowerOn: Boolean) {
-        updateLampField(userId, roomId, lampId, "isPowerOn", isPowerOn)
+    fun putLampIsAutomaticOn(userId: String, roomId: String, lampId: String, isAutomaticOn: Boolean) {
+        updateLampField(userId, roomId, lampId, "lampIsAutomaticOn", isAutomaticOn)
     }
 
-    fun putIsAutomaticOn(userId: String, roomId: String, lampId: String, isAutomaticOn: Boolean) {
-        updateLampField(userId, roomId, lampId, "isAutomaticOn", isAutomaticOn)
+    fun putLampIsPowerOn(userId: String, roomId: String, lampId: String, isPowerOn: Boolean) {
+        updateLampField(userId, roomId, lampId, "lampIsPowerOn", isPowerOn)
     }
 
-    // Add similar functions for lampBrightness, lampSchedule, and lampSelectedMode
+//    fun putLampSchedule(userId: String, roomId: String, lampId: String, lampSchedule: String) {
+//        updateLampField(userId, roomId, lampId, "lampSchedule", lampSchedule)
+//    }
+
+    fun putLampSelectedMode(userId: String, roomId: String, lampId: String, selectedMode: String) {
+        updateLampField(userId, roomId, lampId, "lampSelectedMode", selectedMode)
+    }
+
 
     // Helper function for updating lamp fields
     private fun updateLampField(userId: String, roomId: String, lampId: String, field: String, value: Any) {

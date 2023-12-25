@@ -20,43 +20,6 @@ class HomeViewModel(private val repository: SmartHomeRepository) : ViewModel() {
     }
 
 
-//    private val _selectedLamp = MutableLiveData<LampModel>()
-//    val selectedLamp: LiveData<LampModel> get() = _selectedLamp
-
-
-
-//    private val _mode = MutableLiveData<String>()
-//    val mode: LiveData<String> get() = _mode
-//
-//    private val _selectedMode = MutableLiveData<Int>()
-//    val selectedMode: LiveData<Int> get() = _selectedMode
-//
-//
-//
-//    private val _powerConsumed = MutableLiveData<String>()
-//    val powerConsumed: LiveData<String> get() = _powerConsumed
-//
-//    private val _totalPowerConsumed = MutableLiveData<String>()
-//    val totalPowerConsumed: LiveData<String> get() = _totalPowerConsumed
-//
-//
-//
-//    private val _isPowerOn = MutableLiveData<Boolean>()
-//    val isPowerOn: LiveData<Boolean> get() = _isPowerOn
-//
-//
-//
-//    private val _scheduleFrom = MutableLiveData<String>()
-//    val scheduleFrom: LiveData<String> get() = _scheduleFrom
-//
-//    private val _scheduleTo = MutableLiveData<String>()
-//    val scheduleTo: LiveData<String> get() = _scheduleTo
-
-
-
-
-
-
 
     private val _selectedRoom = MutableLiveData<Pair<RoomModel, String?>>()
     val selectedRoom: LiveData<Pair<RoomModel, String?>> get() = _selectedRoom
@@ -85,6 +48,9 @@ class HomeViewModel(private val repository: SmartHomeRepository) : ViewModel() {
 
     private val _lampBrightnessLiveData = MutableLiveData<Int>()
     val lampBrightnessLiveData: LiveData<Int> get() = _lampBrightnessLiveData
+
+    private val _lampIsPowerOnLiveData = MutableLiveData<Boolean>()
+    val lampIsPowerOnLiveData: LiveData<Boolean> get() = _lampIsPowerOnLiveData
 
 
 
@@ -143,17 +109,6 @@ class HomeViewModel(private val repository: SmartHomeRepository) : ViewModel() {
         }
     }
 
-    fun updateLampBrightness(userId: String, roomId: String, lampId: String, brightness: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                repository.putLampBrightness(userId, roomId, lampId, brightness)
-                _lampBrightnessLiveData.postValue(brightness)
-            } catch (e: Exception) {
-                Log.e(TAG, "Error updating lampBrightness: $e")
-            }
-        }
-    }
-
     private fun fetchPowerConsumed(lamps: List<LampModel>): Map<String, Int> {
         val powerConsumedMap = mutableMapOf<String, Int>()
 
@@ -184,6 +139,28 @@ class HomeViewModel(private val repository: SmartHomeRepository) : ViewModel() {
 
 
 
+
+    fun updateLampBrightness(userId: String, roomId: String, lampId: String, brightness: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                repository.putLampBrightness(userId, roomId, lampId, brightness)
+                _lampBrightnessLiveData.postValue(brightness)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error updating lamp brightness: $e")
+            }
+        }
+    }
+
+    fun updateLampIsPowerOn(userId: String, roomId: String, lampId: String, isPowerOn: Boolean) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                repository.putLampIsPowerOn(userId, roomId, lampId, isPowerOn)
+                _lampIsPowerOnLiveData.postValue(isPowerOn)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error updating switch power: $e")
+            }
+        }
+    }
 
 
 
