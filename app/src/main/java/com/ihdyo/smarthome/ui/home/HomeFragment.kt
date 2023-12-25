@@ -152,14 +152,10 @@ class HomeFragment : Fragment() {
     }
 
     private fun recyclerViewInit2(lamps: List<LampModel>) {
-        if (!::lampAdapter.isInitialized) {
-            lampAdapter = LampAdapter(lamps, { selectedLamp -> updateOtherProperties2(selectedLamp) }, homeViewModel)
-            binding.rvIconLamp.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-            binding.rvIconLamp.adapter = lampAdapter
-            lampAdapter.setInitialSelectedIndex(0)
-        } else {
-            lampAdapter.setItems(lamps)
-        }
+        lampAdapter = LampAdapter(lamps, { selectedLamp -> updateOtherProperties2(selectedLamp) }, homeViewModel)
+        binding.rvIconLamp.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        binding.rvIconLamp.adapter = lampAdapter
+        lampAdapter.setInitialSelectedIndex(0)
     }
 
     private fun recyclerViewInit(rooms: List<RoomModel>) {

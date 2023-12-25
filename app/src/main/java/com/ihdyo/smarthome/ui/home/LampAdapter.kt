@@ -44,8 +44,7 @@ class LampAdapter(
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        val item = items[position]
-        holder.bind(item, position)
+        holder.bind(position)
     }
 
     override fun getItemCount(): Int {
@@ -76,7 +75,7 @@ class LampAdapter(
         }
 
         @SuppressLint("SetTextI18n")
-        fun bind(item: LampModel, position: Int) {
+        fun bind(position: Int) {
             currentPosition = position
             val isActive = position == activePosition
 
