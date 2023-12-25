@@ -75,34 +75,16 @@ class HomeViewModel(private val repository: SmartHomeRepository) : ViewModel() {
     val lampsLiveData: MutableLiveData<List<LampModel>?> get() = _lampsLiveData
 
 
-    private val _lampBrightnessLiveData = MutableLiveData<Int>()
-    val lampBrightnessLiveData: LiveData<Int> get() = _lampBrightnessLiveData
-
-    private val _lampIsAutomaticOnLiveData = MutableLiveData<Boolean>()
-    val lampIsAutomaticOnLiveData: LiveData<Boolean> get() = _lampIsAutomaticOnLiveData
-
-    private val _lampIsPowerOnLiveData = MutableLiveData<Boolean>()
-    val lampIsPowerOnLiveData: LiveData<Boolean> get() = _lampIsPowerOnLiveData
-
-    private val _lampRuntimeLiveData = MutableLiveData<Int>()
-    val lampRuntimeLiveData: LiveData<Int> get() = _lampRuntimeLiveData
-
-    private val _lampScheduleLiveData = MutableLiveData<Map<String, String>>()
-    val lampScheduleLiveData: LiveData<Map<String, String>> get() = _lampScheduleLiveData
-
-    private val _lampSelectedModeLiveData = MutableLiveData<String>()
-    val lampSelectedModeLiveData: LiveData<String> get() = _lampSelectedModeLiveData
-
-    private val _lampWattPowerLiveData = MutableLiveData<Int>()
-    val lampWattPowerLiveData: LiveData<Int> get() = _lampWattPowerLiveData
-
-
 
     private val _powerConsumedLiveData = MutableLiveData<Map<String, Int>>()
     val powerConsumedLiveData: LiveData<Map<String, Int>> get() = _powerConsumedLiveData
 
     private val _totalPowerConsumedLiveData = MutableLiveData<Int>()
     val totalPowerConsumedLiveData: LiveData<Int> get() = _totalPowerConsumedLiveData
+
+
+    private val _lampBrightnessLiveData = MutableLiveData<Int>()
+    val lampBrightnessLiveData: LiveData<Int> get() = _lampBrightnessLiveData
 
 
 
@@ -161,93 +143,16 @@ class HomeViewModel(private val repository: SmartHomeRepository) : ViewModel() {
         }
     }
 
-
-    fun lampBrightness(userId: String, roomId: String, lampId: String) {
+    fun updateLampBrightness(userId: String, roomId: String, lampId: String, brightness: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                repository.getLampBrightness(userId, roomId, lampId) { brightness ->
-                    _lampBrightnessLiveData.postValue(brightness)
-                }
+                repository.putLampBrightness(userId, roomId, lampId, brightness)
+                _lampBrightnessLiveData.postValue(brightness)
             } catch (e: Exception) {
-                Log.e(TAG, "Error observing lampBrightness: $e")
+                Log.e(TAG, "Error updating lampBrightness: $e")
             }
         }
     }
-
-    fun lampIsAutomaticOn(userId: String, roomId: String, lampId: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                repository.getLampIsAutomaticOn(userId, roomId, lampId) { isAutomaticOn ->
-                    _lampIsAutomaticOnLiveData.postValue(isAutomaticOn)
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error observing lampIsAutomaticOn: $e")
-            }
-        }
-    }
-
-    fun lampIsPowerOn(userId: String, roomId: String, lampId: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                repository.getLampIsPowerOn(userId, roomId, lampId) { isPowerOn ->
-                    _lampIsPowerOnLiveData.postValue(isPowerOn)
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error observing lampIsPowerOn: $e")
-            }
-        }
-    }
-
-    fun lampRuntime(userId: String, roomId: String, lampId: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                repository.getLampRuntime(userId, roomId, lampId) { runtime ->
-                    _lampRuntimeLiveData.postValue(runtime)
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error observing lampRuntime: $e")
-            }
-        }
-    }
-
-    fun lampSchedule(userId: String, roomId: String, lampId: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                repository.getLampSchedule(userId, roomId, lampId) { schedule ->
-                    _lampScheduleLiveData.postValue(schedule)
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error observing lampSchedule: $e")
-            }
-        }
-    }
-
-    fun lampSelectedMode(userId: String, roomId: String, lampId: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                repository.getLampSelectedMode(userId, roomId, lampId) { selectedMode ->
-                    _lampSelectedModeLiveData.postValue(selectedMode)
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error observing lampSelectedMode: $e")
-            }
-        }
-    }
-
-    fun lampWattPower(userId: String, roomId: String, lampId: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val wattPower = repository.getLampWattPower(userId, roomId, lampId)
-                _lampWattPowerLiveData.postValue(wattPower)
-            } catch (e: Exception) {
-                Log.e(TAG, "Error fetching lampWattPower: $e")
-            }
-        }
-    }
-
-
-
-
 
     private fun fetchPowerConsumed(lamps: List<LampModel>): Map<String, Int> {
         val powerConsumedMap = mutableMapOf<String, Int>()

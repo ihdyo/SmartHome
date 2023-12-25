@@ -86,7 +86,7 @@ class HomeFragment : Fragment() {
 
         // Observe user data
         homeViewModel.userLiveData.observe(viewLifecycleOwner) { user ->
-            binding.textUsername.text = user?.userName
+//            binding.textUsername.text = user?.userName
         }
 
         // Observe rooms data
@@ -151,8 +151,8 @@ class HomeFragment : Fragment() {
         _binding = null
     }
 
-    private fun recyclerViewInit2(lamps: List<LampModel>) {
-        lampAdapter = LampAdapter(lamps, { selectedLamp -> updateOtherProperties2(selectedLamp) }, homeViewModel)
+    private fun recyclerViewInit2(selectedRoom: RoomModel, lamps: List<LampModel>) {
+        lampAdapter = LampAdapter(lamps, { selectedLamp -> updateOtherProperties2(selectedRoom, selectedLamp) }, homeViewModel)
         binding.rvIconLamp.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding.rvIconLamp.adapter = lampAdapter
         lampAdapter.setInitialSelectedIndex(0)
@@ -170,7 +170,7 @@ class HomeFragment : Fragment() {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun updateOtherProperties2(selectedLamp: LampModel) {
+    private fun updateOtherProperties2(selectedRoom: RoomModel, selectedLamp: LampModel) {
         // Power Consumed
         homeViewModel.powerConsumedLiveData.observe(viewLifecycleOwner) { powerConsumedMap ->
             val powerConsumed = powerConsumedMap[selectedLamp.LID]
@@ -178,11 +178,26 @@ class HomeFragment : Fragment() {
             binding.textPowerConsumed.text = formattedText
         }
 
+        // Total Power Consumed
         homeViewModel.totalPowerConsumedLiveData.observe(viewLifecycleOwner) { totalPowerConsumedMap ->
             val formattedText = "${totalPowerConsumedMap}Wh"
             binding.textTotalPowerConsumed.text = formattedText
         }
 
+        // Lamp Brightness
+        binding.sliderLampBrightness.value = selectedLamp.lampBrightness.toFloat()
+
+        binding.sliderLampBrightness.addOnChangeListener { _, value, fromUser ->
+            if (fromUser) {
+                homeViewModel.updateLampBrightness(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), value.toInt())
+                binding.textUsername.text = selectedRoom.RID.toString()
+            }
+        }
+
+
+
+        // Lamp Switch Power
+        binding.switchPower.isChecked = selectedLamp.lampIsPowerOn!!
 
 
     }
@@ -193,7 +208,7 @@ class HomeFragment : Fragment() {
         // Observe lamps data
         homeViewModel.lampsLiveData.observe(viewLifecycleOwner) { lamps ->
             if (lamps != null) {
-                recyclerViewInit2(lamps)
+                recyclerViewInit2(selectedRoom, lamps)
             }
         }
 
@@ -217,52 +232,6 @@ class HomeFragment : Fragment() {
             crossfade(true)
             memoryCachePolicy(CachePolicy.ENABLED)
         }
-
-//        // Power Consumed
-//        homeViewModel.powerConsumedLiveData.observe(viewLifecycleOwner) { powerConsumed ->
-//            binding.textPowerConsumed.text = powerConsumed.toString()
-//        }
-
-
-
-
-//
-//        // Mode State
-//        binding.toggleMode.addOnButtonCheckedListener { _, checkedId, _ ->
-//            homeViewModel.updateSelectedMode(checkedId)
-//        }
-//        homeViewModel.mode.observe(viewLifecycleOwner) { mode ->
-//            binding.textTest.text = mode
-//        }
-//        homeViewModel.selectedMode.observe(viewLifecycleOwner) { selectedModeId ->
-//            binding.toggleMode.check(selectedModeId)
-//        }
-//
-//        // Switch Power
-//        binding.switchPower.setOnCheckedChangeListener { _, isChecked ->
-//            if (isChecked != homeViewModel.isPowerOn.value) {
-//                homeViewModel.updatePowerState(isChecked)
-//            }
-//        }
-//        homeViewModel.isPowerOn.observe(viewLifecycleOwner) { isPowerOn ->
-//            if (binding.switchPower.isChecked != isPowerOn) {
-//                binding.switchPower.isChecked = isPowerOn
-//            }
-//        }
-//
-//
-//
-//        // Schedule
-//        homeViewModel.scheduleFrom.observe(viewLifecycleOwner) { scheduleFrom ->
-//            binding.textScheduleFrom.text = scheduleFrom
-//        }
-//
-//        homeViewModel.scheduleTo.observe(viewLifecycleOwner) { scheduleTo ->
-//            binding.textScheduleTo.text = scheduleTo
-//        }
-
-
-
     }
 
 //    private fun setupScheduleTimeListeners(selectedRoom: RoomModel) {

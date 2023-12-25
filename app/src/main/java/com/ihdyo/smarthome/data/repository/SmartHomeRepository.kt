@@ -72,189 +72,30 @@ class SmartHomeRepository() {
     }
 
 
-    fun calculateLampPowerConsumed(lamp: LampModel): Int {
-        return lamp.lampRuntime * lamp.lampWattPower
-    }
-
-    // Calculate totalLampPowerConsumed for all documents inside the lamps collection
-    suspend fun totalLampPowerConsumed(userId: String, roomId: String): Int {
-        return withContext(Dispatchers.Default) {
-            val lamps = getLamps(userId, roomId)
-            var totalPowerConsumed = 0
-
-            for (lamp in lamps) {
-                totalPowerConsumed += calculateLampPowerConsumed(lamp)
-            }
-
-            totalPowerConsumed
-        }
-    }
-
-
-
-
-
-    suspend fun getLampWattPower(userId: String, roomId: String, lampId: String): Int {
-        return try {
-            val documentSnapshot = firestore.collection("users").document(userId)
-                .collection("rooms").document(roomId)
-                .collection("lamps").document(lampId)
-                .get().await()
-
-            documentSnapshot.getLong("lampWattPower")?.toInt() ?: 0
-        } catch (e: Exception) {
-            Log.e(TAG, "Error getting lampWattPower: $e")
-            0
-        }
-    }
-
-
-    fun getLampBrightness(userId: String, roomId: String, lampId: String, callback: (Int) -> Unit) {
-        try {
-            firestore.collection("users").document(userId)
-                .collection("rooms").document(roomId)
-                .collection("lamps").document(lampId)
-                .addSnapshotListener { documentSnapshot, error ->
-                    if (error != null) {
-                        Log.e(TAG, "Error observing lampBrightness: $error")
-                        callback(0)
-                    } else {
-                        val lampBrightness = documentSnapshot?.getLong("lampBrightness")?.toInt() ?: 0
-                        callback(lampBrightness)
-                    }
-                }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error observing lampBrightness: $e")
-            callback(0)
-        }
-    }
-
-    fun getLampIsAutomaticOn(userId: String, roomId: String, lampId: String, callback: (Boolean) -> Unit) {
-        try {
-            firestore.collection("users").document(userId)
-                .collection("rooms").document(roomId)
-                .collection("lamps").document(lampId)
-                .addSnapshotListener { documentSnapshot, error ->
-                    if (error != null) {
-                        Log.e(TAG, "Error observing lampIsAutomaticOn: $error")
-                        callback(false)
-                    } else {
-                        val lampIsAutomaticOn = documentSnapshot?.getBoolean("lampIsAutomaticOn") ?: false
-                        callback(lampIsAutomaticOn)
-                    }
-                }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error observing lampIsAutomaticOn: $e")
-            callback(false)
-        }
-    }
-
-    fun getLampIsPowerOn(userId: String, roomId: String, lampId: String, callback: (Boolean) -> Unit) {
-        try {
-            firestore.collection("users").document(userId)
-                .collection("rooms").document(roomId)
-                .collection("lamps").document(lampId)
-                .addSnapshotListener { documentSnapshot, error ->
-                    if (error != null) {
-                        Log.e(TAG, "Error observing lampIsPowerOn: $error")
-                        callback(false)
-                    } else {
-                        val lampIsPowerOn = documentSnapshot?.getBoolean("lampIsPowerOn") ?: false
-                        callback(lampIsPowerOn)
-                    }
-                }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error observing lampIsPowerOn: $e")
-            callback(false)
-        }
-    }
-
-    fun getLampRuntime(userId: String, roomId: String, lampId: String, callback: (Int) -> Unit) {
-        try {
-            firestore.collection("users").document(userId)
-                .collection("rooms").document(roomId)
-                .collection("lamps").document(lampId)
-                .addSnapshotListener { documentSnapshot, error ->
-                    if (error != null) {
-                        Log.e(TAG, "Error observing lampRuntime: $error")
-                        callback(0)
-                    } else {
-                        val lampRuntime = documentSnapshot?.getLong("lampRuntime")?.toInt() ?: 0
-                        callback(lampRuntime)
-                    }
-                }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error observing lampRuntime: $e")
-            callback(0)
-        }
-    }
-
-    fun getLampSchedule(
-        userId: String,
-        roomId: String,
-        lampId: String,
-        callback: (Map<String, String>) -> Unit
-    ) {
-        try {
-            firestore.collection("users").document(userId)
-                .collection("rooms").document(roomId)
-                .collection("lamps").document(lampId)
-                .addSnapshotListener { documentSnapshot, error ->
-                    if (error != null) {
-                        Log.e(TAG, "Error observing lampSchedule: $error")
-                        callback(emptyMap())
-                    } else {
-                        val lampSchedule = documentSnapshot?.get("lampSchedule") as? Map<String, String> ?: emptyMap()
-                        callback(lampSchedule)
-                    }
-                }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error observing lampSchedule: $e")
-            callback(emptyMap())
-        }
-    }
-
-    fun getLampSelectedMode(userId: String, roomId: String, lampId: String, callback: (String) -> Unit) {
-        try {
-            firestore.collection("users").document(userId)
-                .collection("rooms").document(roomId)
-                .collection("lamps").document(lampId)
-                .addSnapshotListener { documentSnapshot, error ->
-                    if (error != null) {
-                        Log.e(TAG, "Error observing lampSelectedMode: $error")
-                        callback("")
-                    } else {
-                        val lampSelectedMode = documentSnapshot?.getString("lampSelectedMode") ?: ""
-                        callback(lampSelectedMode)
-                    }
-                }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error observing lampSelectedMode: $e")
-            callback("")
-        }
-    }
-
-
-
-
 
     // Update functions for Lamp attributes
-    fun putIsPowerOn(userId: String, roomId: String, isPowerOn: Boolean) {
-        updateLampField(userId, roomId, "isPowerOn", isPowerOn)
+    fun putLampBrightness(userId: String, roomId: String, lampId: String, lampBrightness: Int) {
+        updateLampField(userId, roomId, lampId, "lampBrightness", lampBrightness)
     }
 
-    fun putIsAutomaticOn(userId: String, roomId: String, isAutomaticOn: Boolean) {
-        updateLampField(userId, roomId, "isAutomaticOn", isAutomaticOn)
+    fun putIsPowerOn(userId: String, roomId: String, lampId: String, isPowerOn: Boolean) {
+        updateLampField(userId, roomId, lampId, "isPowerOn", isPowerOn)
+    }
+
+    fun putIsAutomaticOn(userId: String, roomId: String, lampId: String, isAutomaticOn: Boolean) {
+        updateLampField(userId, roomId, lampId, "isAutomaticOn", isAutomaticOn)
     }
 
     // Add similar functions for lampBrightness, lampSchedule, and lampSelectedMode
 
     // Helper function for updating lamp fields
-    private fun updateLampField(userId: String, roomId: String, field: String, value: Any) {
+    private fun updateLampField(userId: String, roomId: String, lampId: String, field: String, value: Any) {
         firestore.collection("users")
             .document(userId)
             .collection("rooms")
             .document(roomId)
+            .collection("lamps")
+            .document(lampId)
             .update(field, value)
             .addOnSuccessListener {
                 Log.d(TAG, "Successfully updated $field")

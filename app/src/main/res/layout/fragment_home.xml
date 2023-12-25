@@ -194,6 +194,7 @@
             tools:orientation="horizontal" />
 
         <com.google.android.material.slider.Slider
+            android:id="@+id/slider_lamp_brightness"
             android:layout_width="@dimen/switch_width"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/switch_margin"
