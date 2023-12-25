@@ -204,7 +204,10 @@ class HomeFragment : Fragment() {
         }
 
         // Lamp Selected Mode
-        getButtonState(selectedLamp.lampSelectedMode)
+
+        homeViewModel.lampSelectedModeLiveData.observe(viewLifecycleOwner) { selectedMode ->
+            getButtonState(selectedMode)
+        }
 
         binding.buttonAutomatic.setOnClickListener {
             homeViewModel.updateLampSelectedMode(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), "automatic")

@@ -106,10 +106,17 @@ class HomeViewModel(private val repository: SmartHomeRepository) : ViewModel() {
                 val totalPowerConsumedMap = fetchTotalPowerConsumed(powerConsumedMap)
                 _totalPowerConsumedLiveData.postValue(totalPowerConsumedMap)
 
+                val selectedMode = fetchSelectedMode(lamps)
+                _lampSelectedModeLiveData.postValue(selectedMode)
+
             } catch (e: Exception) {
                 Log.e(TAG, "Error fetching lamps: $e")
             }
         }
+    }
+
+    private fun fetchSelectedMode(lamps: List<LampModel>): String {
+        return lamps.firstOrNull()?.lampSelectedMode ?: "manual"
     }
 
     private fun fetchPowerConsumed(lamps: List<LampModel>): Map<String, Int> {
