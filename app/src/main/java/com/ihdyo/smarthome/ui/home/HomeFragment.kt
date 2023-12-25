@@ -207,16 +207,14 @@ class HomeFragment : Fragment() {
         getButtonState(selectedLamp.lampSelectedMode)
 
         binding.buttonAutomatic.setOnClickListener {
-            setButtonClickListener("automatic", false, 0.5F, false, UID, selectedRoom.RID.toString(), selectedLamp.LID.toString())
+            homeViewModel.updateLampSelectedMode(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), "automatic")
         }
         binding.buttonSchedule.setOnClickListener {
-            setButtonClickListener("schedule", false, 1F, true, UID, selectedRoom.RID.toString(), selectedLamp.LID.toString())
+            homeViewModel.updateLampSelectedMode(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), "schedule")
         }
         binding.buttonManual.setOnClickListener {
-            setButtonClickListener("manual", true, 0.5F, false, UID, selectedRoom.RID.toString(), selectedLamp.LID.toString())
+            homeViewModel.updateLampSelectedMode(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), "manual")
         }
-
-
     }
 
     @SuppressLint("SetTextI18n", "SimpleDateFormat")
@@ -316,28 +314,58 @@ class HomeFragment : Fragment() {
     private fun getButtonState(selectedMode: String) {
         binding.toggleMode.let { toggleGroup ->
             when (selectedMode) {
-                "automatic" -> toggleGroup.check(R.id.button_automatic)
-                "schedule" -> toggleGroup.check(R.id.button_schedule)
-                "manual" -> toggleGroup.check(R.id.button_manual)
+                "automatic" -> {
+                    toggleGroup.check(R.id.button_automatic)
+                    binding.switchPower.isEnabled = false
+                    binding.textFrom.alpha = 0.5F
+                    binding.textScheduleFrom.isEnabled = false
+                    binding.textTo.alpha = 0.5F
+                    binding.textScheduleTo.isEnabled = false
+                }
+                "schedule" -> {
+                    toggleGroup.check(R.id.button_schedule)
+                    binding.switchPower.isEnabled = false
+                    binding.textFrom.alpha = 1F
+                    binding.textScheduleFrom.isEnabled = true
+                    binding.textTo.alpha = 1F
+                    binding.textScheduleTo.isEnabled = true
+                }
+                "manual" -> {
+                    toggleGroup.check(R.id.button_manual)
+                    binding.switchPower.isEnabled = true
+                    binding.textFrom.alpha = 0.5F
+                    binding.textScheduleFrom.isEnabled = false
+                    binding.textTo.alpha = 0.5F
+                    binding.textScheduleTo.isEnabled = false
+                }
             }
         }
     }
 
-    private fun setButtonClickListener(
-        mode: String,
-        isEnabled: Boolean,
-        alpha: Float,
-        isEnabledText: Boolean,
-        UID: String,
-        selectedRoomRID: String,
-        selectedLampLID: String
-    ) {
-        homeViewModel.updateLampSelectedMode(UID, selectedRoomRID, selectedLampLID, mode)
-        binding.switchPower.isEnabled = isEnabled
-        binding.textFrom.alpha = alpha
-        binding.textScheduleFrom.isEnabled = isEnabledText
-        binding.textTo.alpha = alpha
-        binding.textScheduleTo.isEnabled = isEnabledText
+    private fun updateUIForMode(checkedId: Int) {
+        when (checkedId) {
+            R.id.button_automatic -> {
+                binding.switchPower.isEnabled = false
+                binding.textFrom.alpha = 0.5F
+                binding.textScheduleFrom.isEnabled = false
+                binding.textTo.alpha = 0.5F
+                binding.textScheduleTo.isEnabled = false
+            }
+            R.id.button_schedule -> {
+                binding.switchPower.isEnabled = false
+                binding.textFrom.alpha = 1F
+                binding.textScheduleFrom.isEnabled = true
+                binding.textTo.alpha = 1F
+                binding.textScheduleTo.isEnabled = true
+            }
+            R.id.button_manual -> {
+                binding.switchPower.isEnabled = true
+                binding.textFrom.alpha = 0.5F
+                binding.textScheduleFrom.isEnabled = false
+                binding.textTo.alpha = 0.5F
+                binding.textScheduleTo.isEnabled = false
+            }
+        }
     }
 
     private fun getLastLocation(callback: (String?) -> Unit) {
