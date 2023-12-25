@@ -9,7 +9,9 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:clipChildren="false"
+        android:clipToPadding="false">
 
         <View
             android:id="@+id/rectangle"
@@ -26,11 +28,10 @@
             android:id="@+id/rv_icon_room"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:clipChildren="false"
             android:layout_marginTop="@dimen/sp_7xl"
             android:layout_gravity="center"
-            android:clipChildren="false"
-            android:clipToPadding="false"
-            android:paddingBottom="@dimen/sp_lg"
             tools:orientation="vertical"
             tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintEnd_toEndOf="@+id/rectangle"
@@ -183,9 +184,9 @@
             android:id="@+id/rv_icon_lamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:clipChildren="false"
             android:clipToPadding="false"
+            android:clipChildren="false"
+            android:layout_gravity="center"
             app:layout_constraintEnd_toEndOf="@+id/text_room_decoration"
             app:layout_constraintTop_toBottomOf="@+id/text_room_decoration"
             tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
@@ -196,16 +197,16 @@
             android:layout_width="@dimen/switch_width"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/switch_margin"
-            app:thumbElevation="@dimen/sp_0"
             android:rotation="-90"
+            android:stepSize="1.0"
+            android:value="10.0"
             android:valueFrom="0.0"
             android:valueTo="10.0"
-            android:value="10.0"
-            android:stepSize="1.0"
-            app:tickVisible="false"
             app:layout_constraintBottom_toTopOf="@+id/switch_power"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/text_room_decoration" />
+            app:layout_constraintTop_toBottomOf="@+id/rv_icon_lamp"
+            app:thumbElevation="@dimen/sp_0"
+            app:tickVisible="false" />
 
         <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@+id/switch_power"

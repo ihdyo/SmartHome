@@ -58,8 +58,8 @@ class HomeViewModel(private val repository: SmartHomeRepository) : ViewModel() {
 
 
 
-    private val _selectedRoom = MutableLiveData<RoomModel>()
-    val selectedRoom: LiveData<RoomModel> get() = _selectedRoom
+    private val _selectedRoom = MutableLiveData<Pair<RoomModel, String?>>()
+    val selectedRoom: LiveData<Pair<RoomModel, String?>> get() = _selectedRoom
 
     private val _selectedLamp = MutableLiveData<LampModel>()
     val selectedLamp: LiveData<LampModel> get() = _selectedLamp
@@ -106,9 +106,9 @@ class HomeViewModel(private val repository: SmartHomeRepository) : ViewModel() {
 
 
 
-    fun setSelectedRoom(room: RoomModel) {
+    fun setSelectedRoom(room: RoomModel, documentId: String?) {
         viewModelScope.launch {
-            _selectedRoom.postValue(room)
+            _selectedRoom.postValue(Pair(room, documentId))
         }
     }
 
@@ -142,10 +142,10 @@ class HomeViewModel(private val repository: SmartHomeRepository) : ViewModel() {
         }
     }
 
-    fun fetchLamps(userId: String, lampId: String) {
+    fun fetchLamps(userId: String, roomId: String) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val lamps = repository.getLamps(userId, lampId)
+                val lamps = repository.getLamps(userId, roomId)
                 _lampsLiveData.postValue(lamps)
             } catch (e: Exception) {
                 Log.e(TAG, "Error fetching lamps: $e")

@@ -5,6 +5,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class LampModel (
+    val LID: String? = "",
     var lampBrightness: Int = 0,
     var lampIsAutomaticOn: Boolean? = false,
     var lampIsPowerOn: Boolean? = false,

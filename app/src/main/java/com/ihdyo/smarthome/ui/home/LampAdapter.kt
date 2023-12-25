@@ -8,25 +8,22 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
+import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import coil.decode.SvgDecoder
-import coil.load
-import coil.request.CachePolicy
 import com.ihdyo.smarthome.R
-import com.ihdyo.smarthome.data.model.RoomModel
+import com.ihdyo.smarthome.data.model.LampModel
 
-class RoomAdapter(
-    private var items: List<RoomModel>,
-    private val onItemClickListener: (RoomModel) -> Unit,
+class LampAdapter(
+    private var items: List<LampModel>,
+    private val onItemClickListener: (LampModel) -> Unit,
     private val homeViewModel: HomeViewModel
-    ): RecyclerView.Adapter<RoomAdapter.ItemViewHolder>() {
+    ): RecyclerView.Adapter<LampAdapter.ItemViewHolder>() {
 
     private var activePosition: Int = RecyclerView.NO_POSITION
 
     @SuppressLint("NotifyDataSetChanged")
-    fun setItems(item: List<RoomModel>) {
+    fun setItems(item: List<LampModel>) {
         this.items = item
         notifyDataSetChanged()
     }
@@ -35,14 +32,14 @@ class RoomAdapter(
         if (index >= 0 && index < items.size) {
             activePosition = index
             notifyItemChanged(activePosition)
-            val selectedRoom = items[activePosition]
-            onItemClickListener(selectedRoom)
-            homeViewModel.setSelectedRoom(selectedRoom, selectedRoom.RID)
+            val selectedLamp = items[activePosition]
+            onItemClickListener(selectedLamp)
+            homeViewModel.setSelectedLamp(selectedLamp)
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_room, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_lamp, parent, false)
         return ItemViewHolder(view)
     }
 
@@ -56,75 +53,72 @@ class RoomAdapter(
     }
 
     inner class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val iconRoom: ImageButton = itemView.findViewById(R.id.icon_room)
+        private val iconLamp: ImageView = itemView.findViewById(R.id.icon_lamp)
         private var currentPosition: Int = RecyclerView.NO_POSITION
 
         init {
-            iconRoom.setOnClickListener {
+            iconLamp.setOnClickListener {
                 val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
                     if (position != activePosition) {
                         val previousActivePosition = activePosition
                         activePosition = position
+
                         notifyItemChanged(previousActivePosition)
                         notifyItemChanged(activePosition)
 
-                        val selectedRoom = items[position]
-                        onItemClickListener(selectedRoom)
-                        homeViewModel.setSelectedRoom(selectedRoom, selectedRoom.RID)
+                        val selectedLamp = items[position]
+                        onItemClickListener(selectedLamp)
+                        homeViewModel.setSelectedLamp(selectedLamp)
                     }
                 }
             }
         }
 
         @SuppressLint("SetTextI18n")
-        fun bind(item: RoomModel, position: Int) {
+        fun bind(item: LampModel, position: Int) {
             currentPosition = position
             val isActive = position == activePosition
 
-            iconRoom.load(item.roomIcon) {
-                placeholder(R.drawable.bx_landscape)
-                error(R.drawable.bx_error)
-                crossfade(true)
-                decoder(SvgDecoder(itemView.context))
-                memoryCachePolicy(CachePolicy.ENABLED)
-            }
-
             updateButtonState(isActive)
 
-            val colorFilter = if (isActive) getThemeColor(com.google.android.material.R.attr.colorOnPrimary) else getThemeColor(com.google.android.material.R.attr.colorPrimary)
-            iconRoom.imageTintList = ColorStateList.valueOf(colorFilter)
+            val colorFilter = if (isActive) getThemeColor(com.google.android.material.R.attr.colorSurface) else getThemeColor(com.google.android.material.R.attr.colorPrimary)
+            iconLamp.imageTintList = ColorStateList.valueOf(colorFilter)
         }
 
         private fun updateButtonState(isActive: Boolean) {
             val resources = itemView.resources
-            val newHeight = if (isActive) resources.getDimensionPixelSize(R.dimen.sp_5xl) else resources.getDimensionPixelSize(R.dimen.sp_4xl)
-            val newWidth = if (isActive) resources.getDimensionPixelSize(R.dimen.sp_5xl) else resources.getDimensionPixelSize(R.dimen.sp_4xl)
-            val elevation = if (isActive) 36f else 0f
+            val newHeight = if (isActive) resources.getDimensionPixelSize(R.dimen.sp_2xl) else resources.getDimensionPixelSize(R.dimen.sp_lg)
+            val newWidth = if (isActive) resources.getDimensionPixelSize(R.dimen.sp_2xl) else resources.getDimensionPixelSize(R.dimen.sp_lg)
 
-            val heightAnimator = ObjectAnimator.ofInt(iconRoom.layoutParams.height, newHeight)
+            val heightAnimator = ObjectAnimator.ofInt(iconLamp.layoutParams.height, newHeight)
             heightAnimator.addUpdateListener { valueAnimator ->
                 val animatedValue = valueAnimator.animatedValue as Int
-                val layoutParams = iconRoom.layoutParams
+                val layoutParams = iconLamp.layoutParams
                 layoutParams.height = animatedValue
-                iconRoom.layoutParams = layoutParams
+                iconLamp.layoutParams = layoutParams
             }
 
-            val widthAnimator = ObjectAnimator.ofInt(iconRoom.layoutParams.width, newWidth)
+            val widthAnimator = ObjectAnimator.ofInt(iconLamp.layoutParams.width, newWidth)
             widthAnimator.addUpdateListener { valueAnimator ->
                 val animatedValue = valueAnimator.animatedValue as Int
-                val layoutParams = iconRoom.layoutParams
+                val layoutParams = iconLamp.layoutParams
                 layoutParams.width = animatedValue
-                iconRoom.layoutParams = layoutParams
+                iconLamp.layoutParams = layoutParams
             }
-            val elevationAnimator = ObjectAnimator.ofFloat(iconRoom, "elevation", iconRoom.elevation, elevation)
 
             val animatorSet = AnimatorSet()
             animatorSet.duration = 0
-            animatorSet.playTogether(heightAnimator, widthAnimator, elevationAnimator)
+            animatorSet.playTogether(heightAnimator, widthAnimator)
             animatorSet.start()
 
-            if (isActive) iconRoom.setBackgroundResource(R.drawable.shape_squircle_active) else iconRoom.setBackgroundResource(R.drawable.shape_squircle_inactive)
+            if (isActive) {
+                iconLamp.setBackgroundResource(R.drawable.shape_squircle_active)
+                iconLamp.setImageResource(R.drawable.bx_bulb)
+            } else {
+                iconLamp.setBackgroundResource(R.drawable.shape_squircle_inactive)
+                iconLamp.setImageResource(0)
+            }
         }
 
         private fun getThemeColor(attr: Int): Int {

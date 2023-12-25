@@ -29,6 +29,7 @@ import com.google.android.material.timepicker.MaterialTimePicker.INPUT_MODE_CLOC
 import com.google.android.material.timepicker.TimeFormat
 import com.ihdyo.smarthome.R
 import com.ihdyo.smarthome.data.ViewModelFactory
+import com.ihdyo.smarthome.data.model.LampModel
 import com.ihdyo.smarthome.data.model.RoomModel
 import com.ihdyo.smarthome.data.repository.SmartHomeRepository
 import com.ihdyo.smarthome.databinding.FragmentHomeBinding
@@ -50,6 +51,7 @@ class HomeFragment : Fragment() {
     private lateinit var homeViewModel: HomeViewModel
 
     private lateinit var roomAdapter: RoomAdapter
+    private lateinit var lampAdapter: LampAdapter
 
     private var fusedLocationProviderClient: FusedLocationProviderClient? = null
 
@@ -100,9 +102,6 @@ class HomeFragment : Fragment() {
         // Fetch rooms data
         homeViewModel.fetchRooms(UID)
 
-        // Fetch lamps data
-//        homeViewModel.fetchLamps(UID)
-
 
 
 
@@ -152,15 +151,16 @@ class HomeFragment : Fragment() {
         _binding = null
     }
 
-//    private fun recyclerViewInit(rooms: List<RoomModel>) {
-//        if (!::roomAdapter.isInitialized) {
-//            roomAdapter = RoomAdapter(rooms, { selectedRoom -> updateOtherProperties(selectedRoom) }, homeViewModel)
-//            binding.rvIconRoom.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-//            binding.rvIconRoom.adapter = roomAdapter
-//        } else {
-//            roomAdapter.setItems(rooms)
-//        }
-//    }
+    private fun recyclerViewInit2(lamps: List<LampModel>) {
+        if (!::lampAdapter.isInitialized) {
+            lampAdapter = LampAdapter(lamps, { selectedLamp -> updateOtherProperties2(selectedLamp) }, homeViewModel)
+            binding.rvIconLamp.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+            binding.rvIconLamp.adapter = lampAdapter
+            lampAdapter.setInitialSelectedIndex(0)
+        } else {
+            lampAdapter.setItems(lamps)
+        }
+    }
 
     private fun recyclerViewInit(rooms: List<RoomModel>) {
         if (!::roomAdapter.isInitialized) {
@@ -171,6 +171,10 @@ class HomeFragment : Fragment() {
         } else {
             roomAdapter.setItems(rooms)
         }
+    }
+
+    private fun updateOtherProperties2(selectedLamp: LampModel) {
+
     }
 
     @SuppressLint("SetTextI18n", "SimpleDateFormat")
@@ -190,6 +194,18 @@ class HomeFragment : Fragment() {
             crossfade(true)
             memoryCachePolicy(CachePolicy.ENABLED)
         }
+
+
+        // Observe lamps data
+        homeViewModel.lampsLiveData.observe(viewLifecycleOwner) { lamps ->
+            if (lamps != null) {
+                recyclerViewInit2(lamps)
+            }
+        }
+
+        // Fetch lamps data
+        homeViewModel.fetchLamps(UID, selectedRoom.RID.toString())
+
 
 //        // Power Used
 //        homeViewModel.powerConsumed.observe(viewLifecycleOwner) { powerConsumed ->

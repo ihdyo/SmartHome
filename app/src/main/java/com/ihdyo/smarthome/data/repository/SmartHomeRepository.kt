@@ -37,7 +37,7 @@ class SmartHomeRepository() {
             val documentSnapshot = firestore.collection("users").document(userId).get().await()
             documentSnapshot.toObject(UserModel::class.java)
         } catch (e: Exception) {
-            Log.e(TAG, "Error fetching user: $e")
+            Log.e(TAG, "Error getting user: $e")
             null
         }
     }
@@ -51,7 +51,7 @@ class SmartHomeRepository() {
                 documentSnapshot.toObject(RoomModel::class.java)
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error fetching rooms: $e")
+            Log.e(TAG, "Error getting rooms: $e")
             emptyList()
         }
     }
@@ -66,7 +66,7 @@ class SmartHomeRepository() {
                 documentSnapshot.toObject(LampModel::class.java)
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error fetching lamps: $e")
+            Log.e(TAG, "Error getting lamps: $e")
             emptyList()
         }
     }
@@ -103,7 +103,7 @@ class SmartHomeRepository() {
 
             documentSnapshot.getLong("lampWattPower")?.toInt() ?: 0
         } catch (e: Exception) {
-            Log.e(TAG, "Error fetching lampWattPower: $e")
+            Log.e(TAG, "Error getting lampWattPower: $e")
             0
         }
     }
@@ -287,7 +287,7 @@ class SmartHomeRepository() {
 //
 //            lamps
 //        } catch (e: Exception) {
-//            Log.e(TAG, "Error fetching lamp details", e)
+//            Log.e(TAG, "Error getting lamp details", e)
 //            emptyList()
 //        }
 //    }
@@ -297,12 +297,12 @@ class SmartHomeRepository() {
 //
 //        document.addSnapshotListener { snapshot, exception ->
 //            if (exception != null) {
-//                Log.e(TAG, "Error fetching selected mode", exception)
+//                Log.e(TAG, "Error getting selected mode", exception)
 //                callback(null)
 //                return@addSnapshotListener
 //            }
 //
-//            Log.d(TAG, "Success fetching selected mode")
+//            Log.d(TAG, "Success getting selected mode")
 //
 //            val mode = snapshot?.getString(FIELD_MODE)
 //            callback(mode)
@@ -314,12 +314,12 @@ class SmartHomeRepository() {
 //
 //        document.addSnapshotListener { snapshot, exception ->
 //            if (exception != null) {
-//                Log.e(TAG, "Error fetching power state", exception)
+//                Log.e(TAG, "Error getting power state", exception)
 //                callback(null)
 //                return@addSnapshotListener
 //            }
 //
-//            Log.d(TAG, "Success fetching power state")
+//            Log.d(TAG, "Success getting power state")
 //
 //            val isPowerOn = snapshot?.getBoolean(FIELD_IS_POWER_ON) ?: false
 //            callback(isPowerOn)
@@ -331,12 +331,12 @@ class SmartHomeRepository() {
 //
 //        document.addSnapshotListener { snapshot, exception ->
 //            if (exception != null) {
-//                Log.e(TAG, "Error fetching schedule start time", exception)
+//                Log.e(TAG, "Error getting schedule start time", exception)
 //                callback(null)
 //                return@addSnapshotListener
 //            }
 //
-//            Log.d(TAG, "Success fetching schedule start time")
+//            Log.d(TAG, "Success getting schedule start time")
 //
 //            val scheduleFrom = snapshot?.getString(FIELD_SCHEDULE_FROM)
 //            callback(scheduleFrom)
@@ -348,12 +348,12 @@ class SmartHomeRepository() {
 //
 //        document.addSnapshotListener { snapshot, exception ->
 //            if (exception != null) {
-//                Log.e(TAG, "Error fetching schedule finish time", exception)
+//                Log.e(TAG, "Error getting schedule finish time", exception)
 //                callback(null)
 //                return@addSnapshotListener
 //            }
 //
-//            Log.d(TAG, "Success fetching schedule finish time")
+//            Log.d(TAG, "Success getting schedule finish time")
 //
 //            val scheduleTo = snapshot?.getString(FIELD_SCHEDULE_TO)
 //            callback(scheduleTo)
@@ -365,12 +365,12 @@ class SmartHomeRepository() {
 //
 //        document.addSnapshotListener { snapshot, exception ->
 //            if (exception != null) {
-//                Log.e(TAG, "Error fetching lamp runtime", exception)
+//                Log.e(TAG, "Error getting lamp runtime", exception)
 //                callback(null)
 //                return@addSnapshotListener
 //            }
 //
-//            Log.d(TAG, "Success fetching lamp runtime")
+//            Log.d(TAG, "Success getting lamp runtime")
 //
 //            val lampRuntime = snapshot?.getLong(FIELD_LAMP_RUNTIME)?.toInt()
 //            callback(lampRuntime)
