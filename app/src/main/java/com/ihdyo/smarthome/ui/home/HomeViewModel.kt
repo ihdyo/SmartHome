@@ -55,6 +55,9 @@ class HomeViewModel(private val repository: SmartHomeRepository) : ViewModel() {
     private val _lampSelectedModeLiveData = MutableLiveData<String>()
     val lampSelectedModeLiveData: LiveData<String> get() = _lampSelectedModeLiveData
 
+    private val _lampScheduleLiveData = MutableLiveData<Map<String, String>>()
+    val lampScheduleLiveData: LiveData<Map<String, String>> get() = _lampScheduleLiveData
+
 
 
     fun setSelectedRoom(room: RoomModel, documentId: String?) {
@@ -106,8 +109,19 @@ class HomeViewModel(private val repository: SmartHomeRepository) : ViewModel() {
                 val totalPowerConsumedMap = fetchTotalPowerConsumed(powerConsumedMap)
                 _totalPowerConsumedLiveData.postValue(totalPowerConsumedMap)
 
-                val selectedMode = fetchSelectedMode(lamps)
-                _lampSelectedModeLiveData.postValue(selectedMode)
+
+
+                val lampBrightness = fetchLampBrightness(lamps)
+                _lampBrightnessLiveData.postValue(lampBrightness)
+
+                val lampisPowerOn = fetchLampIsPowerOn(lamps)
+                _lampIsPowerOnLiveData.postValue(lampisPowerOn)
+
+                val lampSelectedMode = fetchLampSelectedMode(lamps)
+                _lampSelectedModeLiveData.postValue(lampSelectedMode)
+
+//                val lampSchedule = fetchLampSchedule(lamps)
+//                _lampScheduleLiveData.postValue(lampSchedule)
 
             } catch (e: Exception) {
                 Log.e(TAG, "Error fetching lamps: $e")
@@ -115,9 +129,45 @@ class HomeViewModel(private val repository: SmartHomeRepository) : ViewModel() {
         }
     }
 
-    private fun fetchSelectedMode(lamps: List<LampModel>): String {
-        return lamps.firstOrNull()?.lampSelectedMode ?: "manual"
+    private fun fetchLampSelectedMode(lamps: List<LampModel>): String {
+        return try {
+            lamps.firstOrNull()?.lampSelectedMode ?: "manual"
+        } catch (e: Exception) {
+            Log.e(TAG, "Error fetching lamp selected mode: $e")
+            "manual"
+        }
     }
+
+    private fun fetchLampIsPowerOn(lamps: List<LampModel>): Boolean {
+        return try {
+            lamps.firstOrNull()?.lampIsPowerOn ?: false
+        } catch (e: Exception) {
+            Log.e(TAG, "Error fetching lamp power state: $e")
+            false
+        }
+    }
+
+    private fun fetchLampBrightness(lamps: List<LampModel>): Int {
+        return try {
+            lamps.firstOrNull()?.lampBrightness ?: 0
+        } catch (e: Exception) {
+            Log.e(TAG, "Error fetching lamp brightness: $e")
+            0
+        }
+    }
+
+//    private fun fetchLampSchedule(lamps: List<LampModel>): Map<String, String> {
+//        try {
+//            return lamps.firstOrNull()?.lampSchedule ?: emptyMap()
+//        } catch (e: Exception) {
+//            Log.e(TAG, "Error fetching lamp schedule: $e")
+//            return emptyMap()
+//        }
+//    }
+
+
+
+
 
     private fun fetchPowerConsumed(lamps: List<LampModel>): Map<String, Int> {
         val powerConsumedMap = mutableMapOf<String, Int>()
@@ -167,7 +217,7 @@ class HomeViewModel(private val repository: SmartHomeRepository) : ViewModel() {
                 repository.putLampIsPowerOn(userId, roomId, lampId, isPowerOn)
                 _lampIsPowerOnLiveData.postValue(isPowerOn)
             } catch (e: Exception) {
-                Log.e(TAG, "Error updating switch power: $e")
+                Log.e(TAG, "Error updating power state: $e")
             }
         }
     }

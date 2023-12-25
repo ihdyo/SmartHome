@@ -55,7 +55,6 @@ class HomeFragment : Fragment() {
 
     private var fusedLocationProviderClient: FusedLocationProviderClient? = null
 
-    private var isTime: String? = null
     private var initialTouchX = 0f
     private var initialTouchY = 0f
     private var currentRotationX = 0f
@@ -187,7 +186,9 @@ class HomeFragment : Fragment() {
         }
 
         // Lamp Brightness
-        binding.sliderLampBrightness.value = selectedLamp.lampBrightness.toFloat()
+        homeViewModel.lampBrightnessLiveData.observe(viewLifecycleOwner) { brightness ->
+            binding.sliderLampBrightness.value = brightness.toFloat()
+        }
 
         binding.sliderLampBrightness.addOnChangeListener { _, value, fromUser ->
             if (fromUser) {
@@ -196,7 +197,9 @@ class HomeFragment : Fragment() {
         }
 
         // Lamp Switch Power
-        binding.switchPower.isChecked = selectedLamp.lampIsPowerOn!!
+        homeViewModel.lampIsPowerOnLiveData.observe(viewLifecycleOwner) { isPowerOn ->
+            binding.switchPower.isChecked = isPowerOn
+        }
 
         binding.switchPower.setOnCheckedChangeListener { _, isChecked ->
             selectedLamp.lampIsPowerOn = isChecked
@@ -204,7 +207,6 @@ class HomeFragment : Fragment() {
         }
 
         // Lamp Selected Mode
-
         homeViewModel.lampSelectedModeLiveData.observe(viewLifecycleOwner) { selectedMode ->
             getButtonState(selectedMode)
         }
@@ -218,6 +220,8 @@ class HomeFragment : Fragment() {
         binding.buttonManual.setOnClickListener {
             homeViewModel.updateLampSelectedMode(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), "manual")
         }
+
+        // Lamp Schedule
     }
 
     @SuppressLint("SetTextI18n", "SimpleDateFormat")
@@ -252,28 +256,6 @@ class HomeFragment : Fragment() {
         }
     }
 
-//    private fun setupScheduleTimeListeners(selectedRoom: RoomModel) {
-//        // Schedule Time From
-//        binding.textScheduleFrom.text = selectedRoom.scheduleFrom
-//        binding.textScheduleFrom.setOnClickListener {
-//            isTime = "Select Start Time"
-//            openTimePicker { selectedTime ->
-//                binding.textScheduleFrom.text = selectedTime
-//                homeViewModel.updateScheduleFrom(selectedTime)
-//            }
-//        }
-//
-//        // Schedule Time To
-//        binding.textScheduleTo.text = selectedRoom.scheduleTo
-//        binding.textScheduleTo.setOnClickListener {
-//            isTime = "Select Finish Time"
-//            openTimePicker { selectedTime ->
-//                binding.textScheduleTo.text = selectedTime
-//                homeViewModel.updateScheduleTo(selectedTime)
-//            }
-//        }
-//    }
-
     private fun getCurrentTime(callback: (String) -> Unit) {
         val currentTime = Calendar.getInstance()
         val greeting = when (currentTime.get(Calendar.HOUR_OF_DAY)) {
@@ -285,8 +267,18 @@ class HomeFragment : Fragment() {
         callback(greeting)
     }
 
+//    private fun setupScheduleTimeListeners(selectedLamp: LampModel) {
+//        binding.textScheduleFrom.text = selectedLamp.lampSchedule.scheduleFrom
+//        binding.textScheduleFrom.setOnClickListener {
+//            openTimePicker("Select Start Time") { selectedTime ->
+//                binding.textScheduleFrom.text = selectedTime
+//                homeViewModel.updateScheduleFrom(selectedTime)
+//            }
+//        }
+//    }
+
     @SuppressLint("SetTextI18n")
-    private fun openTimePicker(callback: (String) -> Unit) {
+    private fun openTimePicker(isTime: String, callback: (String) -> Unit) {
         val isSystem24Hour = is24HourFormat(requireContext())
         val clockFormat = if (isSystem24Hour) TimeFormat.CLOCK_24H else TimeFormat.CLOCK_12H
         val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
