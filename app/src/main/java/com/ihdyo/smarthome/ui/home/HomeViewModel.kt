@@ -52,6 +52,9 @@ class HomeViewModel(private val repository: SmartHomeRepository) : ViewModel() {
     private val _lampIsPowerOnLiveData = MutableLiveData<Boolean>()
     val lampIsPowerOnLiveData: LiveData<Boolean> get() = _lampIsPowerOnLiveData
 
+    private val _lampSelectedModeLiveData = MutableLiveData<String>()
+    val lampSelectedModeLiveData: LiveData<String> get() = _lampSelectedModeLiveData
+
 
 
     fun setSelectedRoom(room: RoomModel, documentId: String?) {
@@ -158,6 +161,17 @@ class HomeViewModel(private val repository: SmartHomeRepository) : ViewModel() {
                 _lampIsPowerOnLiveData.postValue(isPowerOn)
             } catch (e: Exception) {
                 Log.e(TAG, "Error updating switch power: $e")
+            }
+        }
+    }
+
+    fun updateLampSelectedMode(userId: String, roomId: String, lampId: String, selectedMode: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                repository.putLampSelectedMode(userId, roomId, lampId, selectedMode)
+                _lampSelectedModeLiveData.postValue(selectedMode)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error updating selected mode: $e")
             }
         }
     }
