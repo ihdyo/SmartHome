@@ -169,12 +169,39 @@ class HomeFragment : Fragment() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun updateOtherProperties2(selectedLamp: LampModel) {
+        // Power Consumed
+        homeViewModel.powerConsumedLiveData.observe(viewLifecycleOwner) { powerConsumedMap ->
+            val powerConsumed = powerConsumedMap[selectedLamp.LID]
+            val formattedText = "${powerConsumed}Wh"
+            binding.textPowerConsumed.text = formattedText
+        }
+
+        homeViewModel.totalPowerConsumedLiveData.observe(viewLifecycleOwner) { totalPowerConsumedMap ->
+            val formattedText = "${totalPowerConsumedMap}Wh"
+            binding.textTotalPowerConsumed.text = formattedText
+        }
+
+
 
     }
 
     @SuppressLint("SetTextI18n", "SimpleDateFormat")
     private fun updateOtherProperties(selectedRoom: RoomModel) {
+
+        // Observe lamps data
+        homeViewModel.lampsLiveData.observe(viewLifecycleOwner) { lamps ->
+            if (lamps != null) {
+                recyclerViewInit2(lamps)
+            }
+        }
+
+        // Fetch lamps data
+        homeViewModel.fetchLamps(UID, selectedRoom.RID.toString())
+
+
+
         // Room Name
         val roomName = selectedRoom.roomName
         binding.textRoom.text = roomName
@@ -191,21 +218,14 @@ class HomeFragment : Fragment() {
             memoryCachePolicy(CachePolicy.ENABLED)
         }
 
-
-        // Observe lamps data
-        homeViewModel.lampsLiveData.observe(viewLifecycleOwner) { lamps ->
-            if (lamps != null) {
-                recyclerViewInit2(lamps)
-            }
-        }
-
-        // Fetch lamps data
-        homeViewModel.fetchLamps(UID, selectedRoom.RID.toString())
-
-
-//        // Power Used
-//        homeViewModel.powerConsumed.observe(viewLifecycleOwner) { powerConsumed ->
+//        // Power Consumed
+//        homeViewModel.powerConsumedLiveData.observe(viewLifecycleOwner) { powerConsumed ->
+//            binding.textPowerConsumed.text = powerConsumed.toString()
 //        }
+
+
+
+
 //
 //        // Mode State
 //        binding.toggleMode.addOnButtonCheckedListener { _, checkedId, _ ->

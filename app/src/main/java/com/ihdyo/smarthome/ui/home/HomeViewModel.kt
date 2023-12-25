@@ -25,32 +25,32 @@ class HomeViewModel(private val repository: SmartHomeRepository) : ViewModel() {
 
 
 
-    private val _mode = MutableLiveData<String>()
-    val mode: LiveData<String> get() = _mode
-
-    private val _selectedMode = MutableLiveData<Int>()
-    val selectedMode: LiveData<Int> get() = _selectedMode
-
-
-
-    private val _powerConsumed = MutableLiveData<String>()
-    val powerConsumed: LiveData<String> get() = _powerConsumed
-
-    private val _totalPowerConsumed = MutableLiveData<String>()
-    val totalPowerConsumed: LiveData<String> get() = _totalPowerConsumed
-
-
-
-    private val _isPowerOn = MutableLiveData<Boolean>()
-    val isPowerOn: LiveData<Boolean> get() = _isPowerOn
-
-
-
-    private val _scheduleFrom = MutableLiveData<String>()
-    val scheduleFrom: LiveData<String> get() = _scheduleFrom
-
-    private val _scheduleTo = MutableLiveData<String>()
-    val scheduleTo: LiveData<String> get() = _scheduleTo
+//    private val _mode = MutableLiveData<String>()
+//    val mode: LiveData<String> get() = _mode
+//
+//    private val _selectedMode = MutableLiveData<Int>()
+//    val selectedMode: LiveData<Int> get() = _selectedMode
+//
+//
+//
+//    private val _powerConsumed = MutableLiveData<String>()
+//    val powerConsumed: LiveData<String> get() = _powerConsumed
+//
+//    private val _totalPowerConsumed = MutableLiveData<String>()
+//    val totalPowerConsumed: LiveData<String> get() = _totalPowerConsumed
+//
+//
+//
+//    private val _isPowerOn = MutableLiveData<Boolean>()
+//    val isPowerOn: LiveData<Boolean> get() = _isPowerOn
+//
+//
+//
+//    private val _scheduleFrom = MutableLiveData<String>()
+//    val scheduleFrom: LiveData<String> get() = _scheduleFrom
+//
+//    private val _scheduleTo = MutableLiveData<String>()
+//    val scheduleTo: LiveData<String> get() = _scheduleTo
 
 
 
@@ -98,8 +98,8 @@ class HomeViewModel(private val repository: SmartHomeRepository) : ViewModel() {
 
 
 
-    private val _powerConsumedLiveData = MutableLiveData<Int>()
-    val powerConsumedLiveData: LiveData<Int> get() = _powerConsumedLiveData
+    private val _powerConsumedLiveData = MutableLiveData<Map<String, Int>>()
+    val powerConsumedLiveData: LiveData<Map<String, Int>> get() = _powerConsumedLiveData
 
     private val _totalPowerConsumedLiveData = MutableLiveData<Int>()
     val totalPowerConsumedLiveData: LiveData<Int> get() = _totalPowerConsumedLiveData
@@ -136,6 +136,7 @@ class HomeViewModel(private val repository: SmartHomeRepository) : ViewModel() {
             try {
                 val rooms = repository.getRooms(userId)
                 _roomsLiveData.postValue(rooms)
+
             } catch (e: Exception) {
                 Log.e(TAG, "Error fetching rooms: $e")
             }
@@ -147,6 +148,13 @@ class HomeViewModel(private val repository: SmartHomeRepository) : ViewModel() {
             try {
                 val lamps = repository.getLamps(userId, roomId)
                 _lampsLiveData.postValue(lamps)
+
+                val powerConsumedMap = fetchPowerConsumed(lamps)
+                _powerConsumedLiveData.postValue(powerConsumedMap)
+
+                val totalPowerConsumedMap = fetchTotalPowerConsumed(powerConsumedMap)
+                _totalPowerConsumedLiveData.postValue(totalPowerConsumedMap)
+
             } catch (e: Exception) {
                 Log.e(TAG, "Error fetching lamps: $e")
             }
@@ -239,19 +247,42 @@ class HomeViewModel(private val repository: SmartHomeRepository) : ViewModel() {
 
 
 
-    fun fetchPowerConsumed(userId: String, roomId: String, lampId: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val runtime = _lampRuntimeLiveData.value ?: 0
-                val wattPower = _lampWattPowerLiveData.value ?: 0
 
-                val powerConsumed = (runtime.div(60).div(60)).times(wattPower)
-                _powerConsumedLiveData.postValue(powerConsumed)
-            } catch (e: Exception) {
-                Log.e(TAG, "Error fetching powerConsumed: $e")
+
+    private fun fetchPowerConsumed(lamps: List<LampModel>): Map<String, Int> {
+        val powerConsumedMap = mutableMapOf<String, Int>()
+
+        try {
+            for (lamp in lamps) {
+                val powerConsumed = (lamp.lampRuntime.div(3600)).times(lamp.lampWattPower)
+                powerConsumedMap[lamp.LID.orEmpty()] = powerConsumed
             }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error calculating power consumption: $e")
         }
+
+        return powerConsumedMap
     }
+
+    private fun fetchTotalPowerConsumed(powerConsumedMap: Map<String, Int>): Int {
+        var totalPowerConsumed = 0
+
+        try {
+            totalPowerConsumed = powerConsumedMap.values.sum()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error calculating total power consumption: $e")
+        }
+
+        return totalPowerConsumed
+    }
+
+
+
+
+
+
+
+
 
 //    fun fetchSelectedMode(userId: String, roomId: String, lampId: String, selectedIndex: Int) {
 //        viewModelScope.launch(Dispatchers.IO) {
