@@ -31,6 +31,16 @@ class RoomAdapter(
         notifyDataSetChanged()
     }
 
+    fun setInitialSelectedIndex(index: Int) {
+        if (index >= 0 && index < items.size) {
+            activePosition = index
+            notifyItemChanged(activePosition)
+            val selectedRoom = items[activePosition]
+            onItemClickListener(selectedRoom)
+            homeViewModel.setSelectedRoom(selectedRoom)
+        }
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_room, parent, false)
         return ItemViewHolder(view)
@@ -72,7 +82,6 @@ class RoomAdapter(
         fun bind(item: RoomModel, position: Int) {
             currentPosition = position
             val isActive = position == activePosition
-            updateButtonState(isActive)
 
             iconRoom.load(item.roomIcon) {
                 placeholder(R.drawable.bx_landscape)
@@ -81,6 +90,8 @@ class RoomAdapter(
                 decoder(SvgDecoder(itemView.context))
                 memoryCachePolicy(CachePolicy.ENABLED)
             }
+
+            updateButtonState(isActive)
 
             val colorFilter = if (isActive) getThemeColor(com.google.android.material.R.attr.colorOnPrimary) else getThemeColor(com.google.android.material.R.attr.colorPrimary)
             iconRoom.imageTintList = ColorStateList.valueOf(colorFilter)

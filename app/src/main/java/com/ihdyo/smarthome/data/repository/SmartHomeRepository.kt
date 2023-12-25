@@ -7,7 +7,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.ihdyo.smarthome.data.model.LampModel
 import com.ihdyo.smarthome.data.model.RoomModel
 import com.ihdyo.smarthome.data.model.UserModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 class SmartHomeRepository() {
 
@@ -68,6 +70,27 @@ class SmartHomeRepository() {
             emptyList()
         }
     }
+
+
+    fun calculateLampPowerConsumed(lamp: LampModel): Int {
+        return lamp.lampRuntime * lamp.lampWattPower
+    }
+
+    // Calculate totalLampPowerConsumed for all documents inside the lamps collection
+    suspend fun totalLampPowerConsumed(userId: String, roomId: String): Int {
+        return withContext(Dispatchers.Default) {
+            val lamps = getLamps(userId, roomId)
+            var totalPowerConsumed = 0
+
+            for (lamp in lamps) {
+                totalPowerConsumed += calculateLampPowerConsumed(lamp)
+            }
+
+            totalPowerConsumed
+        }
+    }
+
+
 
 
 

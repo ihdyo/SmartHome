@@ -101,7 +101,7 @@ class HomeFragment : Fragment() {
         homeViewModel.fetchRooms(UID)
 
         // Fetch lamps data
-        homeViewModel.fetchLamps(UID)
+//        homeViewModel.fetchLamps(UID)
 
 
 
@@ -152,11 +152,22 @@ class HomeFragment : Fragment() {
         _binding = null
     }
 
+//    private fun recyclerViewInit(rooms: List<RoomModel>) {
+//        if (!::roomAdapter.isInitialized) {
+//            roomAdapter = RoomAdapter(rooms, { selectedRoom -> updateOtherProperties(selectedRoom) }, homeViewModel)
+//            binding.rvIconRoom.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+//            binding.rvIconRoom.adapter = roomAdapter
+//        } else {
+//            roomAdapter.setItems(rooms)
+//        }
+//    }
+
     private fun recyclerViewInit(rooms: List<RoomModel>) {
         if (!::roomAdapter.isInitialized) {
             roomAdapter = RoomAdapter(rooms, { selectedRoom -> updateOtherProperties(selectedRoom) }, homeViewModel)
             binding.rvIconRoom.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             binding.rvIconRoom.adapter = roomAdapter
+            roomAdapter.setInitialSelectedIndex(0)
         } else {
             roomAdapter.setItems(rooms)
         }

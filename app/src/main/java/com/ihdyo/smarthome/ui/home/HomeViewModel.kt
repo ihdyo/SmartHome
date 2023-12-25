@@ -124,20 +124,9 @@ class HomeViewModel(private val repository: SmartHomeRepository) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val user = repository.getUser(userId)
-                userLiveData.postValue(user)
+                _userLiveData.postValue(user)
             } catch (e: Exception) {
                 Log.e(TAG, "Error fetching user: $e")
-            }
-        }
-    }
-
-    fun fetchLamps(userId: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val rooms = repository.getRooms(userId)
-                roomsLiveData.postValue(rooms)
-            } catch (e: Exception) {
-                Log.e(TAG, "Error fetching rooms: $e")
             }
         }
     }
@@ -146,9 +135,20 @@ class HomeViewModel(private val repository: SmartHomeRepository) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val rooms = repository.getRooms(userId)
-                roomsLiveData.postValue(rooms)
+                _roomsLiveData.postValue(rooms)
             } catch (e: Exception) {
                 Log.e(TAG, "Error fetching rooms: $e")
+            }
+        }
+    }
+
+    fun fetchLamps(userId: String, lampId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val lamps = repository.getLamps(userId, lampId)
+                _lampsLiveData.postValue(lamps)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error fetching lamps: $e")
             }
         }
     }

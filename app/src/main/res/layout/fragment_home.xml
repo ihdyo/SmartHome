@@ -179,6 +179,19 @@
             app:layout_constraintEnd_toEndOf="@+id/text_room_decoration"
             app:layout_constraintTop_toTopOf="@+id/text_room_decoration" />
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_icon_lamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            app:layout_constraintEnd_toEndOf="@+id/text_room_decoration"
+            app:layout_constraintTop_toBottomOf="@+id/text_room_decoration"
+            tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/item_lamp"
+            tools:orientation="horizontal" />
+
         <com.google.android.material.slider.Slider
             android:layout_width="@dimen/switch_width"
             android:layout_height="wrap_content"
