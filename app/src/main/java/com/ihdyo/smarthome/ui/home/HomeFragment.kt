@@ -7,6 +7,7 @@ import android.annotation.SuppressLint
 import android.content.ContentValues.TAG
 import android.content.pm.PackageManager
 import android.location.Geocoder
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.text.format.DateFormat.is24HourFormat
@@ -17,6 +18,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.ImageView
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -37,11 +39,15 @@ import com.ihdyo.smarthome.data.repository.SmartHomeRepository
 import com.ihdyo.smarthome.databinding.FragmentHomeBinding
 import kotlinx.coroutines.launch
 import java.io.IOException
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
 import kotlin.math.pow
 import kotlin.math.sqrt
 
+@RequiresApi(Build.VERSION_CODES.O)
 class HomeFragment : Fragment() {
 
     companion object {
@@ -208,9 +214,8 @@ class HomeFragment : Fragment() {
 
         // Lamp Selected Mode
         homeViewModel.lampSelectedModeLiveData.observe(viewLifecycleOwner) { selectedMode ->
-            getButtonState(selectedMode)
+            getButtonState(selectedRoom, selectedLamp, selectedMode)
         }
-
         binding.buttonAutomatic.setOnClickListener {
             homeViewModel.updateLampSelectedMode(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), "automatic")
         }
@@ -317,10 +322,40 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun getButtonState(selectedMode: String) {
+    private fun updatePowerStateIfInSchedule(selectedRoom: RoomModel, selectedLamp: LampModel, scheduleFrom: String, scheduleTo: String) {
+        val currentTime = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("HH:mm")
+
+        val scheduleFromDateTime = LocalDateTime.of(currentTime.toLocalDate(), LocalTime.parse(scheduleFrom, formatter))
+        val scheduleToDateTime = LocalDateTime.of(
+            if (LocalTime.parse(scheduleTo, formatter).isBefore(LocalTime.parse(scheduleFrom, formatter))) {
+                currentTime.toLocalDate().plusDays(1)
+            } else {
+                currentTime.toLocalDate()
+            },
+            LocalTime.parse(scheduleTo, formatter)
+        )
+
+        if (currentTime.isAfter(scheduleFromDateTime) && currentTime.isBefore(scheduleToDateTime)) {
+            binding.switchPower.setOnCheckedChangeListener { _, isChecked ->
+                selectedLamp.lampIsPowerOn = isChecked
+                homeViewModel.updateLampIsPowerOn(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), isChecked)
+            }
+            homeViewModel.updateLampIsPowerOn(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), true)
+        } else {
+            binding.switchPower.setOnCheckedChangeListener { _, isChecked ->
+                selectedLamp.lampIsPowerOn = isChecked
+                homeViewModel.updateLampIsPowerOn(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), isChecked)
+            }
+            homeViewModel.updateLampIsPowerOn(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), false)
+        }
+    }
+
+    private fun getButtonState(selectedRoom: RoomModel, selectedLamp: LampModel, selectedMode: String) {
         binding.toggleMode.let { toggleGroup ->
             when (selectedMode) {
                 "automatic" -> {
+                    homeViewModel.updateLampIsAutomaticOn(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), true)
                     toggleGroup.check(R.id.button_automatic)
                     binding.switchPower.isEnabled = false
                     binding.textFrom.alpha = 0.5F
@@ -329,6 +364,10 @@ class HomeFragment : Fragment() {
                     binding.textScheduleTo.isEnabled = false
                 }
                 "schedule" -> {
+                    homeViewModel.updateLampIsAutomaticOn(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), false)
+                    homeViewModel.lampScheduleLiveData.observe(viewLifecycleOwner) { schedule ->
+                        updatePowerStateIfInSchedule(selectedRoom, selectedLamp, schedule.scheduleFrom!!, schedule.scheduleTo!!)
+                    }
                     toggleGroup.check(R.id.button_schedule)
                     binding.switchPower.isEnabled = false
                     binding.textFrom.alpha = 1F
@@ -337,6 +376,7 @@ class HomeFragment : Fragment() {
                     binding.textScheduleTo.isEnabled = true
                 }
                 "manual" -> {
+                    homeViewModel.updateLampIsAutomaticOn(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), false)
                     toggleGroup.check(R.id.button_manual)
                     binding.switchPower.isEnabled = true
                     binding.textFrom.alpha = 0.5F

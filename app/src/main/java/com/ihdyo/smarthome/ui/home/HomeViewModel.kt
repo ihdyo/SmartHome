@@ -50,6 +50,9 @@ class HomeViewModel(private val repository: SmartHomeRepository) : ViewModel() {
     private val _lampBrightnessLiveData = MutableLiveData<Int>()
     val lampBrightnessLiveData: LiveData<Int> get() = _lampBrightnessLiveData
 
+    private val _lampIsAutomaticOnLiveData = MutableLiveData<Boolean>()
+    val lampIsAutomaticOnLiveData: LiveData<Boolean> get() = _lampIsAutomaticOnLiveData
+
     private val _lampIsPowerOnLiveData = MutableLiveData<Boolean>()
     val lampIsPowerOnLiveData: LiveData<Boolean> get() = _lampIsPowerOnLiveData
 
@@ -209,6 +212,17 @@ class HomeViewModel(private val repository: SmartHomeRepository) : ViewModel() {
                 _lampBrightnessLiveData.postValue(brightness)
             } catch (e: Exception) {
                 Log.e(TAG, "Error updating lamp brightness: $e")
+            }
+        }
+    }
+
+    fun updateLampIsAutomaticOn(userId: String, roomId: String, lampId: String, isAutomaticOn: Boolean) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                repository.putLampIsAutomaticOn(userId, roomId, lampId, isAutomaticOn)
+                _lampIsAutomaticOnLiveData.postValue(isAutomaticOn)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error set mode to automatic: $e")
             }
         }
     }

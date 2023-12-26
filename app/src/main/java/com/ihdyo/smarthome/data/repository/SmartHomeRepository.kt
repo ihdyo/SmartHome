@@ -95,7 +95,6 @@ class SmartHomeRepository() {
         updateLampField(userId, roomId, lampId, "lampSchedule", scheduleMap)
     }
 
-
     fun putLampSelectedMode(userId: String, roomId: String, lampId: String, selectedMode: String) {
         updateLampField(userId, roomId, lampId, "lampSelectedMode", selectedMode)
     }
