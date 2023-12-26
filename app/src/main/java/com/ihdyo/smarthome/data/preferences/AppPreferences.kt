@@ -2,17 +2,17 @@ package com.ihdyo.smarthome.data.preferences
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.ihdyo.smarthome.utils.Const.DARK_THEME
+import com.ihdyo.smarthome.utils.Const.LIGHT_THEME
+import com.ihdyo.smarthome.utils.Const.SYSTEM_DEFAULT_THEME
+import com.ihdyo.smarthome.utils.Const.USED_THEME
 
 class AppPreferences(context: Context) {
-    private val sharedPreferences: SharedPreferences =
-        context.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
 
-    companion object {
-        const val USED_THEME = "used_theme"
-        const val LIGHT_THEME = "light_theme"
-        const val DARK_THEME = "dark_theme"
-        const val SYSTEM_DEFAULT_THEME = "system_default_theme"
-    }
+    private val sharedPreferences: SharedPreferences = context.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+
+
+    // ========================= THEMES ========================= //
 
     enum class ThemeMode {
         LIGHT, DARK, SYSTEM_DEFAULT
@@ -35,4 +35,5 @@ class AppPreferences(context: Context) {
             }
             sharedPreferences.edit().putString(USED_THEME, themeToSave).apply()
         }
+
 }

@@ -9,18 +9,11 @@ import com.ihdyo.smarthome.data.model.LampModel
 import com.ihdyo.smarthome.data.model.LampSchedule
 import com.ihdyo.smarthome.data.model.RoomModel
 import com.ihdyo.smarthome.data.model.UserModel
-import com.ihdyo.smarthome.data.repository.SmartHomeRepository
-import kotlinx.coroutines.CoroutineScope
+import com.ihdyo.smarthome.data.repository.MainRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class HomeViewModel(private val repository: SmartHomeRepository) : ViewModel() {
-
-    companion object {
-        const val TAG = "HomeViewModel"
-    }
-
-
+class HomeViewModel(private val repository: MainRepository) : ViewModel() {
 
     private val _selectedRoom = MutableLiveData<Pair<RoomModel, String?>>()
     val selectedRoom: LiveData<Pair<RoomModel, String?>> get() = _selectedRoom
@@ -39,7 +32,6 @@ class HomeViewModel(private val repository: SmartHomeRepository) : ViewModel() {
     val lampsLiveData: MutableLiveData<List<LampModel>?> get() = _lampsLiveData
 
 
-
     private val _powerConsumedLiveData = MutableLiveData<Map<String, Int>>()
     val powerConsumedLiveData: LiveData<Map<String, Int>> get() = _powerConsumedLiveData
 
@@ -56,13 +48,14 @@ class HomeViewModel(private val repository: SmartHomeRepository) : ViewModel() {
     private val _lampIsPowerOnLiveData = MutableLiveData<Boolean>()
     val lampIsPowerOnLiveData: LiveData<Boolean> get() = _lampIsPowerOnLiveData
 
-    private val _lampSelectedModeLiveData = MutableLiveData<String>()
-    val lampSelectedModeLiveData: LiveData<String> get() = _lampSelectedModeLiveData
-
     private val _lampScheduleLiveData = MutableLiveData<LampSchedule>()
     val lampScheduleLiveData: LiveData<LampSchedule> get() = _lampScheduleLiveData
 
+    private val _lampSelectedModeLiveData = MutableLiveData<String>()
+    val lampSelectedModeLiveData: LiveData<String> get() = _lampSelectedModeLiveData
 
+
+    // ========================= SET OPERATOR ========================= //
 
     fun setSelectedRoom(room: RoomModel, documentId: String?) {
         viewModelScope.launch {
@@ -77,6 +70,7 @@ class HomeViewModel(private val repository: SmartHomeRepository) : ViewModel() {
     }
 
 
+    // ========================= FETCH OPERATOR ========================= //
 
     fun fetchUser(userId: String) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -114,65 +108,23 @@ class HomeViewModel(private val repository: SmartHomeRepository) : ViewModel() {
                 _totalPowerConsumedLiveData.postValue(totalPowerConsumedMap)
 
 
-
                 val lampBrightness = fetchLampBrightness(lamps)
                 _lampBrightnessLiveData.postValue(lampBrightness)
 
                 val lampIsPowerOn = fetchLampIsPowerOn(lamps)
                 _lampIsPowerOnLiveData.postValue(lampIsPowerOn)
 
-                val lampSelectedMode = fetchLampSelectedMode(lamps)
-                _lampSelectedModeLiveData.postValue(lampSelectedMode)
-
                 val lampSchedule = fetchLampSchedule(lamps)
                 _lampScheduleLiveData.postValue(lampSchedule)
+
+                val lampSelectedMode = fetchLampSelectedMode(lamps)
+                _lampSelectedModeLiveData.postValue(lampSelectedMode)
 
             } catch (e: Exception) {
                 Log.e(TAG, "Error fetching lamps: $e")
             }
         }
     }
-
-    private fun fetchLampSchedule(lamps: List<LampModel>): LampSchedule {
-        return try {
-            lamps.firstOrNull()?.lampSchedule ?: LampSchedule("", "")
-        } catch (e: Exception) {
-            Log.e(TAG, "Error fetching lamp schedule: $e")
-            LampSchedule("", "")
-        }
-    }
-
-    private fun fetchLampSelectedMode(lamps: List<LampModel>): String {
-        return try {
-            lamps.firstOrNull()?.lampSelectedMode ?: "manual"
-        } catch (e: Exception) {
-            Log.e(TAG, "Error fetching lamp selected mode: $e")
-            "manual"
-        }
-    }
-
-    private fun fetchLampIsPowerOn(lamps: List<LampModel>): Boolean {
-        return try {
-            lamps.firstOrNull()?.lampIsPowerOn ?: false
-        } catch (e: Exception) {
-            Log.e(TAG, "Error fetching lamp power state: $e")
-            false
-        }
-    }
-
-    private fun fetchLampBrightness(lamps: List<LampModel>): Int {
-        return try {
-            lamps.firstOrNull()?.lampBrightness ?: 0
-        } catch (e: Exception) {
-            Log.e(TAG, "Error fetching lamp brightness: $e")
-            0
-        }
-    }
-
-
-
-
-
 
     private fun fetchPowerConsumed(lamps: List<LampModel>): Map<String, Int> {
         val powerConsumedMap = mutableMapOf<String, Int>()
@@ -202,8 +154,44 @@ class HomeViewModel(private val repository: SmartHomeRepository) : ViewModel() {
     }
 
 
+    private fun fetchLampBrightness(lamps: List<LampModel>): Int {
+        return try {
+            lamps.firstOrNull()?.lampBrightness ?: 0
+        } catch (e: Exception) {
+            Log.e(TAG, "Error fetching lamp brightness: $e")
+            0
+        }
+    }
+
+    private fun fetchLampIsPowerOn(lamps: List<LampModel>): Boolean {
+        return try {
+            lamps.firstOrNull()?.lampIsPowerOn ?: false
+        } catch (e: Exception) {
+            Log.e(TAG, "Error fetching lamp power state: $e")
+            false
+        }
+    }
+
+    private fun fetchLampSchedule(lamps: List<LampModel>): LampSchedule {
+        return try {
+            lamps.firstOrNull()?.lampSchedule ?: LampSchedule("", "")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error fetching lamp schedule: $e")
+            LampSchedule("", "")
+        }
+    }
+
+    private fun fetchLampSelectedMode(lamps: List<LampModel>): String {
+        return try {
+            lamps.firstOrNull()?.lampSelectedMode ?: "manual"
+        } catch (e: Exception) {
+            Log.e(TAG, "Error fetching lamp selected mode: $e")
+            "manual"
+        }
+    }
 
 
+    // ========================= UPDATE OPERATOR ========================= //
 
     fun updateLampBrightness(userId: String, roomId: String, lampId: String, brightness: Int) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -238,17 +226,6 @@ class HomeViewModel(private val repository: SmartHomeRepository) : ViewModel() {
         }
     }
 
-    fun updateLampSelectedMode(userId: String, roomId: String, lampId: String, selectedMode: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                repository.putLampSelectedMode(userId, roomId, lampId, selectedMode)
-                _lampSelectedModeLiveData.postValue(selectedMode)
-            } catch (e: Exception) {
-                Log.e(TAG, "Error updating selected mode: $e")
-            }
-        }
-    }
-
     fun updateLampSchedule(userId: String, roomId: String, lampId: String, newSchedule: LampSchedule) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -260,250 +237,19 @@ class HomeViewModel(private val repository: SmartHomeRepository) : ViewModel() {
         }
     }
 
+    fun updateLampSelectedMode(userId: String, roomId: String, lampId: String, selectedMode: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                repository.putLampSelectedMode(userId, roomId, lampId, selectedMode)
+                _lampSelectedModeLiveData.postValue(selectedMode)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error updating selected mode: $e")
+            }
+        }
+    }
 
+    companion object {
+        const val TAG = "HomeViewModel"
+    }
 
-
-
-
-
-//    fun fetchSelectedMode(userId: String, roomId: String, lampId: String, selectedIndex: Int) {
-//        viewModelScope.launch(Dispatchers.IO) {
-//            try {
-//                val selectedMode = when (selectedIndex) {
-//                    0 -> "automatic"
-//                    1 -> "schedule"
-//                    2 -> "manual"
-//                    else -> throw IllegalArgumentException("Invalid index: $selectedIndex")
-//                }
-//
-//                // Update lamp selectedMode
-//                repository.updateLampSelectedMode(userId, roomId, lampId, selectedMode)
-//
-//                // Update lampIsAutomatic based on selectedMode
-//                val lampIsAutomatic = when (selectedMode) {
-//                    "automatic" -> true
-//                    else -> false
-//                }
-//                repository.updateLampIsAutomatic(userId, roomId, lampId, lampIsAutomatic)
-//            } catch (e: Exception) {
-//                Log.e(TAG, "Error updating lamp selected mode: $e")
-//            }
-//        }
-//    }
-
-
-
-
-
-
-
-
-
-
-
-
-//    @SuppressLint("NullSafeMutableLiveData")
-//    fun fetchLampDetails(): LiveData<List<LampModel>> {
-//        viewModelScope.launch {
-//            try {
-//                val lamps = smartHomeRepository.getLamps()
-//                _lampDetails.postValue(lamps)
-//            } catch (exception: Exception) {
-//                Log.e(this.javaClass.simpleName, "Error fetching lamp details", exception)
-//            }
-//        }
-//        return _lampDetails
-//    }
-//
-//    fun setSelectedLamp(lamp: LampModel) {
-//        viewModelScope.launch {
-//            _selectedLamp.postValue(lamp)
-//        }
-//    }
-//
-//    // ========================== POWER CONSUMED =========================== //
-//
-//    fun fetchPowerConsumed(lamp: LampModel) {
-//        viewModelScope.launch {
-//            smartHomeRepository.getLampRuntime(lamp) { lampRuntime ->
-//                if (lampRuntime != null) {
-//                    try {
-//                        Log.d(TAG, "Successfully fetched power consumed: $lampRuntime")
-//
-//                        val runtimeHours = lampRuntime.div(60).div(60)
-//                        val powerConsumed = (WATT_POWER * runtimeHours).toString()
-//
-//                        _powerConsumed.postValue("${powerConsumed}Wh")
-//                    } catch (exception: Exception) {
-//                        Log.e(this.javaClass.simpleName, "Error calculating power consumed", exception)
-//                    }
-//                } else {
-//                    Log.e(TAG, "Error fetching power consumed: lampRuntime is null.")
-//                }
-//            }
-//        }
-//    }
-//
-//    fun fetchTotalPowerConsumed() {
-//        viewModelScope.launch {
-//            try {
-//                Log.d(TAG, "Successfully calculated total power consumed: $totalPowerConsumed")
-//
-//                smartHomeRepository.getTotalLampRuntime { totalLampRuntime ->
-//                    val totalLampRuntimeHours = totalLampRuntime?.div(60)?.div(60) ?: 0
-//                    val totalPowerConsumed = (WATT_POWER * totalLampRuntimeHours).toString()
-//
-//                    _totalPowerConsumed.postValue("${totalPowerConsumed}Wh")
-//                }
-//            } catch (exception: Exception) {
-//                Log.e(this.javaClass.simpleName, "Error calculating totalLampRuntime", exception)
-//            }
-//        }
-//    }
-//
-//    // ========================== SELECTED MODE =========================== //
-//
-//    fun fetchSelectedMode(lamp: LampModel) {
-//        viewModelScope.launch {
-//            smartHomeRepository.getMode(lamp) { mode ->
-//                if (mode != null) {
-//                    Log.d(TAG, "Successfully fetched selected mode: $mode")
-//                    _mode.postValue(mode)
-//                    _selectedMode.postValue(mapSelectedModeToCheckedId(mode))
-//                } else {
-//                    Log.e(TAG, "Error fetching selected mode: mode is null.")
-//                }
-//            }
-//        }
-//    }
-//
-//    fun updateSelectedMode(checkedId: Int) {
-//        viewModelScope.launch {
-//            try {
-//                selectedLamp.value?.let { selectedLamp ->
-//                    updateLampProperties(selectedLamp, checkedId)
-//                    smartHomeRepository.putMode(selectedLamp)
-//                    _selectedMode.postValue(checkedId)
-//                }
-//            } catch (e: Exception) {
-//                Log.e(this.javaClass.simpleName, "Error updating mode", e)
-//            }
-//        }
-//    }
-//
-//    private fun mapSelectedModeToCheckedId(mode: String): Int {
-//        return when (mode) {
-//            "automatic" -> R.id.button_automatic
-//            "schedule" -> R.id.button_schedule
-//            "manual" -> R.id.button_manual
-//            else -> R.id.button_manual
-//        }
-//    }
-//
-//    private fun updateLampProperties(lamp: LampModel, checkedId: Int) {
-//        when (checkedId) {
-//            R.id.button_automatic -> {
-//                lamp.mode = "automatic"
-//                lamp.isAutomaticOn = true
-//                lamp.isScheduleOn = false
-//            }
-//            R.id.button_schedule -> {
-//                lamp.mode = "schedule"
-//                lamp.isAutomaticOn = false
-//                lamp.isScheduleOn = true
-//            }
-//            R.id.button_manual -> {
-//                lamp.mode = "manual"
-//                lamp.isAutomaticOn = false
-//                lamp.isScheduleOn = false
-//            }
-//            else -> {
-//                lamp.mode = "manual"
-//                lamp.isAutomaticOn = false
-//                lamp.isScheduleOn = false
-//            }
-//        }
-//    }
-//
-//    // ========================== POWER STATE =========================== //
-//
-//    fun fetchPowerState(lamp: LampModel) {
-//        viewModelScope.launch {
-//            smartHomeRepository.getIsPowerOn(lamp) { isPowerOn ->
-//                if (isPowerOn != null) {
-//                    Log.d(TAG, "Successfully fetched power state: $isPowerOn")
-//                    _isPowerOn.postValue(isPowerOn)
-//                } else {
-//                    Log.e(TAG, "Error fetching power state: isPowerOn is null.")
-//                }
-//            }
-//        }
-//    }
-//
-//    fun updatePowerState(isChecked: Boolean) {
-//        viewModelScope.launch {
-//            try {
-//                selectedLamp.value?.let { selectedLamp ->
-//                    smartHomeRepository.putIsPowerOn(selectedLamp)
-//                    _isPowerOn.postValue(isChecked)
-//                }
-//            } catch (e: Exception) {
-//                Log.e(this.javaClass.simpleName, "Error updating power state", e)
-//            }
-//        }
-//    }
-//
-//    // =========================== SCHEDULE =========================== //
-//
-//    fun fetchScheduleStartTime(lamp: LampModel) {
-//        viewModelScope.launch {
-//            smartHomeRepository.getScheduleFrom(lamp) { scheduleFrom ->
-//                if (scheduleFrom != null) {
-//                    Log.d(TAG, "Successfully fetched schedule start time: $scheduleFrom")
-//                    _scheduleFrom.postValue(scheduleFrom)
-//                } else {
-//                    Log.e(TAG, "Error fetching schedule start time: scheduleFrom is null.")
-//                }
-//            }
-//        }
-//    }
-//
-//    fun fetchScheduleFinishTime(lamp: LampModel) {
-//        viewModelScope.launch {
-//            smartHomeRepository.getScheduleTo(lamp) { scheduleTo ->
-//                if (scheduleTo != null) {
-//                    Log.d(TAG, "Successfully fetched schedule finish time: $scheduleTo")
-//                    _scheduleTo.postValue(scheduleTo)
-//                } else {
-//                    Log.e(TAG, "Error fetching schedule finish time: scheduleTo time is null.")
-//                }
-//            }
-//        }
-//    }
-//
-//    fun updateScheduleStartTime(scheduleFrom: String) {
-//        viewModelScope.launch {
-//            try {
-//                selectedLamp.value?.let { selectedLamp ->
-//                    smartHomeRepository.putScheduleFrom(selectedLamp)
-//                    _scheduleFrom.postValue(scheduleFrom)
-//                }
-//            } catch (e: Exception) {
-//                Log.e(this.javaClass.simpleName, "Error updating schedule start time", e)
-//            }
-//        }
-//    }
-//
-//    fun updateScheduleFinishTime(scheduleTo: String) {
-//        viewModelScope.launch {
-//            try {
-//                selectedLamp.value?.let { selectedLamp ->
-//                    smartHomeRepository.putScheduleTo(selectedLamp)
-//                    _scheduleTo.postValue(scheduleTo)
-//                }
-//            } catch (e: Exception) {
-//                Log.e(this.javaClass.simpleName, "Error updating schedule finish time", e)
-//            }
-//        }
-//    }
 }
