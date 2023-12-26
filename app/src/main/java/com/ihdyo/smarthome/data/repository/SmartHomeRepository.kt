@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.firestore.FirebaseFirestore
 import com.ihdyo.smarthome.data.model.LampModel
+import com.ihdyo.smarthome.data.model.LampSchedule
 import com.ihdyo.smarthome.data.model.RoomModel
 import com.ihdyo.smarthome.data.model.UserModel
 import kotlinx.coroutines.Dispatchers
@@ -86,9 +87,14 @@ class SmartHomeRepository() {
         updateLampField(userId, roomId, lampId, "lampIsPowerOn", isPowerOn)
     }
 
-//    fun putLampSchedule(userId: String, roomId: String, lampId: String, lampSchedule: String) {
-//        updateLampField(userId, roomId, lampId, "lampSchedule", lampSchedule)
-//    }
+    fun putLampSchedule(userId: String, roomId: String, lampId: String, lampSchedule: LampSchedule) {
+        val scheduleMap = mapOf(
+            "scheduleFrom" to lampSchedule.scheduleFrom,
+            "scheduleTo" to lampSchedule.scheduleTo
+        )
+        updateLampField(userId, roomId, lampId, "lampSchedule", scheduleMap)
+    }
+
 
     fun putLampSelectedMode(userId: String, roomId: String, lampId: String, selectedMode: String) {
         updateLampField(userId, roomId, lampId, "lampSelectedMode", selectedMode)

@@ -189,7 +189,6 @@ class HomeFragment : Fragment() {
         homeViewModel.lampBrightnessLiveData.observe(viewLifecycleOwner) { brightness ->
             binding.sliderLampBrightness.value = brightness.toFloat()
         }
-
         binding.sliderLampBrightness.addOnChangeListener { _, value, fromUser ->
             if (fromUser) {
                 homeViewModel.updateLampBrightness(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), value.toInt())
@@ -200,7 +199,6 @@ class HomeFragment : Fragment() {
         homeViewModel.lampIsPowerOnLiveData.observe(viewLifecycleOwner) { isPowerOn ->
             binding.switchPower.isChecked = isPowerOn
         }
-
         binding.switchPower.setOnCheckedChangeListener { _, isChecked ->
             selectedLamp.lampIsPowerOn = isChecked
             homeViewModel.updateLampIsPowerOn(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), isChecked)
@@ -222,6 +220,22 @@ class HomeFragment : Fragment() {
         }
 
         // Lamp Schedule
+        homeViewModel.lampScheduleLiveData.observe(viewLifecycleOwner) { schedule ->
+            binding.textScheduleFrom.text = schedule.scheduleFrom
+            binding.textScheduleTo.text = schedule.scheduleTo
+        }
+        binding.textScheduleFrom.setOnClickListener {
+            openTimePicker("Select Start Time") { selectedTime ->
+                val newSchedule = homeViewModel.lampScheduleLiveData.value?.copy(scheduleFrom = selectedTime)
+                newSchedule?.let { homeViewModel.updateLampSchedule(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), it) }
+            }
+        }
+        binding.textScheduleTo.setOnClickListener {
+            openTimePicker("Select Finish Time") { selectedTime ->
+                val newSchedule = homeViewModel.lampScheduleLiveData.value?.copy(scheduleTo = selectedTime)
+                newSchedule?.let { homeViewModel.updateLampSchedule(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), it) }
+            }
+        }
     }
 
     @SuppressLint("SetTextI18n", "SimpleDateFormat")
@@ -267,18 +281,8 @@ class HomeFragment : Fragment() {
         callback(greeting)
     }
 
-//    private fun setupScheduleTimeListeners(selectedLamp: LampModel) {
-//        binding.textScheduleFrom.text = selectedLamp.lampSchedule.scheduleFrom
-//        binding.textScheduleFrom.setOnClickListener {
-//            openTimePicker("Select Start Time") { selectedTime ->
-//                binding.textScheduleFrom.text = selectedTime
-//                homeViewModel.updateScheduleFrom(selectedTime)
-//            }
-//        }
-//    }
-
     @SuppressLint("SetTextI18n")
-    private fun openTimePicker(isTime: String, callback: (String) -> Unit) {
+    private fun openTimePicker(title: String, callback: (String) -> Unit) {
         val isSystem24Hour = is24HourFormat(requireContext())
         val clockFormat = if (isSystem24Hour) TimeFormat.CLOCK_24H else TimeFormat.CLOCK_12H
         val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
@@ -290,7 +294,7 @@ class HomeFragment : Fragment() {
                 .setTimeFormat(clockFormat)
                 .setHour(currentHour)
                 .setMinute(currentMinute)
-                .setTitleText(isTime)
+                .setTitleText(title)
                 .build()
         picker.show(childFragmentManager, "TAG")
 
@@ -301,8 +305,8 @@ class HomeFragment : Fragment() {
             val formattedHour = String.format("%02d", hour)
             val formattedMinute = String.format("%02d", minute)
 
-            val timePicker = "$formattedHour:$formattedMinute"
-            callback(timePicker)
+            val selectedTime = "$formattedHour:$formattedMinute"
+            callback(selectedTime)
         }
     }
 
@@ -333,32 +337,6 @@ class HomeFragment : Fragment() {
                     binding.textTo.alpha = 0.5F
                     binding.textScheduleTo.isEnabled = false
                 }
-            }
-        }
-    }
-
-    private fun updateUIForMode(checkedId: Int) {
-        when (checkedId) {
-            R.id.button_automatic -> {
-                binding.switchPower.isEnabled = false
-                binding.textFrom.alpha = 0.5F
-                binding.textScheduleFrom.isEnabled = false
-                binding.textTo.alpha = 0.5F
-                binding.textScheduleTo.isEnabled = false
-            }
-            R.id.button_schedule -> {
-                binding.switchPower.isEnabled = false
-                binding.textFrom.alpha = 1F
-                binding.textScheduleFrom.isEnabled = true
-                binding.textTo.alpha = 1F
-                binding.textScheduleTo.isEnabled = true
-            }
-            R.id.button_manual -> {
-                binding.switchPower.isEnabled = true
-                binding.textFrom.alpha = 0.5F
-                binding.textScheduleFrom.isEnabled = false
-                binding.textTo.alpha = 0.5F
-                binding.textScheduleTo.isEnabled = false
             }
         }
     }

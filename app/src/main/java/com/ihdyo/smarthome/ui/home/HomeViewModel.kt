@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ihdyo.smarthome.data.model.LampModel
+import com.ihdyo.smarthome.data.model.LampSchedule
 import com.ihdyo.smarthome.data.model.RoomModel
 import com.ihdyo.smarthome.data.model.UserModel
 import com.ihdyo.smarthome.data.repository.SmartHomeRepository
@@ -55,8 +56,8 @@ class HomeViewModel(private val repository: SmartHomeRepository) : ViewModel() {
     private val _lampSelectedModeLiveData = MutableLiveData<String>()
     val lampSelectedModeLiveData: LiveData<String> get() = _lampSelectedModeLiveData
 
-    private val _lampScheduleLiveData = MutableLiveData<Map<String, String>>()
-    val lampScheduleLiveData: LiveData<Map<String, String>> get() = _lampScheduleLiveData
+    private val _lampScheduleLiveData = MutableLiveData<LampSchedule>()
+    val lampScheduleLiveData: LiveData<LampSchedule> get() = _lampScheduleLiveData
 
 
 
@@ -114,18 +115,27 @@ class HomeViewModel(private val repository: SmartHomeRepository) : ViewModel() {
                 val lampBrightness = fetchLampBrightness(lamps)
                 _lampBrightnessLiveData.postValue(lampBrightness)
 
-                val lampisPowerOn = fetchLampIsPowerOn(lamps)
-                _lampIsPowerOnLiveData.postValue(lampisPowerOn)
+                val lampIsPowerOn = fetchLampIsPowerOn(lamps)
+                _lampIsPowerOnLiveData.postValue(lampIsPowerOn)
 
                 val lampSelectedMode = fetchLampSelectedMode(lamps)
                 _lampSelectedModeLiveData.postValue(lampSelectedMode)
 
-//                val lampSchedule = fetchLampSchedule(lamps)
-//                _lampScheduleLiveData.postValue(lampSchedule)
+                val lampSchedule = fetchLampSchedule(lamps)
+                _lampScheduleLiveData.postValue(lampSchedule)
 
             } catch (e: Exception) {
                 Log.e(TAG, "Error fetching lamps: $e")
             }
+        }
+    }
+
+    private fun fetchLampSchedule(lamps: List<LampModel>): LampSchedule {
+        return try {
+            lamps.firstOrNull()?.lampSchedule ?: LampSchedule("", "")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error fetching lamp schedule: $e")
+            LampSchedule("", "")
         }
     }
 
@@ -156,14 +166,6 @@ class HomeViewModel(private val repository: SmartHomeRepository) : ViewModel() {
         }
     }
 
-//    private fun fetchLampSchedule(lamps: List<LampModel>): Map<String, String> {
-//        try {
-//            return lamps.firstOrNull()?.lampSchedule ?: emptyMap()
-//        } catch (e: Exception) {
-//            Log.e(TAG, "Error fetching lamp schedule: $e")
-//            return emptyMap()
-//        }
-//    }
 
 
 
@@ -232,6 +234,18 @@ class HomeViewModel(private val repository: SmartHomeRepository) : ViewModel() {
             }
         }
     }
+
+    fun updateLampSchedule(userId: String, roomId: String, lampId: String, newSchedule: LampSchedule) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                repository.putLampSchedule(userId, roomId, lampId, newSchedule)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error updating lampSchedule: $e")
+            }
+        }
+    }
+
+
 
 
 
