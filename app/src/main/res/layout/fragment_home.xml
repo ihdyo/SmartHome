@@ -72,7 +72,7 @@
             android:layout_height="@dimen/room"
             android:elevation="-2dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/img_house"
+            android:src="@drawable/shape_placeholder"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"

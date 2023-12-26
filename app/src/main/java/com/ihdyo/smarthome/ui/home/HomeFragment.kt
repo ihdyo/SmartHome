@@ -280,8 +280,8 @@ class HomeFragment : Fragment() {
 
         // Room Image
         binding.imageRoom.load(selectedRoom.roomImage) {
-            placeholder(R.drawable.bx_landscape)
-            error(R.drawable.bx_error)
+            placeholder(R.drawable.shape_placeholder)
+            error(R.drawable.bx_landscape)
             crossfade(true)
             memoryCachePolicy(CachePolicy.ENABLED)
         }
@@ -451,6 +451,6 @@ class HomeFragment : Fragment() {
 
 
     private fun calculateWeight(distance: Float): Float {
-        return 1 / (1 + distance / 100)
+        return 1 / (1 + distance / 250)
     }
 }

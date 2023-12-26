@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-parcelize'
     id 'com.google.gms.google-services'
+    id 'com.google.firebase.firebase-perf'
 }
 
 android {
@@ -57,8 +58,10 @@ dependencies {
 
     // Firebase Integration
     implementation 'com.google.firebase:firebase-auth-ktx:22.3.0'
-    implementation 'com.google.firebase:firebase-database-ktx:20.3.0'
     implementation 'com.google.firebase:firebase-firestore-ktx:24.10.0'
+    implementation 'com.google.firebase:firebase-storage:20.3.0'
+    implementation 'com.google.firebase:firebase-analytics-ktx:21.5.0'
+    implementation 'com.google.firebase:firebase-perf:20.5.1'
 
     // Coil
     implementation 'io.coil-kt:coil:1.4.0'
