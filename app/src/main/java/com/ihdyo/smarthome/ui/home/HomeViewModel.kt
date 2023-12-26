@@ -239,6 +239,7 @@ class HomeViewModel(private val repository: SmartHomeRepository) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 repository.putLampSchedule(userId, roomId, lampId, newSchedule)
+                _lampScheduleLiveData.postValue(newSchedule)
             } catch (e: Exception) {
                 Log.e(TAG, "Error updating lampSchedule: $e")
             }

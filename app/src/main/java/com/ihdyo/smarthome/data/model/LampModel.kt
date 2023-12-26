@@ -10,7 +10,7 @@ data class LampModel (
     var lampIsAutomaticOn: Boolean? = false,
     var lampIsPowerOn: Boolean? = false,
     val lampRuntime: Int = 0,
-    var lampSchedule: LampSchedule = LampSchedule("", ""),
+    var lampSchedule: LampSchedule = LampSchedule(),
     var lampSelectedMode: String = "manual",
     val lampWattPower: Int = 0
 ) : Parcelable

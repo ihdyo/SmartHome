@@ -4,11 +4,13 @@ import android.Manifest
 import android.animation.ObjectAnimator
 import android.animation.TimeInterpolator
 import android.annotation.SuppressLint
+import android.content.ContentValues.TAG
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.os.Bundle
 import android.os.Handler
 import android.text.format.DateFormat.is24HourFormat
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -227,13 +229,18 @@ class HomeFragment : Fragment() {
         binding.textScheduleFrom.setOnClickListener {
             openTimePicker("Select Start Time") { selectedTime ->
                 val newSchedule = homeViewModel.lampScheduleLiveData.value?.copy(scheduleFrom = selectedTime)
-                newSchedule?.let { homeViewModel.updateLampSchedule(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), it) }
+                newSchedule?.let {
+                    homeViewModel.updateLampSchedule(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), it)
+                }
             }
         }
         binding.textScheduleTo.setOnClickListener {
             openTimePicker("Select Finish Time") { selectedTime ->
                 val newSchedule = homeViewModel.lampScheduleLiveData.value?.copy(scheduleTo = selectedTime)
-                newSchedule?.let { homeViewModel.updateLampSchedule(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), it) }
+                newSchedule?.let {
+                    homeViewModel.updateLampSchedule(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), it)
+
+                }
             }
         }
     }
