@@ -65,13 +65,8 @@ class HomeFragment : Fragment() {
 
     private var initialTouchX = 0f
     private var initialTouchY = 0f
-    private var currentRotationX = 0f
-    private var currentRotationY = 0f
-    private var previousDistance = 0f
-    private val sensitivity = 0.001f // Adjust the sensitivity as needed
-    private val maxRotation = 5f // Adjust the maximum rotation in degrees
-    private val rotationThreshold = 0.5f // Adjust the threshold as needed
-    private val rotationDuration = 500L // Adjust the duration for rotation animation
+    private val sensitivity = 1f // Adjust the sensitivity as needed
+    private val translationDuration = 500L // Adjust the duration for rotation animation
 
     private val UID = "n5BwXDohfZPzXVS3EjalXgwjGcI3"
 
@@ -143,9 +138,19 @@ class HomeFragment : Fragment() {
 
         // Image
         startFloatingAnimation(binding.imageRoom, AccelerateDecelerateInterpolator())
-
         binding.imageRoom.setOnTouchListener { _, event ->
             handleTouch(event)
+        }
+        binding.sliderLampBrightness.setOnTouchListener { _, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    binding.swipeRefresh.isEnabled = false
+                }
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    binding.swipeRefresh.isEnabled = true
+                }
+            }
+            false
         }
 
         binding.swipeRefresh.setOnRefreshListener {
@@ -411,7 +416,7 @@ class HomeFragment : Fragment() {
         animator.interpolator = interpolator
         animator.repeatCount = ObjectAnimator.INFINITE
         animator.repeatMode = ObjectAnimator.REVERSE
-        animator.duration = 5000
+        animator.duration = 8000
 
         animator.start()
     }
@@ -419,56 +424,31 @@ class HomeFragment : Fragment() {
     private fun handleTouch(event: MotionEvent): Boolean {
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
+                binding.swipeRefresh.isEnabled = false
                 initialTouchX = event.x
                 initialTouchY = event.y
-                previousDistance = 0f
             }
             MotionEvent.ACTION_MOVE -> {
                 val deltaX = event.x - initialTouchX
-                val deltaY = event.y - initialTouchY
 
-                val distance = sqrt(deltaX.pow(2) + deltaY.pow(2))
+                if (deltaX > 0) {
+                    val distance = deltaX
+                    val weight = calculateWeight(distance)
+                    val translationX = deltaX * sensitivity * weight
 
-                // Apply the threshold for smooth rotation
-                if (distance > rotationThreshold) {
-                    val rotationX = deltaY * sensitivity * calculateWeight(distance)
-                    val rotationY = deltaX * sensitivity * calculateWeight(distance)
-
-                    // Update the current rotation values
-                    currentRotationX += rotationX
-                    currentRotationY += rotationY
-
-                    // Limit rotation within a specific range
-                    currentRotationX = currentRotationX.coerceIn(-maxRotation, maxRotation)
-                    currentRotationY = currentRotationY.coerceIn(-maxRotation, maxRotation)
-
-                    // Rotate the image around the X and Y axes
-                    binding.imageRoom.rotationX = currentRotationX
-                    binding.imageRoom.rotationY = currentRotationY
-
-                    // Update the initial touch position for the next move
-                    initialTouchX = event.x
-                    initialTouchY = event.y
-                    previousDistance = distance
+                    binding.imageRoom.translationX = translationX
                 }
             }
             MotionEvent.ACTION_UP -> {
-                // Return to the initial state with a smooth animation
-                val rotationAnimatorX = ObjectAnimator.ofFloat(binding.imageRoom, "rotationX", 0f)
-                rotationAnimatorX.duration = rotationDuration
-                rotationAnimatorX.start()
-
-                val rotationAnimatorY = ObjectAnimator.ofFloat(binding.imageRoom, "rotationY", 0f)
-                rotationAnimatorY.duration = rotationDuration
-                rotationAnimatorY.start()
-
-                // Reset the current rotation values
-                currentRotationX = 0f
-                currentRotationY = 0f
+                binding.swipeRefresh.isEnabled = true
+                val translationAnimator = ObjectAnimator.ofFloat(binding.imageRoom, "translationX", 0f)
+                translationAnimator.duration = translationDuration
+                translationAnimator.start()
             }
         }
         return true
     }
+
 
     private fun calculateWeight(distance: Float): Float {
         return 1 / (1 + distance / 100)
