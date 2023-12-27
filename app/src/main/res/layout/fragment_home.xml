@@ -13,6 +13,22 @@
         android:clipChildren="false"
         android:clipToPadding="false">
 
+        <TextView
+            android:id="@+id/text_test"
+            style="@style/TextAppearance.Material3.TitleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/sp_8xl"
+            android:elevation="999dp"
+            android:text="error"
+            android:textAlignment="textStart"
+            android:textColor="?attr/colorError"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <View
             android:id="@+id/rectangle"
             android:layout_width="@dimen/sp_7xl"

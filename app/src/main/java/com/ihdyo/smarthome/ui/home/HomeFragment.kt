@@ -142,7 +142,7 @@ class HomeFragment : Fragment() {
 
     private fun initRoomRecyclerView(rooms: List<RoomModel>) {
         if (!::roomAdapter.isInitialized) {
-            roomAdapter = RoomAdapter(rooms, { selectedRoom -> updateRoomProperties(selectedRoom) }, homeViewModel)
+            roomAdapter = RoomAdapter(rooms, { selectedRoom -> showRoomProperties(selectedRoom) }, homeViewModel)
             binding.rvIconRoom.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             binding.rvIconRoom.adapter = roomAdapter
             roomAdapter.setInitialSelectedIndex(0)
@@ -151,101 +151,21 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun initLampRecyclerView(selectedRoom: RoomModel, lamps: List<LampModel>) {
-        if (!::lampAdapter.isInitialized) {
-            lampAdapter = LampAdapter(lamps, { selectedLamp -> updateLampProperties(selectedRoom, selectedLamp) }, homeViewModel)
-            binding.rvIconLamp.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-            binding.rvIconLamp.adapter = lampAdapter
-            lampAdapter.setInitialSelectedIndex(0)
-        } else {
-            lampAdapter.setItems(lamps)
-        }
+    private fun initLampRecyclerView(lamps: List<LampModel>) {
+        lampAdapter = LampAdapter(lamps, { selectedLamp -> showLampProperties(selectedLamp) }, homeViewModel)
+        binding.rvIconLamp.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        binding.rvIconLamp.adapter = lampAdapter
+        lampAdapter.setInitialSelectedIndex(0)
     }
-
-
-    // ========================= SHOW LAMP PROPERTIES ========================= //
-
-    private fun updateLampProperties(selectedRoom: RoomModel, selectedLamp: LampModel) {
-
-        // Power Consumed
-        homeViewModel.powerConsumedLiveData.observe(viewLifecycleOwner) { powerConsumedMap ->
-            val powerConsumed = powerConsumedMap[selectedLamp.LID]
-            val formattedText = "${powerConsumed}Wh"
-            binding.textPowerConsumed.text = formattedText
-        }
-
-        // Total Power Consumed
-        homeViewModel.totalPowerConsumedLiveData.observe(viewLifecycleOwner) { totalPowerConsumedMap ->
-            val formattedText = "${totalPowerConsumedMap}Wh"
-            binding.textTotalPowerConsumed.text = formattedText
-        }
-
-        // Lamp Brightness
-        binding.sliderLampBrightness.addOnChangeListener { _, value, fromUser ->
-            if (fromUser) {
-                homeViewModel.updateLampBrightness(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), value.toInt())
-            }
-        }
-        homeViewModel.lampBrightnessLiveData.observe(viewLifecycleOwner) { brightness ->
-            binding.sliderLampBrightness.value = brightness.toFloat()
-        }
-
-        // Lamp Switch Power
-        binding.switchPower.setOnCheckedChangeListener { _, isChecked ->
-            selectedLamp.lampIsPowerOn = isChecked
-            homeViewModel.updateLampIsPowerOn(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), isChecked)
-        }
-        homeViewModel.lampIsPowerOnLiveData.observe(viewLifecycleOwner) { isPowerOn ->
-            binding.switchPower.isChecked = isPowerOn
-        }
-
-        // Lamp Selected Mode
-        binding.buttonAutomatic.setOnClickListener {
-            homeViewModel.updateLampSelectedMode(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), LAMP_SELECTED_MODE_AUTOMATIC)
-        }
-        binding.buttonSchedule.setOnClickListener {
-            homeViewModel.updateLampSelectedMode(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), LAMP_SELECTED_MODE_SCHEDULE)
-        }
-        binding.buttonManual.setOnClickListener {
-            homeViewModel.updateLampSelectedMode(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), LAMP_SELECTED_MODE_MANUAL)
-        }
-        homeViewModel.lampSelectedModeLiveData.observe(viewLifecycleOwner) { selectedMode ->
-            getButtonState(selectedRoom, selectedLamp, selectedMode)
-        }
-
-        // Lamp Schedule
-        binding.textScheduleFrom.setOnClickListener {
-            openTimePicker(getString(R.string.text_schedule_title_start)) { selectedTime ->
-                val newSchedule = homeViewModel.lampScheduleLiveData.value?.copy(scheduleFrom = selectedTime)
-                newSchedule?.let {
-                    homeViewModel.updateLampSchedule(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), it)
-                }
-            }
-        }
-        binding.textScheduleTo.setOnClickListener {
-            openTimePicker(getString(R.string.text_schedule_title_start)) { selectedTime ->
-                val newSchedule = homeViewModel.lampScheduleLiveData.value?.copy(scheduleTo = selectedTime)
-                newSchedule?.let {
-                    homeViewModel.updateLampSchedule(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), it)
-
-                }
-            }
-        }
-        homeViewModel.lampScheduleLiveData.observe(viewLifecycleOwner) { schedule ->
-            binding.textScheduleFrom.text = schedule.scheduleFrom
-            binding.textScheduleTo.text = schedule.scheduleTo
-        }
-    }
-
 
     // ========================= SHOW ROOM PROPERTIES ========================= //
 
     @SuppressLint("SetTextI18n")
-    private fun updateRoomProperties(selectedRoom: RoomModel) {
+    private fun showRoomProperties(selectedRoom: RoomModel) {
 
         homeViewModel.lampsLiveData.observe(viewLifecycleOwner) { lamps ->
             if (lamps != null) {
-                initLampRecyclerView(selectedRoom, lamps)
+                initLampRecyclerView(lamps)
             }
         }
         homeViewModel.fetchLamps(UID, selectedRoom.RID.toString())
@@ -269,18 +189,119 @@ class HomeFragment : Fragment() {
     }
 
 
+    // ========================= SHOW LAMP PROPERTIES ========================= //
+
+    private fun showLampProperties(selectedLamp: LampModel) {
+
+        // Power Consumed
+        homeViewModel.powerConsumedLiveData.observe(viewLifecycleOwner) { powerConsumedMap ->
+            val powerConsumed = powerConsumedMap[selectedLamp.LID]
+            val formattedText = "${powerConsumed}Wh"
+            binding.textPowerConsumed.text = formattedText
+        }
+
+        // Total Power Consumed
+        homeViewModel.totalPowerConsumedLiveData.observe(viewLifecycleOwner) { totalPowerConsumedMap ->
+            val formattedText = "${totalPowerConsumedMap}Wh"
+            binding.textTotalPowerConsumed.text = formattedText
+        }
+
+        // Lamp Brightness
+        homeViewModel.lampBrightnessLiveData.observe(viewLifecycleOwner) { brightness ->
+            binding.sliderLampBrightness.value = brightness.toFloat()
+        }
+
+        // Lamp Switch Power
+        homeViewModel.lampIsPowerOnLiveData.observe(viewLifecycleOwner) { isPowerOn ->
+            binding.switchPower.isChecked = isPowerOn
+        }
+
+        // Lamp Schedule
+        homeViewModel.lampScheduleLiveData.observe(viewLifecycleOwner) { schedule ->
+            binding.textScheduleFrom.text = schedule.scheduleFrom
+            binding.textScheduleTo.text = schedule.scheduleTo
+        }
+
+        // Update
+        updateLampProperties()
+
+    }
+
+
+    // ========================= UPDATE LAMP PROPERTIES ========================= //
+
+    private fun updateLampProperties() {
+        homeViewModel.selectedRoom.observe(viewLifecycleOwner) { pair ->
+            homeViewModel.selectedLamp.observe(viewLifecycleOwner) { selectedLamp ->
+
+                // TEST
+                binding.textTest.text = "${pair.second}, ${selectedLamp.LID}"
+
+
+
+                // Lamp Brightness
+                binding.sliderLampBrightness.addOnChangeListener { _, value, fromUser ->
+                    if (fromUser) {
+                        homeViewModel.updateLampBrightness(UID, pair.second.toString(), selectedLamp.LID.toString(), value.toInt())
+                    }
+                }
+
+                // Lamp Switch Power
+                binding.switchPower.setOnCheckedChangeListener { _, isChecked ->
+                    selectedLamp.lampIsPowerOn = isChecked
+                    homeViewModel.updateLampIsPowerOn(UID, pair.second.toString(), selectedLamp.LID.toString(), isChecked)
+                }
+
+                // Lamp Selected Mode
+                homeViewModel.lampSelectedModeLiveData.observe(viewLifecycleOwner) { selectedMode ->
+                    getButtonState(pair.first, selectedLamp, selectedMode)
+                }
+                binding.buttonAutomatic.setOnClickListener {
+                    homeViewModel.updateLampSelectedMode(UID, pair.second.toString(), selectedLamp.LID.toString(), LAMP_SELECTED_MODE_AUTOMATIC)
+                }
+                binding.buttonSchedule.setOnClickListener {
+                    homeViewModel.updateLampSelectedMode(UID, pair.second.toString(), selectedLamp.LID.toString(), LAMP_SELECTED_MODE_SCHEDULE)
+                }
+                binding.buttonManual.setOnClickListener {
+                    homeViewModel.updateLampSelectedMode(UID, pair.second.toString(), selectedLamp.LID.toString(), LAMP_SELECTED_MODE_MANUAL)
+                }
+
+                // Lamp Schedule
+                binding.textScheduleFrom.setOnClickListener {
+                    openTimePicker(getString(R.string.text_schedule_title_start)) { selectedTime ->
+                        val newSchedule = homeViewModel.lampScheduleLiveData.value?.copy(scheduleFrom = selectedTime)
+                        newSchedule?.let {
+                            homeViewModel.updateLampSchedule(UID, pair.second.toString(), selectedLamp.LID.toString(), it)
+                        }
+                    }
+                }
+                binding.textScheduleTo.setOnClickListener {
+                    openTimePicker(getString(R.string.text_schedule_title_start)) { selectedTime ->
+                        val newSchedule = homeViewModel.lampScheduleLiveData.value?.copy(scheduleTo = selectedTime)
+                        newSchedule?.let {
+                            homeViewModel.updateLampSchedule(UID, pair.second.toString(), selectedLamp.LID.toString(), it)
+
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+
+
     // ========================= OTHER FUNCTION ========================= //
 
     private fun getButtonState(selectedRoom: RoomModel, selectedLamp: LampModel, selectedMode: String) {
         val isAutomatic = when (selectedMode) {
-            "automatic" -> true
-            "schedule" -> {
+            LAMP_SELECTED_MODE_AUTOMATIC -> true
+            LAMP_SELECTED_MODE_SCHEDULE -> {
                 homeViewModel.lampScheduleLiveData.observe(viewLifecycleOwner) { schedule ->
                     updatePowerStateIfInSchedule(selectedRoom, selectedLamp, schedule.scheduleFrom!!, schedule.scheduleTo!!)
                 }
                 false
             }
-            "manual" -> false
+            LAMP_SELECTED_MODE_MANUAL -> false
             else -> return
         }
 
