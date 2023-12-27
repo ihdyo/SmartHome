@@ -135,6 +135,18 @@ class HomeFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+
+        homeViewModel.userLiveData.removeObservers(viewLifecycleOwner)
+        homeViewModel.roomsLiveData.removeObservers(viewLifecycleOwner)
+        homeViewModel.lampsLiveData.removeObservers(viewLifecycleOwner)
+        homeViewModel.powerConsumedLiveData.removeObservers(viewLifecycleOwner)
+        homeViewModel.totalPowerConsumedLiveData.removeObservers(viewLifecycleOwner)
+        homeViewModel.lampBrightnessLiveData.removeObservers(viewLifecycleOwner)
+        homeViewModel.lampIsPowerOnLiveData.removeObservers(viewLifecycleOwner)
+        homeViewModel.lampScheduleLiveData.removeObservers(viewLifecycleOwner)
+        homeViewModel.lampSelectedModeLiveData.removeObservers(viewLifecycleOwner)
+        homeViewModel.selectedRoom.removeObservers(viewLifecycleOwner)
+        homeViewModel.selectedLamp.removeObservers(viewLifecycleOwner)
     }
 
 
@@ -152,10 +164,14 @@ class HomeFragment : Fragment() {
     }
 
     private fun initLampRecyclerView(lamps: List<LampModel>) {
-        lampAdapter = LampAdapter(lamps, { selectedLamp -> showLampProperties(selectedLamp) }, homeViewModel)
-        binding.rvIconLamp.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-        binding.rvIconLamp.adapter = lampAdapter
-        lampAdapter.setInitialSelectedIndex(0)
+        if (!::lampAdapter.isInitialized) {
+            lampAdapter = LampAdapter(lamps, { selectedLamp -> showLampProperties(selectedLamp) }, homeViewModel)
+            binding.rvIconLamp.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+            binding.rvIconLamp.adapter = lampAdapter
+            lampAdapter.setInitialSelectedIndex(0)
+        } else {
+            lampAdapter.setItems(lamps)
+        }
     }
 
     // ========================= SHOW ROOM PROPERTIES ========================= //
@@ -294,7 +310,13 @@ class HomeFragment : Fragment() {
 
     private fun getButtonState(selectedRoom: RoomModel, selectedLamp: LampModel, selectedMode: String) {
         val isAutomatic = when (selectedMode) {
-            LAMP_SELECTED_MODE_AUTOMATIC -> true
+            LAMP_SELECTED_MODE_AUTOMATIC -> {
+                homeViewModel.sensorValueLiveData.observe(viewLifecycleOwner) { value ->
+                    homeViewModel.updateLampIsPowerOn(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), value)
+                }
+                homeViewModel.fetchEnvironments(UID)
+                true
+            }
             LAMP_SELECTED_MODE_SCHEDULE -> {
                 homeViewModel.lampScheduleLiveData.observe(viewLifecycleOwner) { schedule ->
                     updatePowerStateIfInSchedule(selectedRoom, selectedLamp, schedule.scheduleFrom!!, schedule.scheduleTo!!)

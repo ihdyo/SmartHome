@@ -2,13 +2,16 @@ package com.ihdyo.smarthome.data.repository
 
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
+import com.ihdyo.smarthome.data.model.EnvironmentModel
 import com.ihdyo.smarthome.data.model.LampModel
 import com.ihdyo.smarthome.data.model.LampSchedule
 import com.ihdyo.smarthome.data.model.RoomModel
 import com.ihdyo.smarthome.data.model.UserModel
+import com.ihdyo.smarthome.utils.Const.COLLECTION_ENVIRONMENTS
 import com.ihdyo.smarthome.utils.Const.COLLECTION_LAMPS
 import com.ihdyo.smarthome.utils.Const.COLLECTION_ROOMS
 import com.ihdyo.smarthome.utils.Const.COLLECTION_USERS
+import com.ihdyo.smarthome.utils.Const.FIELD_ENVIRONMENT_SENSOR_VALUE
 import com.ihdyo.smarthome.utils.Const.FIELD_LAMP_BRIGHTNESS
 import com.ihdyo.smarthome.utils.Const.FIELD_LAMP_IS_AUTOMATIC_ON
 import com.ihdyo.smarthome.utils.Const.FIELD_LAMP_IS_POWER_ON
@@ -68,6 +71,22 @@ class MainRepository(private val firestore: FirebaseFirestore) {
         }
     }
 
+    suspend fun getEnvironments(userId: String): List<EnvironmentModel> {
+        return try {
+            val querySnapshot = firestore.collection(COLLECTION_USERS).document(userId)
+                .collection(COLLECTION_ENVIRONMENTS).get().await()
+
+            val environments = querySnapshot.documents.mapNotNull { documentSnapshot ->
+                documentSnapshot.toObject(EnvironmentModel::class.java)
+            }
+            Log.d(TAG, "Successfully get environments for user with ID: $userId")
+            environments
+        } catch (e: Exception) {
+            Log.e(TAG, "Error getting environments: $e")
+            emptyList()
+        }
+    }
+
 
     // ========================= PUT METHOD ========================= //
 
@@ -104,13 +123,12 @@ class MainRepository(private val firestore: FirebaseFirestore) {
             .document(lampId)
             .update(field, value)
             .addOnSuccessListener {
-                Log.d(TAG, "Successfully updated $field to $value for lamp $lampId in room $roomId")
+                Log.d(TAG, "Successfully updated $field to $value for $lampId in $roomId")
             }
             .addOnFailureListener { exception ->
-                Log.e(TAG, "Error updating $field for lamp $lampId in room $roomId", exception)
+                Log.e(TAG, "Error updating $field for $lampId in $roomId", exception)
             }
     }
-
 
     companion object {
         private const val TAG = "MainRepository"

@@ -8,7 +8,9 @@ object Const {
 
     const val COLLECTION_USERS = "users"
     const val COLLECTION_ROOMS = "rooms"
+    const val COLLECTION_ENVIRONMENTS = "environments"
     const val COLLECTION_LAMPS = "lamps"
+    const val FIELD_ENVIRONMENT_SENSOR_VALUE = "sensorValue"
     const val FIELD_LAMP_IS_AUTOMATIC_ON = "lampIsAutomaticOn"
     const val FIELD_LAMP_IS_POWER_ON = "lampIsPowerOn"
     const val FIELD_LAMP_BRIGHTNESS = "lampBrightness"
