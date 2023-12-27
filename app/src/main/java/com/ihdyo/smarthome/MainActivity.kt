@@ -62,12 +62,16 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.action_settings -> {
-                findNavController(R.id.nav_host_fragment_content_main).navigate(R.id.nav_settings)
+            R.id.action_profile -> {
+                findNavController(R.id.nav_host_fragment_content_main).navigate(R.id.nav_profile)
                 return true
             }
             R.id.action_theme -> {
                 showThemeSubMenu(item)
+                return true
+            }
+            R.id.action_language -> {
+                showLanguageSubMenu(item)
                 return true
             }
             R.id.action_light_theme -> {
@@ -80,6 +84,18 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.action_default_theme -> {
                 setThemeMode(AppPreferences.ThemeMode.SYSTEM_DEFAULT)
+                return true
+            }
+            R.id.action_english -> {
+                setLanguage("en")
+                return true
+            }
+            R.id.action_bahasa -> {
+                setLanguage("id")
+                return true
+            }
+            R.id.action_javanese -> {
+                setLanguage("jv")
                 return true
             }
             else -> return super.onOptionsItemSelected(item)
@@ -122,6 +138,28 @@ class MainActivity : AppCompatActivity() {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
             }
         }
+    }
+
+
+    // ========================= SET LANGUAGE ========================= //
+
+    private fun showLanguageSubMenu(item: MenuItem) {
+        val view = findViewById<View>(R.id.action_language)
+        val popupMenu = PopupMenu(this, view)
+        popupMenu.menuInflater.inflate(R.menu.app_bar_menu, popupMenu.menu)
+
+        popupMenu.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.action_english, R.id.action_bahasa, R.id.action_javanese -> {
+                    onOptionsItemSelected(menuItem)
+                }
+            }
+            true
+        }
+    }
+
+    private fun setLanguage(languageCode: String) {
+        appPreferences.selectedLanguage = languageCode
     }
 
 }

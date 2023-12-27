@@ -1,10 +1,13 @@
 package com.ihdyo.smarthome.utils
 
 object Const {
+    const val SHARED_PREFERENCES = "AppPreferences"
     const val USED_THEME = "usedTheme"
     const val LIGHT_THEME = "lightTheme"
     const val DARK_THEME = "darkTheme"
     const val SYSTEM_DEFAULT_THEME = "systemDefaultTheme"
+    const val SELECTED_LANGUAGE = "selectedLanguage"
+    const val SYSTEM_DEFAULT_LANGUAGE = "selectedLanguage"
 
     const val COLLECTION_USERS = "users"
     const val COLLECTION_ROOMS = "rooms"

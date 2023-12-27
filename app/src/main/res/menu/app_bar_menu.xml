@@ -3,10 +3,29 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/action_language"
+        android:orderInCategory="1"
+        android:title="@string/action_language"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/bx_adjust">
+        <menu>
+            <item
+                android:id="@+id/action_english"
+                android:title="@string/action_theme_light" />
+            <item
+                android:id="@+id/action_bahasa"
+                android:title="@string/action_theme_dark" />
+            <item
+                android:id="@+id/action_javanese"
+                android:title="@string/action_theme_default" />
+        </menu>
+    </item>
+
+    <item
         android:id="@+id/action_theme"
         android:orderInCategory="1"
         android:title="@string/action_theme"
-        app:showAsAction="never"
+        app:showAsAction="ifRoom"
         android:icon="@drawable/bx_adjust">
         <menu>
             <item
@@ -25,10 +44,10 @@
     </item>
 
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/action_profile"
         android:orderInCategory="2"
-        android:title="@string/action_settings"
-        app:showAsAction="never"
+        android:title="@string/action_profile"
+        app:showAsAction="ifRoom"
         android:icon="@drawable/bx_cog" />
 
 </menu>

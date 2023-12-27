@@ -4,12 +4,15 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.ihdyo.smarthome.utils.Const.DARK_THEME
 import com.ihdyo.smarthome.utils.Const.LIGHT_THEME
+import com.ihdyo.smarthome.utils.Const.SELECTED_LANGUAGE
+import com.ihdyo.smarthome.utils.Const.SHARED_PREFERENCES
+import com.ihdyo.smarthome.utils.Const.SYSTEM_DEFAULT_LANGUAGE
 import com.ihdyo.smarthome.utils.Const.SYSTEM_DEFAULT_THEME
 import com.ihdyo.smarthome.utils.Const.USED_THEME
 
 class AppPreferences(context: Context) {
 
-    private val sharedPreferences: SharedPreferences = context.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+    private val sharedPreferences: SharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE)
 
 
     // ========================= THEMES ========================= //
@@ -35,5 +38,12 @@ class AppPreferences(context: Context) {
             }
             sharedPreferences.edit().putString(USED_THEME, themeToSave).apply()
         }
+
+
+    // ========================= LANGUAGES ========================= //
+
+    var selectedLanguage: String
+        get() = sharedPreferences.getString(SELECTED_LANGUAGE, SYSTEM_DEFAULT_LANGUAGE) ?: SYSTEM_DEFAULT_LANGUAGE
+        set(value) = sharedPreferences.edit().putString(SELECTED_LANGUAGE, value).apply()
 
 }
