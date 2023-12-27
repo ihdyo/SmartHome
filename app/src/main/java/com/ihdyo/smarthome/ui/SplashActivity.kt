@@ -4,6 +4,8 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import androidx.appcompat.app.AppCompatActivity
@@ -13,11 +15,9 @@ import android.provider.Settings
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.google.android.material.color.DynamicColors
 import com.ihdyo.smarthome.MainActivity
 import com.ihdyo.smarthome.R
 import com.ihdyo.smarthome.databinding.ActivitySplashBinding
-import com.ihdyo.smarthome.ui.home.HomeFragment
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : AppCompatActivity() {
@@ -34,8 +34,46 @@ class SplashActivity : AppCompatActivity() {
         binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.textAppName.text = getAppName()
+        binding.textAppVersion.text = "${getString(R.string.app_version)} ${getAppVersion()}"
+
         askPermission()
     }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                checkPermissionAndStartDelay()
+            }
+        }
+    }
+
+
+    // ========================= APP INFO ========================= //
+
+    private fun getAppName(): String {
+        val packageManager: PackageManager = packageManager
+        val applicationInfo: ApplicationInfo = applicationInfo
+
+        return packageManager.getApplicationLabel(applicationInfo).toString()
+    }
+
+    private fun getAppVersion(): String {
+        val packageManager: PackageManager = packageManager
+        val packageName: String = packageName
+
+        return try {
+            val packageInfo: PackageInfo = packageManager.getPackageInfo(packageName, 0)
+            packageInfo.versionName
+        } catch (e: PackageManager.NameNotFoundException) {
+            e.printStackTrace()
+            "N/A"
+        }
+    }
+
+
+    // ========================= PERMISSION ========================= //
 
     private fun askPermission() {
         ActivityCompat.requestPermissions(
@@ -52,11 +90,11 @@ class SplashActivity : AppCompatActivity() {
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             startDelay()
-        } else {
-            // Handle the case where the permission is not granted
-            // You may want to show a message or request the permission again
         }
     }
+
+
+    // ========================= DELAY ========================= //
 
     private fun startDelay() {
         Handler().postDelayed({
@@ -81,19 +119,4 @@ class SplashActivity : AppCompatActivity() {
         }, 800)
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                checkPermissionAndStartDelay()
-            } else {
-                // Handle the case where the permission is not granted
-                // You may want to show a message or request the permission again
-            }
-        }
-    }
 }

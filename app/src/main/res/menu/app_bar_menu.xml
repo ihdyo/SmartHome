@@ -7,17 +7,17 @@
         android:orderInCategory="1"
         android:title="@string/action_language"
         app:showAsAction="ifRoom"
-        android:icon="@drawable/bx_adjust">
+        android:icon="@drawable/bx_globe">
         <menu>
             <item
                 android:id="@+id/action_english"
-                android:title="@string/action_theme_light" />
+                android:title="@string/action_language_english" />
             <item
                 android:id="@+id/action_bahasa"
-                android:title="@string/action_theme_dark" />
+                android:title="@string/action_language_bahasa" />
             <item
                 android:id="@+id/action_javanese"
-                android:title="@string/action_theme_default" />
+                android:title="@string/action_language_javanese" />
         </menu>
     </item>
 
@@ -48,6 +48,6 @@
         android:orderInCategory="2"
         android:title="@string/action_profile"
         app:showAsAction="ifRoom"
-        android:icon="@drawable/bx_cog" />
+        android:icon="@drawable/bx_user_circle" />
 
 </menu>

@@ -24,12 +24,12 @@ class SmartHome : Application() {
         )
 
         // Language
-        val selectedLanguage = appPreferences.selectedLanguage
-        val resources = resources
-        val configuration = resources.configuration
-        val locale = Locale(selectedLanguage)
-        configuration.setLocale(locale)
-        resources.updateConfiguration(configuration, resources.displayMetrics)
+//        val selectedLanguage = appPreferences.selectedLanguage
+//        val resources = resources
+//        val configuration = resources.configuration
+//        val locale = Locale(selectedLanguage)
+//        configuration.setLocale(locale)
+//        resources.updateConfiguration(configuration, resources.displayMetrics)
 
         // Dynamic Color
         DynamicColors.applyToActivitiesIfAvailable(this)
