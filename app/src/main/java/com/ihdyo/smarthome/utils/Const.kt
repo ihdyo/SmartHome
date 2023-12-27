@@ -1,7 +1,6 @@
 package com.ihdyo.smarthome.utils
 
 object Const {
-
     const val USED_THEME = "usedTheme"
     const val LIGHT_THEME = "lightTheme"
     const val DARK_THEME = "darkTheme"
@@ -20,5 +19,4 @@ object Const {
     const val LAMP_SELECTED_MODE_AUTOMATIC = "automatic"
     const val LAMP_SELECTED_MODE_MANUAL = "manual"
     const val LAMP_SELECTED_MODE_SCHEDULE = "schedule"
-
 }

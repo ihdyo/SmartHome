@@ -1,5 +1,4 @@
 <resources>
-
     <string name="app_name">Lumos</string>
     <string name="app_version">Version alpha 1.0</string>
     <string name="app_tagline">Lux ex te, pro orbis</string>
@@ -46,5 +45,4 @@
     <string name="placeholder_room_floor">-F</string>
     <string name="placeholder_power_consumed">0Wh</string>
     <string name="placeholder_schedule">00:00</string>
-
 </resources>

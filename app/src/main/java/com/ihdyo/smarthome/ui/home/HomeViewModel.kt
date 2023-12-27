@@ -77,6 +77,7 @@ class HomeViewModel(private val repository: MainRepository) : ViewModel() {
             try {
                 val user = repository.getUser(userId)
                 _userLiveData.postValue(user)
+                Log.d(TAG, "Successfully fetched user with ID: $userId")
             } catch (e: Exception) {
                 Log.e(TAG, "Error fetching user: $e")
             }
@@ -88,7 +89,7 @@ class HomeViewModel(private val repository: MainRepository) : ViewModel() {
             try {
                 val rooms = repository.getRooms(userId)
                 _roomsLiveData.postValue(rooms)
-
+                Log.d(TAG, "Successfully fetched rooms for user with ID: $userId")
             } catch (e: Exception) {
                 Log.e(TAG, "Error fetching rooms: $e")
             }
@@ -107,7 +108,6 @@ class HomeViewModel(private val repository: MainRepository) : ViewModel() {
                 val totalPowerConsumedMap = fetchTotalPowerConsumed(powerConsumedMap)
                 _totalPowerConsumedLiveData.postValue(totalPowerConsumedMap)
 
-
                 val lampBrightness = fetchLampBrightness(lamps)
                 _lampBrightnessLiveData.postValue(lampBrightness)
 
@@ -120,6 +120,7 @@ class HomeViewModel(private val repository: MainRepository) : ViewModel() {
                 val lampSelectedMode = fetchLampSelectedMode(lamps)
                 _lampSelectedModeLiveData.postValue(lampSelectedMode)
 
+                Log.d(TAG, "Successfully fetched lamps for user with ID: $userId and room ID: $roomId")
             } catch (e: Exception) {
                 Log.e(TAG, "Error fetching lamps: $e")
             }
@@ -134,8 +135,9 @@ class HomeViewModel(private val repository: MainRepository) : ViewModel() {
                 val powerConsumed = (lamp.lampRuntime.div(3600)).times(lamp.lampWattPower)
                 powerConsumedMap[lamp.LID.orEmpty()] = powerConsumed
             }
+            Log.d(TAG, "Successfully calculating power consumed")
         } catch (e: Exception) {
-            Log.e(TAG, "Error calculating power consumption: $e")
+            Log.e(TAG, "Error calculating power consumed: $e")
         }
 
         return powerConsumedMap
@@ -146,17 +148,19 @@ class HomeViewModel(private val repository: MainRepository) : ViewModel() {
 
         try {
             totalPowerConsumed = powerConsumedMap.values.sum()
+            Log.d(TAG, "Successfully calculating total power consumed")
         } catch (e: Exception) {
-            Log.e(TAG, "Error calculating total power consumption: $e")
+            Log.e(TAG, "Error calculating total power consumed: $e")
         }
 
         return totalPowerConsumed
     }
 
-
     private fun fetchLampBrightness(lamps: List<LampModel>): Int {
         return try {
-            lamps.firstOrNull()?.lampBrightness ?: 0
+            val brightness = lamps.firstOrNull()?.lampBrightness ?: 0
+            Log.d(TAG, "Successfully fetched lamp brightness: $brightness")
+            brightness
         } catch (e: Exception) {
             Log.e(TAG, "Error fetching lamp brightness: $e")
             0
@@ -165,7 +169,9 @@ class HomeViewModel(private val repository: MainRepository) : ViewModel() {
 
     private fun fetchLampIsPowerOn(lamps: List<LampModel>): Boolean {
         return try {
-            lamps.firstOrNull()?.lampIsPowerOn ?: false
+            val isPowerOn = lamps.firstOrNull()?.lampIsPowerOn ?: false
+            Log.d(TAG, "Successfully fetched lamp power state: $isPowerOn")
+            isPowerOn
         } catch (e: Exception) {
             Log.e(TAG, "Error fetching lamp power state: $e")
             false
@@ -174,7 +180,9 @@ class HomeViewModel(private val repository: MainRepository) : ViewModel() {
 
     private fun fetchLampSchedule(lamps: List<LampModel>): LampSchedule {
         return try {
-            lamps.firstOrNull()?.lampSchedule ?: LampSchedule("", "")
+            val lampSchedule = lamps.firstOrNull()?.lampSchedule ?: LampSchedule("", "")
+            Log.d(TAG, "Successfully fetched lamp schedule: $lampSchedule")
+            lampSchedule
         } catch (e: Exception) {
             Log.e(TAG, "Error fetching lamp schedule: $e")
             LampSchedule("", "")
@@ -183,7 +191,9 @@ class HomeViewModel(private val repository: MainRepository) : ViewModel() {
 
     private fun fetchLampSelectedMode(lamps: List<LampModel>): String {
         return try {
-            lamps.firstOrNull()?.lampSelectedMode ?: "manual"
+            val selectedMode = lamps.firstOrNull()?.lampSelectedMode ?: "manual"
+            Log.d(TAG, "Successfully fetched lamp selected mode: $selectedMode")
+            selectedMode
         } catch (e: Exception) {
             Log.e(TAG, "Error fetching lamp selected mode: $e")
             "manual"
@@ -198,6 +208,7 @@ class HomeViewModel(private val repository: MainRepository) : ViewModel() {
             try {
                 repository.putLampBrightness(userId, roomId, lampId, brightness)
                 _lampBrightnessLiveData.postValue(brightness)
+                Log.d(TAG, "Success updating lamp brightness for $lampId in $roomId")
             } catch (e: Exception) {
                 Log.e(TAG, "Error updating lamp brightness: $e")
             }
@@ -209,8 +220,9 @@ class HomeViewModel(private val repository: MainRepository) : ViewModel() {
             try {
                 repository.putLampIsAutomaticOn(userId, roomId, lampId, isAutomaticOn)
                 _lampIsAutomaticOnLiveData.postValue(isAutomaticOn)
+                Log.d(TAG, "Success setting mode to automatic for $lampId in $roomId")
             } catch (e: Exception) {
-                Log.e(TAG, "Error set mode to automatic: $e")
+                Log.e(TAG, "Error setting mode to automatic: $e")
             }
         }
     }
@@ -220,6 +232,7 @@ class HomeViewModel(private val repository: MainRepository) : ViewModel() {
             try {
                 repository.putLampIsPowerOn(userId, roomId, lampId, isPowerOn)
                 _lampIsPowerOnLiveData.postValue(isPowerOn)
+                Log.d(TAG, "Success updating power state for $lampId in $roomId")
             } catch (e: Exception) {
                 Log.e(TAG, "Error updating power state: $e")
             }
@@ -231,8 +244,9 @@ class HomeViewModel(private val repository: MainRepository) : ViewModel() {
             try {
                 repository.putLampSchedule(userId, roomId, lampId, newSchedule)
                 _lampScheduleLiveData.postValue(newSchedule)
+                Log.d(TAG, "Success updating lamp schedule for $lampId in $roomId")
             } catch (e: Exception) {
-                Log.e(TAG, "Error updating lampSchedule: $e")
+                Log.e(TAG, "Error updating lamp schedule: $e")
             }
         }
     }
@@ -242,6 +256,7 @@ class HomeViewModel(private val repository: MainRepository) : ViewModel() {
             try {
                 repository.putLampSelectedMode(userId, roomId, lampId, selectedMode)
                 _lampSelectedModeLiveData.postValue(selectedMode)
+                Log.d(TAG, "Success updating selected mode for $lampId in $roomId")
             } catch (e: Exception) {
                 Log.e(TAG, "Error updating selected mode: $e")
             }

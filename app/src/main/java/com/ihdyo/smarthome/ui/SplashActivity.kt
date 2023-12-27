@@ -19,7 +19,6 @@ import com.ihdyo.smarthome.R
 import com.ihdyo.smarthome.databinding.ActivitySplashBinding
 import com.ihdyo.smarthome.ui.home.HomeFragment
 
-@Suppress("DEPRECATION")
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : AppCompatActivity() {
 
@@ -89,7 +88,6 @@ class SplashActivity : AppCompatActivity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_CODE) {
-            // Check if the permission is granted
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 checkPermissionAndStartDelay()
             } else {

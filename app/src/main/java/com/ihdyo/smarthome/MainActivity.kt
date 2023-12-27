@@ -31,7 +31,9 @@ class MainActivity : AppCompatActivity() {
 
         appPreferences = AppPreferences(this)
 
-        // Navigation Drawer
+
+        // ========================= SET UP APP BAR ========================= //
+
         setSupportActionBar(binding.appBarMain.toolbar)
 
         val drawerLayout: DrawerLayout = binding.drawerLayout
@@ -84,6 +86,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
+    // ========================= SET THEME ========================= //
+
     private fun showThemeSubMenu(item: MenuItem) {
         val view = findViewById<View>(R.id.action_theme)
         val popupMenu = PopupMenu(this, view)
@@ -118,4 +123,5 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
 }

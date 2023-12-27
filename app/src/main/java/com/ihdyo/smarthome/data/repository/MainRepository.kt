@@ -26,7 +26,9 @@ class MainRepository(private val firestore: FirebaseFirestore) {
     suspend fun getUser(userId: String): UserModel? {
         return try {
             val documentSnapshot = firestore.collection(COLLECTION_USERS).document(userId).get().await()
-            documentSnapshot.toObject(UserModel::class.java)
+            val user = documentSnapshot.toObject(UserModel::class.java)
+            Log.d(TAG, "Successfully get user with ID: $userId")
+            user
         } catch (e: Exception) {
             Log.e(TAG, "Error getting user: $e")
             null
@@ -38,9 +40,11 @@ class MainRepository(private val firestore: FirebaseFirestore) {
             val querySnapshot = firestore.collection(COLLECTION_USERS).document(userId)
                 .collection(COLLECTION_ROOMS).get().await()
 
-            querySnapshot.documents.mapNotNull { documentSnapshot ->
+            val rooms = querySnapshot.documents.mapNotNull { documentSnapshot ->
                 documentSnapshot.toObject(RoomModel::class.java)
             }
+            Log.d(TAG, "Successfully get rooms for user with ID: $userId")
+            rooms
         } catch (e: Exception) {
             Log.e(TAG, "Error getting rooms: $e")
             emptyList()
@@ -53,9 +57,11 @@ class MainRepository(private val firestore: FirebaseFirestore) {
                 .collection(COLLECTION_ROOMS).document(roomId)
                 .collection(COLLECTION_LAMPS).get().await()
 
-            querySnapshot.documents.mapNotNull { documentSnapshot ->
+            val lamps = querySnapshot.documents.mapNotNull { documentSnapshot ->
                 documentSnapshot.toObject(LampModel::class.java)
             }
+            Log.d(TAG, "Successfully get lamps for user with ID: $userId and room ID: $roomId")
+            lamps
         } catch (e: Exception) {
             Log.e(TAG, "Error getting lamps: $e")
             emptyList()
@@ -98,12 +104,13 @@ class MainRepository(private val firestore: FirebaseFirestore) {
             .document(lampId)
             .update(field, value)
             .addOnSuccessListener {
-                Log.d(TAG, "Successfully updated $field")
+                Log.d(TAG, "Successfully updated $field to $value for lamp $lampId in room $roomId")
             }
             .addOnFailureListener { exception ->
-                Log.e(TAG, "Error updating $field", exception)
+                Log.e(TAG, "Error updating $field for lamp $lampId in room $roomId", exception)
             }
     }
+
 
     companion object {
         private const val TAG = "MainRepository"
