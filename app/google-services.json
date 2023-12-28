@@ -13,7 +13,20 @@
           "package_name": "com.ihdyo.smarthome"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "113846780678-29ng9blbkpv3pdic4dmhpsuq6t58ap5u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ihdyo.smarthome",
+            "certificate_hash": "eac9348993d6fed327b924aa5e1c53c80f573219"
+          }
+        },
+        {
+          "client_id": "113846780678-po05116d6nmrhmajp36njisbgd51qnm0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyChPQ2S-RNkkTA3D1uSSqsS0KVPzj_0o2o"
@@ -21,7 +34,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "113846780678-po05116d6nmrhmajp36njisbgd51qnm0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

@@ -33,5 +33,5 @@
         android:id="@+id/nav_profile"
         android:name="com.ihdyo.smarthome.ui.profile.ProfileFragment"
         android:label="@string/menu_profile"
-        tools:layout="@layout/fragment_settings" />
+        tools:layout="@layout/fragment_profile" />
 </navigation>

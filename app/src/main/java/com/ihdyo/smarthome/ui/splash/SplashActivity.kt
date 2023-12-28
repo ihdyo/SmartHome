@@ -21,7 +21,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.ihdyo.smarthome.R
 import com.ihdyo.smarthome.databinding.ActivitySplashBinding
 import com.ihdyo.smarthome.ui.MainActivity
-import com.ihdyo.smarthome.ui.auth.AuthActivity
+import com.ihdyo.smarthome.ui.login.LoginActivity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -102,7 +102,7 @@ class SplashActivity : AppCompatActivity() {
 
         // Delay
         lifecycleScope.launch {
-            delay(800)
+            delay(3000)
         }
 
         // Network Check
@@ -126,7 +126,7 @@ class SplashActivity : AppCompatActivity() {
             if (currentUser != null) {
                 startActivity(Intent(this, MainActivity::class.java), animationBundle)
             } else {
-                startActivity(Intent(this, AuthActivity::class.java), animationBundle)
+                startActivity(Intent(this, LoginActivity::class.java), animationBundle)
             }
 
             finish()

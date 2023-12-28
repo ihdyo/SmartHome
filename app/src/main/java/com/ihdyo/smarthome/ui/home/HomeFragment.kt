@@ -25,6 +25,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.MaterialTimePicker.INPUT_MODE_CLOCK
 import com.google.android.material.timepicker.TimeFormat
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.ihdyo.smarthome.R
 import com.ihdyo.smarthome.data.factory.ViewModelFactory
@@ -32,6 +33,7 @@ import com.ihdyo.smarthome.data.model.LampModel
 import com.ihdyo.smarthome.data.model.RoomModel
 import com.ihdyo.smarthome.data.repository.MainRepository
 import com.ihdyo.smarthome.databinding.FragmentHomeBinding
+import com.ihdyo.smarthome.utils.Const.COLLECTION_USERS
 import com.ihdyo.smarthome.utils.Const.LAMP_SELECTED_MODE_AUTOMATIC
 import com.ihdyo.smarthome.utils.Const.LAMP_SELECTED_MODE_MANUAL
 import com.ihdyo.smarthome.utils.Const.LAMP_SELECTED_MODE_SCHEDULE
@@ -51,6 +53,9 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
+
+    private lateinit var firestore: FirebaseFirestore
+    private lateinit var auth: FirebaseAuth
     private lateinit var homeViewModel: HomeViewModel
     private lateinit var roomAdapter: RoomAdapter
     private lateinit var lampAdapter: LampAdapter
@@ -58,13 +63,21 @@ class HomeFragment : Fragment() {
 
     private var fusedLocationProviderClient: FusedLocationProviderClient? = null
     private var isRefreshTriggeredManually: Boolean? = false
-
-    private val UID = "n5BwXDohfZPzXVS3EjalXgwjGcI3"
+    private var UID: String = ""
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
 
+        firestore = FirebaseFirestore.getInstance()
+        auth = FirebaseAuth.getInstance()
         uiUpdater = UiUpdater()
+
+        firestore.collection(COLLECTION_USERS)
+            .document(FirebaseAuth.getInstance().currentUser!!.uid)
+            .get()
+            .addOnSuccessListener { document ->
+                UID = document.toString()
+            }
 
         return binding.root
     }

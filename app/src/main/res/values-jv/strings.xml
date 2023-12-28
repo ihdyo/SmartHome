@@ -22,7 +22,6 @@
     <string name="menu_about">Babagan</string>
     <string name="menu_profile">Profil</string>
     <string name="menu_login">Mlebu</string>
-    <string name="menu_scan">Pindai</string>
 
     <string name="hint_email">Email</string>
     <string name="hint_old_email">Email saiki</string>
@@ -30,8 +29,16 @@
     <string name="hint_password">Sandi</string>
     <string name="hint_old_password">Sandi saiki</string>
     <string name="hint_new_password">Sandi anyar</string>
-    <string name="hint_username">Jeneng panganggo</string>
+    <string name="hint_retype_password">Ngulangi Sandi Anyar</string>
+    <string name="hint_username">Jeneng Panganggo</string>
+    <string name="hint_new_username">Jeneng Panganggo Anyar</string>
 
+    <string name="text_welcome">Sugeng Rawuh!</string>
+    <string name="text_welcome_description">Sugeng rawuh ing Lumos!, mangga mlebu marang akun kadhaptar kanggo nyambung sistem lampu pintermu</string>
+    <string name="text_forgot_password">Lali Sandi?</string>
+    <string name="text_choice">utawa</string>
+    <string name="text_unregistered_user">Durung duwe produk kita?</string>
+    <string name="text_order_here">Pesen kene!</string>
     <string name="text_greeting_morning">Sugeng Enjang,</string>
     <string name="text_greeting_afternoon">Sugeng Awan,</string>
     <string name="text_greeting_evening">Sugeng Sonten,</string>
@@ -43,22 +50,34 @@
     <string name="text_schedule_title_start">Pilih wektu wiwitan</string>
     <string name="text_schedule_title_finish">Pilih wektu pungkasan</string>
     <string name="text_change_email">Ngganti email</string>
-    <string name="text_change_password">Ngganti sandi</string>
+    <string name="text_change_password">Ngganti sandhi</string>
     <string name="text_change_username">Ngganti jeneng panganggo</string>
 
+    <string name="prompt_ok">OK</string>
     <string name="prompt_cancel">Batalake</string>
     <string name="prompt_no">Ora</string>
     <string name="prompt_yes">Ya</string>
+    <string name="prompt_retry">Coba maneh</string>
+    <string name="prompt_register">Dhaptar</string>
     <string name="prompt_connection_no">Ora ana sambungan</string>
     <string name="prompt_connection_check">Mangga priksa sambungan sampeyan</string>
-    <string name="prompt_connection_connect">Nyambung</string>
     <string name="prompt_connection_restart">Ulangi</string>
+    <string name="prompt_connection_connect">Nyambung</string>
+    <string name="prompt_login">Mlebu</string>
+    <string name="prompt_login_with_google">Mlebu karo Google</string>
     <string name="prompt_logout">Metu</string>
     <string name="prompt_logout_check">Apa sampeyan yakin arep metu?</string>
-    <string name="prompt_change_email">Ganti email</string>
+    <string name="prompt_change_email">Ganti Email</string>
     <string name="prompt_change_email_check">Apa sampeyan yakin arep ganti email?</string>
-    <string name="prompt_change_password">Ganti sandi</string>
-    <string name="prompt_change_password_check">Apa sampeyan yakin arep ganti sandi?</string>
+    <string name="prompt_change_password">Ganti Sandi</string>
+    <string name="prompt_change_password_check">Apa sampeyan yakin arep ganti sandhi?</string>
+    <string name="prompt_auth_success">Berhasil mlebu</string>
+    <string name="prompt_auth_failed">Gagal mlebu, panganggo ora kadhaptar</string>
+    <string name="prompt_auth_email_failed">Gagal mlebu nganggo email, priksa maneh email lan sandhine sampeyan</string>
+    <string name="prompt_auth_google_failed">Gagal mlebu nganggo Google</string>
+    <string name="prompt_invalid_email">Format email ora bener</string>
+    <string name="prompt_empty_email">Email ora bisa kosong</string>
+    <string name="prompt_empty_password">Sandi ora bisa kosong</string>
 
     <string name="placeholder_email">email iki</string>
     <string name="placeholder_username">Panganggo Iki</string>

@@ -111,6 +111,7 @@
             style="@style/TextAppearance.Material3.TitleMedium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/sp_3xs"
             android:textStyle="bold"
             android:text="@string/placeholder_username"
             android:textAlignment="textStart"
@@ -306,7 +307,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:icon="@drawable/bx_alarm"
-                android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
+                tools:ignore="RtlSymmetry" />
 
             <Button
                 android:id="@+id/button_manual"

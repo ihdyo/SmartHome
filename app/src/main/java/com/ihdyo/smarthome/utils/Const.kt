@@ -1,6 +1,9 @@
 package com.ihdyo.smarthome.utils
 
 object Const {
+    const val WEB_CLIENT_ID = "113846780678-po05116d6nmrhmajp36njisbgd51qnm0.apps.googleusercontent.com"
+    const val RC_SIGN_IN = 1
+
     const val SHARED_PREFERENCES = "AppPreferences"
     const val USED_THEME = "usedTheme"
     const val LIGHT_THEME = "lightTheme"

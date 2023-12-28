@@ -2,6 +2,7 @@ package com.ihdyo.smarthome.data.repository
 
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Source
 import com.ihdyo.smarthome.data.model.EnvironmentModel
 import com.ihdyo.smarthome.data.model.LampModel
 import com.ihdyo.smarthome.data.model.LampSchedule
@@ -25,9 +26,11 @@ class MainRepository(private val firestore: FirebaseFirestore) {
 
     // ========================= GET METHOD ========================= //
 
+
+
     suspend fun getUser(userId: String): UserModel? {
         return try {
-            val documentSnapshot = firestore.collection(COLLECTION_USERS).document(userId).get().await()
+            val documentSnapshot = firestore.collection(COLLECTION_USERS).document(userId).get(Source.DEFAULT).await()
             val user = documentSnapshot.toObject(UserModel::class.java)
             Log.d(TAG, "Successfully get user with ID: $userId")
             user
@@ -40,7 +43,7 @@ class MainRepository(private val firestore: FirebaseFirestore) {
     suspend fun getRooms(userId: String): List<RoomModel> {
         return try {
             val querySnapshot = firestore.collection(COLLECTION_USERS).document(userId)
-                .collection(COLLECTION_ROOMS).get().await()
+                .collection(COLLECTION_ROOMS).get(Source.DEFAULT).await()
 
             val rooms = querySnapshot.documents.mapNotNull { documentSnapshot ->
                 documentSnapshot.toObject(RoomModel::class.java)
@@ -57,7 +60,7 @@ class MainRepository(private val firestore: FirebaseFirestore) {
         return try {
             val querySnapshot = firestore.collection(COLLECTION_USERS).document(userId)
                 .collection(COLLECTION_ROOMS).document(roomId)
-                .collection(COLLECTION_LAMPS).get().await()
+                .collection(COLLECTION_LAMPS).get(Source.DEFAULT).await()
 
             val lamps = querySnapshot.documents.mapNotNull { documentSnapshot ->
                 documentSnapshot.toObject(LampModel::class.java)
@@ -73,7 +76,7 @@ class MainRepository(private val firestore: FirebaseFirestore) {
     suspend fun getEnvironments(userId: String): List<EnvironmentModel> {
         return try {
             val querySnapshot = firestore.collection(COLLECTION_USERS).document(userId)
-                .collection(COLLECTION_ENVIRONMENTS).get().await()
+                .collection(COLLECTION_ENVIRONMENTS).get(Source.DEFAULT).await()
 
             val environments = querySnapshot.documents.mapNotNull { documentSnapshot ->
                 documentSnapshot.toObject(EnvironmentModel::class.java)
