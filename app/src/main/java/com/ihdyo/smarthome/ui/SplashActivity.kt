@@ -2,6 +2,7 @@ package com.ihdyo.smarthome.ui
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
@@ -11,9 +12,7 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
 import android.provider.Settings
-import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
@@ -98,28 +97,44 @@ class SplashActivity : AppCompatActivity() {
     // ========================= DELAY ========================= //
 
     private fun startDelay() {
+
+        // Delay
         lifecycleScope.launch {
             delay(300)
         }
 
+        // Network Check
         val connectivityManager = this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val networkCapabilities = connectivityManager.activeNetwork?.let {
             connectivityManager.getNetworkCapabilities(it)
         }
 
         if (networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) {
-            startActivity(Intent(this, MainActivity::class.java))
+            val animationBundle = ActivityOptions.makeCustomAnimation(
+                this,
+                R.anim.slide_in_top,
+                R.anim.slide_out_bottom
+            ).toBundle()
+            startActivity(Intent(this, MainActivity::class.java), animationBundle)
+
             finish()
         } else {
+
+            // Alert Dialog
             MaterialAlertDialogBuilder(this)
                 .setIcon(R.drawable.bx_wifi_off)
                 .setTitle(resources.getString(R.string.prompt_connection_no))
                 .setMessage(resources.getString(R.string.prompt_connection_check))
                 .setNeutralButton(resources.getString(R.string.prompt_connection_restart)) { _, _ ->
-                    startActivity(Intent(this, SplashActivity::class.java))
+                    val animationBundle = ActivityOptions.makeCustomAnimation(
+                        this,
+                        R.anim.no_animation,
+                        R.anim.no_animation
+                    ).toBundle()
+                    startActivity(Intent(this, SplashActivity::class.java), animationBundle)
                     finish()
                 }
-                .setNegativeButton(resources.getString(R.string.prompt_connection_cancel)) { dialog, which ->
+                .setNegativeButton(resources.getString(R.string.prompt_connection_cancel)) { _, _ ->
                     finishAffinity()
                 }
                 .setPositiveButton(resources.getString(R.string.prompt_connection_connect)) { _, _ ->
