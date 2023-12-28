@@ -7,13 +7,11 @@ object Const {
     const val DARK_THEME = "darkTheme"
     const val SYSTEM_DEFAULT_THEME = "systemDefaultTheme"
     const val SELECTED_LANGUAGE = "selectedLanguage"
-    const val SYSTEM_DEFAULT_LANGUAGE = "selectedLanguage"
 
     const val COLLECTION_USERS = "users"
     const val COLLECTION_ROOMS = "rooms"
     const val COLLECTION_ENVIRONMENTS = "environments"
     const val COLLECTION_LAMPS = "lamps"
-    const val FIELD_ENVIRONMENT_SENSOR_VALUE = "sensorValue"
     const val FIELD_LAMP_IS_AUTOMATIC_ON = "lampIsAutomaticOn"
     const val FIELD_LAMP_IS_POWER_ON = "lampIsPowerOn"
     const val FIELD_LAMP_BRIGHTNESS = "lampBrightness"

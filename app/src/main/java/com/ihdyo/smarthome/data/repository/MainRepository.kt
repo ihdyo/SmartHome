@@ -11,7 +11,6 @@ import com.ihdyo.smarthome.utils.Const.COLLECTION_ENVIRONMENTS
 import com.ihdyo.smarthome.utils.Const.COLLECTION_LAMPS
 import com.ihdyo.smarthome.utils.Const.COLLECTION_ROOMS
 import com.ihdyo.smarthome.utils.Const.COLLECTION_USERS
-import com.ihdyo.smarthome.utils.Const.FIELD_ENVIRONMENT_SENSOR_VALUE
 import com.ihdyo.smarthome.utils.Const.FIELD_LAMP_BRIGHTNESS
 import com.ihdyo.smarthome.utils.Const.FIELD_LAMP_IS_AUTOMATIC_ON
 import com.ihdyo.smarthome.utils.Const.FIELD_LAMP_IS_POWER_ON

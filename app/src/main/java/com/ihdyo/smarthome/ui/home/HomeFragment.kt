@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import coil.request.CachePolicy
@@ -56,6 +57,7 @@ class HomeFragment : Fragment() {
     private lateinit var uiUpdater: UiUpdater
 
     private var fusedLocationProviderClient: FusedLocationProviderClient? = null
+    private var isRefreshTriggeredManually: Boolean? = false
 
     private val UID = "n5BwXDohfZPzXVS3EjalXgwjGcI3"
 
@@ -112,10 +114,7 @@ class HomeFragment : Fragment() {
 
         // Swipe Refresh
         binding.swipeRefresh.setOnRefreshListener {
-            lifecycleScope.launch {
-                delay(300)
-                binding.swipeRefresh.isRefreshing = false
-            }
+            refreshHomeFragment()
         }
 
         // Prevent Nested Swipe
@@ -147,6 +146,15 @@ class HomeFragment : Fragment() {
         homeViewModel.lampSelectedModeLiveData.removeObservers(viewLifecycleOwner)
         homeViewModel.selectedRoom.removeObservers(viewLifecycleOwner)
         homeViewModel.selectedLamp.removeObservers(viewLifecycleOwner)
+    }
+
+    private fun refreshHomeFragment() {
+        lifecycleScope.launch {
+            delay(300)
+            isRefreshTriggeredManually = true
+            findNavController().navigate(R.id.nav_home)
+            binding.swipeRefresh.isRefreshing = false
+        }
     }
 
 

@@ -37,6 +37,7 @@
     <string name="prompt_connection_check">Please re-check your internet connection</string>
     <string name="prompt_connection_connect">Connect</string>
     <string name="prompt_connection_cancel">Cancel</string>
+    <string name="prompt_connection_restart">Restart</string>
     <string name="prompt_logout">Log Out</string>
     <string name="prompt_logout_check">Are you sure want to log out?</string>
     <string name="prompt_logout_logout">Log Out</string>

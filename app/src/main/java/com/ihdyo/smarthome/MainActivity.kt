@@ -91,7 +91,7 @@ class MainActivity : AppCompatActivity() {
                 return true
             }
             R.id.action_bahasa -> {
-                setLanguage("id")
+                setLanguage("in")
                 return true
             }
             R.id.action_javanese -> {

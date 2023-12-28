@@ -38,6 +38,7 @@ class RoomAdapter(
 
     @SuppressLint("NotifyDataSetChanged")
     fun setItems(item: List<RoomModel>) {
+        this.items = emptyList()
         this.items = item
         notifyDataSetChanged()
     }

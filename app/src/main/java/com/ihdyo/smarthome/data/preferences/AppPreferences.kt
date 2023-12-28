@@ -6,9 +6,9 @@ import com.ihdyo.smarthome.utils.Const.DARK_THEME
 import com.ihdyo.smarthome.utils.Const.LIGHT_THEME
 import com.ihdyo.smarthome.utils.Const.SELECTED_LANGUAGE
 import com.ihdyo.smarthome.utils.Const.SHARED_PREFERENCES
-import com.ihdyo.smarthome.utils.Const.SYSTEM_DEFAULT_LANGUAGE
 import com.ihdyo.smarthome.utils.Const.SYSTEM_DEFAULT_THEME
 import com.ihdyo.smarthome.utils.Const.USED_THEME
+import java.util.Locale
 
 class AppPreferences(context: Context) {
 
@@ -43,7 +43,7 @@ class AppPreferences(context: Context) {
     // ========================= LANGUAGES ========================= //
 
     var selectedLanguage: String
-        get() = sharedPreferences.getString(SELECTED_LANGUAGE, SYSTEM_DEFAULT_LANGUAGE) ?: SYSTEM_DEFAULT_LANGUAGE
+        get() = sharedPreferences.getString(SELECTED_LANGUAGE, Locale.getDefault().language) ?: Locale.getDefault().language
         set(value) = sharedPreferences.edit().putString(SELECTED_LANGUAGE, value).apply()
 
 }

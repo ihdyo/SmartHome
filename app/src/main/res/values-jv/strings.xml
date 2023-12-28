@@ -37,6 +37,7 @@
     <string name="prompt_connection_check">Mangga priksa sambungan sampeyan</string>
     <string name="prompt_connection_connect">Nyambung</string>
     <string name="prompt_connection_cancel">Batal</string>
+    <string name="prompt_connection_restart">Ulangi</string>
     <string name="prompt_logout">Metu</string>
     <string name="prompt_logout_check">Apa sampeyan yakin arep metu?</string>
     <string name="prompt_logout_logout">Metu</string>

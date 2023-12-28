@@ -8,6 +8,7 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
@@ -15,16 +16,16 @@ import android.provider.Settings
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.ihdyo.smarthome.MainActivity
 import com.ihdyo.smarthome.R
 import com.ihdyo.smarthome.databinding.ActivitySplashBinding
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : AppCompatActivity() {
-
-    companion object {
-        const val REQUEST_CODE = 100
-    }
 
     private lateinit var binding: ActivitySplashBinding
 
@@ -97,26 +98,40 @@ class SplashActivity : AppCompatActivity() {
     // ========================= DELAY ========================= //
 
     private fun startDelay() {
-        Handler().postDelayed({
-            val connectivityManager =
-                this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            val activeNetwork = connectivityManager.activeNetworkInfo
+        lifecycleScope.launch {
+            delay(300)
+        }
 
-            if (activeNetwork?.isConnected == true) {
-                startActivity(Intent(this, MainActivity::class.java))
-                finish()
-            } else {
-                val builder = AlertDialog.Builder(this)
-                builder.setTitle(getString(R.string.prompt_connection_no))
-                builder.setMessage(getString(R.string.prompt_connection_check))
-                builder.setPositiveButton(getString(R.string.prompt_connection_connect)) { _, _ ->
-                    val settingsIntent = Intent(Settings.ACTION_WIRELESS_SETTINGS)
+        val connectivityManager = this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkCapabilities = connectivityManager.activeNetwork?.let {
+            connectivityManager.getNetworkCapabilities(it)
+        }
+
+        if (networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) {
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+        } else {
+            MaterialAlertDialogBuilder(this)
+                .setIcon(R.drawable.bx_wifi_off)
+                .setTitle(resources.getString(R.string.prompt_connection_no))
+                .setMessage(resources.getString(R.string.prompt_connection_check))
+                .setNeutralButton(resources.getString(R.string.prompt_connection_restart)) { _, _ ->
+                    startActivity(Intent(this, SplashActivity::class.java))
+                    finish()
+                }
+                .setNegativeButton(resources.getString(R.string.prompt_connection_cancel)) { dialog, which ->
+                    finishAffinity()
+                }
+                .setPositiveButton(resources.getString(R.string.prompt_connection_connect)) { _, _ ->
+                    val settingsIntent = Intent(Settings.ACTION_WIFI_SETTINGS)
                     this.startActivity(settingsIntent)
                 }
-                builder.setNegativeButton(getString(R.string.prompt_connection_cancel)) { _, _ -> }
-                builder.show()
-            }
-        }, 800)
+                .show()
+        }
+    }
+
+    companion object {
+        const val REQUEST_CODE = 100
     }
 
 }

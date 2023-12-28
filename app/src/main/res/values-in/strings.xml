@@ -37,6 +37,7 @@
     <string name="prompt_connection_check">Mohon periksa ulang koneksimu</string>
     <string name="prompt_connection_connect">Hubungkan</string>
     <string name="prompt_connection_cancel">Batal</string>
+    <string name="prompt_connection_restart">Mulai Ulang</string>
     <string name="prompt_logout">Keluar</string>
     <string name="prompt_logout_check">Apakah kamu yakin ingin keluar?</string>
     <string name="prompt_logout_logout">Keluar</string>

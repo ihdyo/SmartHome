@@ -34,6 +34,7 @@ class LampAdapter(
 
     @SuppressLint("NotifyDataSetChanged")
     fun setItems(item: List<LampModel>) {
+        this.items = emptyList()
         this.items = item
         notifyDataSetChanged()
     }
