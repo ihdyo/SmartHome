@@ -1,6 +1,7 @@
 package com.ihdyo.smarthome.ui.login
 
 import android.annotation.SuppressLint
+import android.app.ActivityOptions
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -23,6 +24,7 @@ import com.ihdyo.smarthome.utils.Const.COLLECTION_USERS
 import com.ihdyo.smarthome.utils.Const.RC_SIGN_IN
 import com.ihdyo.smarthome.utils.Const.WEB_CLIENT_ID
 import com.ihdyo.smarthome.utils.ProgressBar
+import com.ihdyo.smarthome.utils.UiUpdater
 
 @Suppress("DEPRECATION")
 class LoginActivity : AppCompatActivity() {
@@ -30,7 +32,6 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
     private lateinit var firestore: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -40,17 +41,19 @@ class LoginActivity : AppCompatActivity() {
         firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
 
+        // Register New Member
         binding.textRegister.setOnClickListener {
             registerNewMember()
         }
 
+        // Register New Member
         binding.textForgotPassword.setOnClickListener {
             val authDialog = AuthDialog(this, R.layout.dialog_change_password)
             authDialog.show()
         }
 
 
-        // ========================= INPUT FIELD VALIDATION ========================= //
+        // Input Field Validation
 
         binding.inputEmail.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(charSequence: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -63,7 +66,7 @@ class LoginActivity : AppCompatActivity() {
         })
 
 
-        // ========================= GOOGLE SIGN IN ========================= //
+        // Google Sign In
 
         val googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(WEB_CLIENT_ID).requestEmail().build()
         val googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions)
@@ -73,7 +76,7 @@ class LoginActivity : AppCompatActivity() {
         }
 
 
-        // ========================= EMAIL SIGN IN ========================= //
+        // Email Sign In
 
         binding.buttonLogin.setOnClickListener {
             val email = binding.inputEmail.text.toString().trim()
@@ -186,7 +189,13 @@ class LoginActivity : AppCompatActivity() {
 
                     Toast.makeText(this, getString(R.string.prompt_auth_success), Toast.LENGTH_SHORT).show()
 
-                    startActivity(Intent(this, MainActivity::class.java))
+                    val animationBundle = ActivityOptions.makeCustomAnimation(
+                        this,
+                        R.anim.slide_in_top,
+                        R.anim.slide_out_bottom
+                    ).toBundle()
+
+                    startActivity(Intent(this, MainActivity::class.java), animationBundle)
                     finish()
                 } else {
                     Snackbar.make(binding.root, R.string.prompt_auth_failed, Snackbar.LENGTH_INDEFINITE)

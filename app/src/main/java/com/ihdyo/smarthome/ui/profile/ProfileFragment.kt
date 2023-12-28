@@ -59,8 +59,8 @@ class ProfileFragment : Fragment() {
 
                 val animationBundle = ActivityOptions.makeCustomAnimation(
                     requireActivity(),
-                    R.anim.slide_in_bottom,
-                    R.anim.slide_out_top
+                    R.anim.no_animation,
+                    R.anim.no_animation
                 ).toBundle()
 
                 startActivity(Intent(requireContext(), SplashActivity::class.java), animationBundle)

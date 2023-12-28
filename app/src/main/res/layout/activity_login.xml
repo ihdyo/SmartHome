@@ -10,10 +10,11 @@
     tools:context=".ui.login.LoginActivity">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/image_decoration"
         android:layout_width="@dimen/sp_12xl"
         android:layout_height="@dimen/sp_12xl"
-        android:layout_marginEnd="-96dp"
+        android:layout_marginTop="-12dp"
+        android:layout_marginEnd="-124dp"
         android:elevation="-1dp"
         android:scaleType="fitStart"
         android:src="@drawable/img_house_d"
@@ -25,16 +26,15 @@
         android:id="@+id/text_room_decoration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="-36dp"
-        android:rotation="-90"
+        android:layout_marginStart="@dimen/sp_xl"
         android:fontFamily="@font/juliette_regular"
         android:text="@string/app_tagline"
         android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.Material3.DisplayMedium"
+        android:textAppearance="@style/TextAppearance.Material3.DisplaySmall"
         android:textColor="?attr/colorPrimary"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView"
+        app:layout_constraintBottom_toBottomOf="@+id/image_decoration"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/imageView" />
+        app:layout_constraintTop_toTopOf="@+id/image_decoration" />
 
     <TextView
         android:id="@+id/text_welcome"
@@ -78,7 +78,7 @@
             android:id="@+id/input_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textPassword" />
+            android:inputType="textEmailAddress" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
