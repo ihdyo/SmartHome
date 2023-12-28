@@ -21,6 +21,16 @@
     <string name="menu_campaign">Kampanye</string>
     <string name="menu_about">Babagan</string>
     <string name="menu_profile">Profil</string>
+    <string name="menu_login">Mlebu</string>
+    <string name="menu_scan">Pindai</string>
+
+    <string name="hint_email">Email</string>
+    <string name="hint_old_email">Email saiki</string>
+    <string name="hint_new_email">Email anyar</string>
+    <string name="hint_password">Sandi</string>
+    <string name="hint_old_password">Sandi saiki</string>
+    <string name="hint_new_password">Sandi anyar</string>
+    <string name="hint_username">Jeneng panganggo</string>
 
     <string name="text_greeting_morning">Sugeng Enjang,</string>
     <string name="text_greeting_afternoon">Sugeng Awan,</string>
@@ -30,21 +40,28 @@
     <string name="text_to">Nganti</string>
     <string name="text_automatic">O</string>
     <string name="text_manual">M</string>
-    <string name="text_schedule_title_start">Pilih Wektu Wiwitan</string>
-    <string name="text_schedule_title_finish">Pilih Wektu Pungkasan</string>
+    <string name="text_schedule_title_start">Pilih wektu wiwitan</string>
+    <string name="text_schedule_title_finish">Pilih wektu pungkasan</string>
+    <string name="text_change_email">Ngganti email</string>
+    <string name="text_change_password">Ngganti sandi</string>
+    <string name="text_change_username">Ngganti jeneng panganggo</string>
 
+    <string name="prompt_cancel">Batalake</string>
+    <string name="prompt_no">Ora</string>
+    <string name="prompt_yes">Ya</string>
     <string name="prompt_connection_no">Ora ana sambungan</string>
     <string name="prompt_connection_check">Mangga priksa sambungan sampeyan</string>
     <string name="prompt_connection_connect">Nyambung</string>
-    <string name="prompt_connection_cancel">Batal</string>
     <string name="prompt_connection_restart">Ulangi</string>
     <string name="prompt_logout">Metu</string>
     <string name="prompt_logout_check">Apa sampeyan yakin arep metu?</string>
-    <string name="prompt_logout_logout">Metu</string>
-    <string name="prompt_logout_cancel">Batal</string>
+    <string name="prompt_change_email">Ganti email</string>
+    <string name="prompt_change_email_check">Apa sampeyan yakin arep ganti email?</string>
+    <string name="prompt_change_password">Ganti sandi</string>
+    <string name="prompt_change_password_check">Apa sampeyan yakin arep ganti sandi?</string>
 
     <string name="placeholder_email">email iki</string>
-    <string name="placeholder_username">Panganggo Ini</string>
+    <string name="placeholder_username">Panganggo Iki</string>
     <string name="placeholder_greeting">Halo,</string>
     <string name="placeholder_city">Kutha Iki</string>
     <string name="placeholder_room">Kamar Iki</string>

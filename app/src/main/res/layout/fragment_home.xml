@@ -84,8 +84,8 @@
 
         <ImageView
             android:id="@+id/image_room"
-            android:layout_width="@dimen/room"
-            android:layout_height="@dimen/room"
+            android:layout_width="560dp"
+            android:layout_height="560dp"
             android:elevation="-2dp"
             android:scaleType="centerCrop"
             android:src="@drawable/shape_placeholder"
@@ -211,9 +211,9 @@
 
         <com.google.android.material.slider.Slider
             android:id="@+id/slider_lamp_brightness"
-            android:layout_width="@dimen/switch_width"
+            android:layout_width="@dimen/sp_11xl"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/switch_margin"
+            android:layout_marginEnd="-112dp"
             android:rotation="-90"
             android:stepSize="1.0"
             android:value="10.0"

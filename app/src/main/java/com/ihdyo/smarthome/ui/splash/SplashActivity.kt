@@ -1,4 +1,4 @@
-package com.ihdyo.smarthome.ui
+package com.ihdyo.smarthome.ui.splash
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -17,9 +17,11 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.ihdyo.smarthome.MainActivity
+import com.google.firebase.auth.FirebaseAuth
 import com.ihdyo.smarthome.R
 import com.ihdyo.smarthome.databinding.ActivitySplashBinding
+import com.ihdyo.smarthome.ui.MainActivity
+import com.ihdyo.smarthome.ui.auth.AuthActivity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -100,7 +102,7 @@ class SplashActivity : AppCompatActivity() {
 
         // Delay
         lifecycleScope.launch {
-            delay(300)
+            delay(800)
         }
 
         // Network Check
@@ -110,12 +112,22 @@ class SplashActivity : AppCompatActivity() {
         }
 
         if (networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) {
+
+            // Animation Bundle
             val animationBundle = ActivityOptions.makeCustomAnimation(
                 this,
                 R.anim.slide_in_top,
                 R.anim.slide_out_bottom
             ).toBundle()
-            startActivity(Intent(this, MainActivity::class.java), animationBundle)
+
+            // User Check
+            val currentUser = FirebaseAuth.getInstance().currentUser
+
+            if (currentUser != null) {
+                startActivity(Intent(this, MainActivity::class.java), animationBundle)
+            } else {
+                startActivity(Intent(this, AuthActivity::class.java), animationBundle)
+            }
 
             finish()
         } else {
@@ -134,7 +146,7 @@ class SplashActivity : AppCompatActivity() {
                     startActivity(Intent(this, SplashActivity::class.java), animationBundle)
                     finish()
                 }
-                .setNegativeButton(resources.getString(R.string.prompt_connection_cancel)) { _, _ ->
+                .setNegativeButton(resources.getString(R.string.prompt_cancel)) { _, _ ->
                     finishAffinity()
                 }
                 .setPositiveButton(resources.getString(R.string.prompt_connection_connect)) { _, _ ->

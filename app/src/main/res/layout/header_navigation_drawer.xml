@@ -28,7 +28,7 @@
         android:id="@+id/text_tagline_translated"
         style="@style/TextAppearance.Material3.LabelSmall"
         android:layout_marginTop="@dimen/sp_sm"
-        android:layout_marginEnd="@dimen/tagline_margin"
+        android:layout_marginEnd="-36dp"
         android:layout_width="@dimen/sp_7xl"
         android:layout_height="wrap_content"
         android:alpha="0.5"

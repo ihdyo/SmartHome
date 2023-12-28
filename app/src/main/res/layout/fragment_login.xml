@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/sp_xl"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    tools:context=".ui.auth.LoginFragment">
+
+    <ImageView
+        android:layout_width="296dp"
+        android:layout_height="296dp"
+        android:elevation="-1dp"
+        android:scaleType="fitStart"
+        android:src="@drawable/img_house_d"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/text_room_decoration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="-2dp"
+        android:layout_marginTop="-56dp"
+        android:layout_marginStart="-56dp"
+        android:fontFamily="@font/juliette_regular"
+        android:rotation="-90"
+        android:text="@string/app_tagline"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.Material3.DisplaySmall"
+        android:textColor="?attr/colorPrimary"
+        app:layout_constraintBottom_toTopOf="@+id/text_login"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/text_login"
+        style="@style/TextAppearance.Material3.TitleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/sp_2xs"
+        android:text="Welcome!"
+        android:textAlignment="textStart"
+        app:layout_constraintBottom_toTopOf="@+id/text_login_description"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/text_login_description"
+        style="@style/TextAppearance.Material3.BodyMedium"
+        android:layout_marginBottom="@dimen/sp_xl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Please provide us your identity so we could let you to come in"
+        android:textAlignment="textStart"
+        app:layout_constraintBottom_toTopOf="@+id/text_email"
+        app:layout_constraintStart_toStartOf="@+id/text_login" />
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/text_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/sp_md"
+        android:hint="@string/hint_email"
+        app:startIconDrawable="@drawable/bx_envelope"
+        app:layout_constraintBottom_toTopOf="@+id/text_password"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/input_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/text_password"
+        android:layout_marginBottom="@dimen/sp_4xl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/hint_password"
+        app:endIconMode="password_toggle"
+        app:startIconDrawable="@drawable/bx_lock_alt"
+        app:layout_constraintBottom_toTopOf="@+id/button_login"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/input_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/text_forgot_password"
+        style="@style/TextAppearance.Material3.LabelMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/sp_xs"
+        android:text="Forgot Password?"
+        android:textAlignment="textEnd"
+        android:textColor="?attr/colorPrimary"
+        app:layout_constraintEnd_toEndOf="@+id/text_password"
+        app:layout_constraintTop_toBottomOf="@+id/text_password" />
+
+    <Button
+        android:id="@+id/button_login"
+        android:layout_width="@dimen/sp_0"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/sp_xl"
+        android:layout_marginBottom="@dimen/sp_xl"
+        android:text="Login"
+        android:textAlignment="textStart"
+        app:icon="@drawable/bx_log_in_circle"
+        app:iconGravity="textStart"
+        app:layout_constraintBottom_toTopOf="@+id/text_or"
+        app:layout_constraintEnd_toStartOf="@+id/button_scan"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/button_scan"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="@dimen/sp_3xl"
+        android:layout_height="wrap_content"
+        android:paddingEnd="@dimen/sp_lg"
+        android:layout_marginBottom="@dimen/sp_sm"
+        app:icon="@drawable/bx_qr_scan"
+        app:iconGravity="textStart"
+        app:layout_constraintBottom_toTopOf="@+id/text_unregistered"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/button_login"
+        app:layout_constraintVertical_bias="0.0"
+        tools:ignore="RtlSymmetry" />
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="@dimen/sp_0"
+        android:layout_height="@dimen/sp_4xs"
+        android:layout_marginHorizontal="@dimen/sp_sm"
+        android:alpha="0.5"
+        android:background="?attr/colorOnSurface"
+        app:layout_constraintBottom_toBottomOf="@+id/text_or"
+        app:layout_constraintEnd_toStartOf="@+id/text_or"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/text_or" />
+
+    <TextView
+        android:id="@+id/text_or"
+        style="@style/TextAppearance.Material3.LabelSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/sp_xl"
+        android:alpha="0.5"
+        android:text="or"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toTopOf="@+id/button_google"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <View
+        android:layout_width="@dimen/sp_0"
+        android:layout_height="@dimen/sp_4xs"
+        android:layout_marginHorizontal="@dimen/sp_sm"
+        android:alpha="0.5"
+        android:background="?attr/colorOnSurface"
+        app:layout_constraintBottom_toBottomOf="@+id/text_or"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/text_or"
+        app:layout_constraintTop_toTopOf="@+id/text_or" />
+
+    <Button
+        android:id="@+id/button_google"
+        style="@style/Widget.Material3.Button.TonalButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/sp_md"
+        android:text="Login with Google"
+        android:textAlignment="textStart"
+        app:icon="@drawable/bxl_google"
+        app:iconGravity="textStart"
+        app:layout_constraintBottom_toTopOf="@+id/text_unregistered"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/text_unregistered"
+        style="@style/TextAppearance.Material3.LabelMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Didn't have our product yet? "
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/text_register"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="@+id/text_login" />
+
+    <TextView
+        android:id="@+id/text_register"
+        style="@style/TextAppearance.Material3.LabelMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Order here!"
+        android:textAlignment="center"
+        android:textColor="?attr/colorPrimary"
+        android:textStyle="italic"
+        app:layout_constraintBottom_toBottomOf="@+id/text_unregistered"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/text_unregistered"
+        app:layout_constraintTop_toTopOf="@+id/text_unregistered" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

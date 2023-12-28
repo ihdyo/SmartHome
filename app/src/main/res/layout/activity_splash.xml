@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.SplashActivity">
+    tools:context=".ui.splash.SplashActivity">
 
     <TextView
         android:id="@+id/text_room_decoration"
@@ -21,8 +21,8 @@
 
     <ImageView
         android:id="@+id/image_splash_background"
-        android:layout_width="@dimen/splash"
-        android:layout_height="@dimen/splash"
+        android:layout_width="@dimen/sp_12xl"
+        android:layout_height="@dimen/sp_12xl"
         android:scaleType="centerCrop"
         android:src="@drawable/app_icon"
         app:layout_constraintBottom_toBottomOf="parent"

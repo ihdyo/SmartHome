@@ -1,4 +1,4 @@
-package com.ihdyo.smarthome
+package com.ihdyo.smarthome.ui
 
 import android.os.Bundle
 import android.view.Menu
@@ -14,6 +14,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.PopupMenu
+import com.ihdyo.smarthome.R
 import com.ihdyo.smarthome.data.preferences.AppPreferences
 import com.ihdyo.smarthome.databinding.ActivityMainBinding
 

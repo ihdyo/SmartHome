@@ -21,6 +21,16 @@
     <string name="menu_campaign">Campaign</string>
     <string name="menu_about">About</string>
     <string name="menu_profile">Profile</string>
+    <string name="menu_login">Login</string>
+    <string name="menu_scan">Scan</string>
+
+    <string name="hint_email">Email</string>
+    <string name="hint_old_email">Current email</string>
+    <string name="hint_new_email">New email</string>
+    <string name="hint_password">Password</string>
+    <string name="hint_old_password">current password</string>
+    <string name="hint_new_password">new password</string>
+    <string name="hint_username">Username</string>
 
     <string name="text_greeting_morning">Good Morning,</string>
     <string name="text_greeting_afternoon">Good Afternoon,</string>
@@ -30,18 +40,25 @@
     <string name="text_to">To</string>
     <string name="text_automatic">A</string>
     <string name="text_manual">M</string>
-    <string name="text_schedule_title_start">Select Start Time</string>
-    <string name="text_schedule_title_finish">Select Finish Time</string>
+    <string name="text_schedule_title_start">Select start time</string>
+    <string name="text_schedule_title_finish">Select finish time</string>
+    <string name="text_change_email">Change email</string>
+    <string name="text_change_password">Change password</string>
+    <string name="text_change_username">Change username</string>
 
+    <string name="prompt_cancel">Cancel</string>
+    <string name="prompt_no">No</string>
+    <string name="prompt_yes">Yes</string>
     <string name="prompt_connection_no">No connection</string>
     <string name="prompt_connection_check">Please re-check your internet connection</string>
-    <string name="prompt_connection_connect">Connect</string>
-    <string name="prompt_connection_cancel">Cancel</string>
     <string name="prompt_connection_restart">Restart</string>
+    <string name="prompt_connection_connect">Connect</string>
     <string name="prompt_logout">Log Out</string>
     <string name="prompt_logout_check">Are you sure want to log out?</string>
-    <string name="prompt_logout_logout">Log Out</string>
-    <string name="prompt_logout_cancel">Cancel</string>
+    <string name="prompt_change_email">Change email</string>
+    <string name="prompt_change_email_check">Are you sure want to change your email?</string>
+    <string name="prompt_change_password">Change password</string>
+    <string name="prompt_change_password_check">Are you sure want to change your password?</string>
 
     <string name="placeholder_email">this email</string>
     <string name="placeholder_username"> This User</string>

@@ -6,7 +6,6 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
-
     <application
         android:name=".SmartHome"
         android:allowBackup="true"
@@ -18,25 +17,26 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SmartHome"
         tools:targetApi="31">
-
         <activity
-            android:name=".ui.SplashActivity"
+            android:name=".ui.auth.AuthActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SmartHome.NoActionBar"
+            android:windowSoftInputMode="adjustPan"/>
+        <activity
+            android:name=".ui.splash.SplashActivity"
             android:exported="true"
-            android:theme="@style/Theme.SmartHome.FullScreen" >
+            android:theme="@style/Theme.SmartHome.FullScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:exported="false"
-            android:label="@string/app_name"
             android:theme="@style/Theme.SmartHome.NoActionBar"
-            android:windowSoftInputMode="adjustNothing"
-            tools:ignore="RedundantLabel" />
-
+            android:windowSoftInputMode="adjustNothing" />
     </application>
+
 </manifest>

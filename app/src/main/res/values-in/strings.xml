@@ -21,6 +21,16 @@
     <string name="menu_campaign">Kampanye</string>
     <string name="menu_about">Tentang</string>
     <string name="menu_profile">Profil</string>
+    <string name="menu_login">Masuk</string>
+    <string name="menu_scan">Pindai</string>
+
+    <string name="hint_email">Email</string>
+    <string name="hint_old_email">Email sekarang</string>
+    <string name="hint_new_email">Email baru</string>
+    <string name="hint_password">Kata sandi</string>
+    <string name="hint_old_password">Kata sandi sekarang</string>
+    <string name="hint_new_password">Kata sandi baru</string>
+    <string name="hint_username">Nama pengguna</string>
 
     <string name="text_greeting_morning">Selamat Pagi,</string>
     <string name="text_greeting_afternoon">Selamat Siang,</string>
@@ -30,18 +40,25 @@
     <string name="text_to">Hingga</string>
     <string name="text_automatic">A</string>
     <string name="text_manual">M</string>
-    <string name="text_schedule_title_start">Pilih Waktu Mulai</string>
-    <string name="text_schedule_title_finish">Pilih Waktu Selesai</string>
+    <string name="text_schedule_title_start">Pilih waktu mulai</string>
+    <string name="text_schedule_title_finish">Pilih waktu selesai</string>
+    <string name="text_change_email">Ubah email</string>
+    <string name="text_change_password">Ubah kata sandi</string>
+    <string name="text_change_username">Ubah nama pengguna</string>
 
+    <string name="prompt_cancel">Batal</string>
+    <string name="prompt_no">Tidak</string>
+    <string name="prompt_yes">Ya</string>
     <string name="prompt_connection_no">Tidak ada koneksi</string>
     <string name="prompt_connection_check">Mohon periksa ulang koneksimu</string>
     <string name="prompt_connection_connect">Hubungkan</string>
-    <string name="prompt_connection_cancel">Batal</string>
     <string name="prompt_connection_restart">Mulai Ulang</string>
     <string name="prompt_logout">Keluar</string>
     <string name="prompt_logout_check">Apakah kamu yakin ingin keluar?</string>
-    <string name="prompt_logout_logout">Keluar</string>
-    <string name="prompt_logout_cancel">Batal</string>
+    <string name="prompt_change_email">Ubah email</string>
+    <string name="prompt_change_email_check">Apakah kamu yakin ingin mengganti email?</string>
+    <string name="prompt_change_password">Ubah kata sandi</string>
+    <string name="prompt_change_password_check">Apakah kamu yakin ingin mengganti kata sandi?</string>
 
     <string name="placeholder_email">email ini</string>
     <string name="placeholder_username">Pengguna Ini</string>
