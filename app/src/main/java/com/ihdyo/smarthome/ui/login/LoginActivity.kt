@@ -24,7 +24,6 @@ import com.ihdyo.smarthome.utils.Const.COLLECTION_USERS
 import com.ihdyo.smarthome.utils.Const.RC_SIGN_IN
 import com.ihdyo.smarthome.utils.Const.WEB_CLIENT_ID
 import com.ihdyo.smarthome.utils.ProgressBar
-import com.ihdyo.smarthome.utils.UiUpdater
 
 @Suppress("DEPRECATION")
 class LoginActivity : AppCompatActivity() {

@@ -3,7 +3,8 @@ package com.ihdyo.smarthome
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.color.DynamicColors
-import com.ihdyo.smarthome.data.preferences.AppPreferences
+import com.google.firebase.FirebaseApp
+import com.ihdyo.smarthome.data.AppPreferences
 import java.util.Locale
 
 @Suppress("DEPRECATION")
@@ -11,6 +12,7 @@ class SmartHome : Application() {
     override fun onCreate() {
         super.onCreate()
 
+        FirebaseApp.initializeApp(applicationContext)
 
         // Theme
         val appPreferences = AppPreferences(this)

@@ -15,10 +15,14 @@ import android.os.Bundle
 import android.provider.Settings
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.ihdyo.smarthome.R
+import com.ihdyo.smarthome.data.factory.AuthFactory
+import com.ihdyo.smarthome.data.repository.AuthRepository
+import com.ihdyo.smarthome.data.viewmodel.AuthViewModel
 import com.ihdyo.smarthome.databinding.ActivitySplashBinding
 import com.ihdyo.smarthome.ui.MainActivity
 import com.ihdyo.smarthome.ui.login.LoginActivity
@@ -29,6 +33,7 @@ import kotlinx.coroutines.launch
 class SplashActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySplashBinding
+    private lateinit var authViewModel: AuthViewModel
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,6 +43,11 @@ class SplashActivity : AppCompatActivity() {
 
         binding.textAppName.text = getAppName()
         binding.textAppVersion.text = "${getString(R.string.app_version)} ${getAppVersion()}"
+
+        authViewModel = ViewModelProvider(
+            this,
+            AuthFactory(AuthRepository(FirebaseAuth.getInstance()))
+        )[AuthViewModel::class.java]
 
         askPermission()
     }
@@ -121,15 +131,16 @@ class SplashActivity : AppCompatActivity() {
             ).toBundle()
 
             // User Check
-            val currentUser = FirebaseAuth.getInstance().currentUser
-
-            if (currentUser != null) {
-                startActivity(Intent(this, MainActivity::class.java), animationBundle)
-            } else {
-                startActivity(Intent(this, LoginActivity::class.java), animationBundle)
+            authViewModel.getCurrentUser()
+            authViewModel.currentUser.observe(this) { currentUser ->
+                if (currentUser != null) {
+                    startActivity(Intent(this, MainActivity::class.java), animationBundle)
+                } else {
+                    startActivity(Intent(this, LoginActivity::class.java), animationBundle)
+                }
+                finish()
             }
 
-            finish()
         } else {
 
             // Alert Dialog

@@ -11,12 +11,13 @@ import coil.load
 import coil.request.CachePolicy
 import com.ihdyo.smarthome.R
 import com.ihdyo.smarthome.data.model.RoomModel
+import com.ihdyo.smarthome.data.viewmodel.MainViewModel
 import com.ihdyo.smarthome.utils.UiUpdater
 
 class RoomAdapter(
     private var items: List<RoomModel>,
     private val onItemClickListener: (RoomModel) -> Unit,
-    private val homeViewModel: HomeViewModel
+    private val mainViewModel: MainViewModel
     ): RecyclerView.Adapter<RoomAdapter.ItemViewHolder>() {
 
     private var activePosition: Int = RecyclerView.NO_POSITION
@@ -49,7 +50,7 @@ class RoomAdapter(
             notifyItemChanged(activePosition)
             val selectedRoom = items[activePosition]
             onItemClickListener(selectedRoom)
-            homeViewModel.setSelectedRoom(selectedRoom, selectedRoom.RID)
+            mainViewModel.setSelectedRoom(selectedRoom, selectedRoom.RID)
         }
     }
 
@@ -70,7 +71,7 @@ class RoomAdapter(
 
                         val selectedRoom = items[position]
                         onItemClickListener(selectedRoom)
-                        homeViewModel.setSelectedRoom(selectedRoom, selectedRoom.RID)
+                        mainViewModel.setSelectedRoom(selectedRoom, selectedRoom.RID)
                     }
                 }
             }

@@ -3,14 +3,14 @@ package com.ihdyo.smarthome.data.factory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.ihdyo.smarthome.data.repository.MainRepository
-import com.ihdyo.smarthome.ui.home.HomeViewModel
+import com.ihdyo.smarthome.data.viewmodel.MainViewModel
 
 @Suppress("UNCHECKED_CAST")
-class ViewModelFactory(private val repository: MainRepository) : ViewModelProvider.Factory {
+class MainFactory(private val mainRepository: MainRepository) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {
-            return HomeViewModel(repository) as T
+        if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
+            return MainViewModel(mainRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

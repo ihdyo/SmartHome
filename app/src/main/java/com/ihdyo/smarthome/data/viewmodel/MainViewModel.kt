@@ -1,20 +1,20 @@
-package com.ihdyo.smarthome.ui.home
+package com.ihdyo.smarthome.data.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ihdyo.smarthome.data.repository.MainRepository
 import com.ihdyo.smarthome.data.model.EnvironmentModel
 import com.ihdyo.smarthome.data.model.LampModel
 import com.ihdyo.smarthome.data.model.LampSchedule
 import com.ihdyo.smarthome.data.model.RoomModel
 import com.ihdyo.smarthome.data.model.UserModel
-import com.ihdyo.smarthome.data.repository.MainRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class HomeViewModel(private val repository: MainRepository) : ViewModel() {
+class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
 
     private val _selectedRoom = MutableLiveData<Pair<RoomModel, String?>>()
     val selectedRoom: LiveData<Pair<RoomModel, String?>> get() = _selectedRoom
@@ -28,7 +28,6 @@ class HomeViewModel(private val repository: MainRepository) : ViewModel() {
 
     private val _environmentsLiveData = MutableLiveData<List<EnvironmentModel>?>()
     val environmentsLiveData: MutableLiveData<List<EnvironmentModel>?> get() = _environmentsLiveData
-
 
     private val _roomsLiveData = MutableLiveData<List<RoomModel>?>()
     val roomsLiveData: MutableLiveData<List<RoomModel>?> get() = _roomsLiveData
@@ -83,7 +82,7 @@ class HomeViewModel(private val repository: MainRepository) : ViewModel() {
     fun fetchUser(userId: String) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val user = repository.getUser(userId)
+                val user = mainRepository.getUser(userId)
                 _userLiveData.postValue(user)
                 Log.d(TAG, "Successfully fetched user with ID: $userId")
             } catch (e: Exception) {
@@ -95,7 +94,7 @@ class HomeViewModel(private val repository: MainRepository) : ViewModel() {
     fun fetchEnvironments(userId: String) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val environments = repository.getEnvironments(userId)
+                val environments = mainRepository.getEnvironments(userId)
                 _environmentsLiveData.postValue(environments)
 
                 val sensorValueMap = fetchSensorValue(environments)
@@ -111,7 +110,7 @@ class HomeViewModel(private val repository: MainRepository) : ViewModel() {
     fun fetchRooms(userId: String) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val rooms = repository.getRooms(userId)
+                val rooms = mainRepository.getRooms(userId)
                 _roomsLiveData.postValue(rooms)
                 Log.d(TAG, "Successfully fetched rooms for user with ID: $userId")
             } catch (e: Exception) {
@@ -134,7 +133,7 @@ class HomeViewModel(private val repository: MainRepository) : ViewModel() {
     fun fetchLamps(userId: String, roomId: String) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val lamps = repository.getLamps(userId, roomId)
+                val lamps = mainRepository.getLamps(userId, roomId)
                 _lampsLiveData.postValue(lamps)
 
                 val powerConsumedMap = fetchPowerConsumed(lamps)
@@ -241,7 +240,7 @@ class HomeViewModel(private val repository: MainRepository) : ViewModel() {
     fun updateLampBrightness(userId: String, roomId: String, lampId: String, brightness: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                repository.putLampBrightness(userId, roomId, lampId, brightness)
+                mainRepository.putLampBrightness(userId, roomId, lampId, brightness)
                 _lampBrightnessLiveData.postValue(brightness)
                 Log.d(TAG, "Success updating lamp brightness for $lampId in $roomId")
             } catch (e: Exception) {
@@ -253,7 +252,7 @@ class HomeViewModel(private val repository: MainRepository) : ViewModel() {
     fun updateLampIsAutomaticOn(userId: String, roomId: String, lampId: String, isAutomaticOn: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                repository.putLampIsAutomaticOn(userId, roomId, lampId, isAutomaticOn)
+                mainRepository.putLampIsAutomaticOn(userId, roomId, lampId, isAutomaticOn)
                 _lampIsAutomaticOnLiveData.postValue(isAutomaticOn)
                 Log.d(TAG, "Success setting mode to automatic for $lampId in $roomId")
             } catch (e: Exception) {
@@ -265,7 +264,7 @@ class HomeViewModel(private val repository: MainRepository) : ViewModel() {
     fun updateLampIsPowerOn(userId: String, roomId: String, lampId: String, isPowerOn: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                repository.putLampIsPowerOn(userId, roomId, lampId, isPowerOn)
+                mainRepository.putLampIsPowerOn(userId, roomId, lampId, isPowerOn)
                 _lampIsPowerOnLiveData.postValue(isPowerOn)
                 Log.d(TAG, "Success updating power state for $lampId in $roomId")
             } catch (e: Exception) {
@@ -277,7 +276,7 @@ class HomeViewModel(private val repository: MainRepository) : ViewModel() {
     fun updateLampSchedule(userId: String, roomId: String, lampId: String, newSchedule: LampSchedule) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                repository.putLampSchedule(userId, roomId, lampId, newSchedule)
+                mainRepository.putLampSchedule(userId, roomId, lampId, newSchedule)
                 _lampScheduleLiveData.postValue(newSchedule)
                 Log.d(TAG, "Success updating lamp schedule for $lampId in $roomId")
             } catch (e: Exception) {
@@ -289,7 +288,7 @@ class HomeViewModel(private val repository: MainRepository) : ViewModel() {
     fun updateLampSelectedMode(userId: String, roomId: String, lampId: String, selectedMode: String) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                repository.putLampSelectedMode(userId, roomId, lampId, selectedMode)
+                mainRepository.putLampSelectedMode(userId, roomId, lampId, selectedMode)
                 _lampSelectedModeLiveData.postValue(selectedMode)
                 Log.d(TAG, "Success updating selected mode for $lampId in $roomId")
             } catch (e: Exception) {
@@ -299,7 +298,7 @@ class HomeViewModel(private val repository: MainRepository) : ViewModel() {
     }
 
     companion object {
-        const val TAG = "HomeViewModel"
+        const val TAG = "MainViewModel"
     }
 
 }

@@ -1,4 +1,4 @@
-package com.ihdyo.smarthome.data.preferences
+package com.ihdyo.smarthome.data
 
 import android.content.Context
 import android.content.SharedPreferences

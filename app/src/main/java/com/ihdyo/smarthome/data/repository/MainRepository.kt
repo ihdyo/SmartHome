@@ -1,6 +1,8 @@
 package com.ihdyo.smarthome.data.repository
 
 import android.util.Log
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Source
 import com.ihdyo.smarthome.data.model.EnvironmentModel
@@ -25,8 +27,6 @@ class MainRepository(private val firestore: FirebaseFirestore) {
 
 
     // ========================= GET METHOD ========================= //
-
-
 
     suspend fun getUser(userId: String): UserModel? {
         return try {

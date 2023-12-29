@@ -7,29 +7,37 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.ihdyo.smarthome.R
+import com.ihdyo.smarthome.data.factory.AuthFactory
+import com.ihdyo.smarthome.data.repository.AuthRepository
+import com.ihdyo.smarthome.data.viewmodel.AuthViewModel
 import com.ihdyo.smarthome.databinding.FragmentProfileBinding
 import com.ihdyo.smarthome.ui.splash.SplashActivity
 import com.ihdyo.smarthome.utils.Const
 
 class ProfileFragment : Fragment() {
 
-    private lateinit var auth: FirebaseAuth
-
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
+
+    private lateinit var authViewModel: AuthViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        auth = FirebaseAuth.getInstance()
+        authViewModel = ViewModelProvider(
+            this,
+            AuthFactory(AuthRepository(FirebaseAuth.getInstance()))
+        )[AuthViewModel::class.java]
 
         // Log Out
+        authViewModel.getCurrentUser()
         binding.buttonLogout.setOnClickListener {
             showLogOutDialog()
         }
@@ -49,13 +57,8 @@ class ProfileFragment : Fragment() {
             .setMessage(resources.getString(R.string.prompt_logout_check))
             .setNeutralButton(resources.getString(R.string.prompt_cancel)) { _, _ -> }
             .setPositiveButton(resources.getString(R.string.prompt_logout)) { _, _ ->
-                val googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(
-                    Const.WEB_CLIENT_ID
-                ).requestEmail().build()
-                val googleSignInClient = GoogleSignIn.getClient(requireContext(), googleSignInOptions)
 
-                auth.signOut()
-                googleSignInClient.signOut()
+                authViewModel.signOut()
 
                 val animationBundle = ActivityOptions.makeCustomAnimation(
                     requireActivity(),

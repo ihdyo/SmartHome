@@ -28,12 +28,15 @@ import com.google.android.material.timepicker.TimeFormat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.ihdyo.smarthome.R
-import com.ihdyo.smarthome.data.factory.ViewModelFactory
+import com.ihdyo.smarthome.data.factory.AuthFactory
+import com.ihdyo.smarthome.data.factory.MainFactory
 import com.ihdyo.smarthome.data.model.LampModel
 import com.ihdyo.smarthome.data.model.RoomModel
+import com.ihdyo.smarthome.data.repository.AuthRepository
 import com.ihdyo.smarthome.data.repository.MainRepository
+import com.ihdyo.smarthome.data.viewmodel.AuthViewModel
+import com.ihdyo.smarthome.data.viewmodel.MainViewModel
 import com.ihdyo.smarthome.databinding.FragmentHomeBinding
-import com.ihdyo.smarthome.utils.Const.COLLECTION_USERS
 import com.ihdyo.smarthome.utils.Const.LAMP_SELECTED_MODE_AUTOMATIC
 import com.ihdyo.smarthome.utils.Const.LAMP_SELECTED_MODE_MANUAL
 import com.ihdyo.smarthome.utils.Const.LAMP_SELECTED_MODE_SCHEDULE
@@ -53,10 +56,8 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
-
-    private lateinit var firestore: FirebaseFirestore
-    private lateinit var auth: FirebaseAuth
-    private lateinit var homeViewModel: HomeViewModel
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var authViewModel: AuthViewModel
     private lateinit var roomAdapter: RoomAdapter
     private lateinit var lampAdapter: LampAdapter
     private lateinit var uiUpdater: UiUpdater
@@ -68,16 +69,17 @@ class HomeFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
 
-        firestore = FirebaseFirestore.getInstance()
-        auth = FirebaseAuth.getInstance()
         uiUpdater = UiUpdater()
 
-        firestore.collection(COLLECTION_USERS)
-            .document(FirebaseAuth.getInstance().currentUser!!.uid)
-            .get()
-            .addOnSuccessListener { document ->
-                UID = document.toString()
-            }
+        mainViewModel = ViewModelProvider(
+            this,
+            MainFactory(MainRepository(FirebaseFirestore.getInstance()))
+        )[MainViewModel::class.java]
+
+        authViewModel = ViewModelProvider(
+            this,
+            AuthFactory(AuthRepository(FirebaseAuth.getInstance()))
+        )[AuthViewModel::class.java]
 
         return binding.root
     }
@@ -87,26 +89,32 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
-        // ========================= INITIATE VIEW MODEL ========================= //
+        // ========================= INITIATE VIEW MODEL WITH UID ========================= //
 
-        homeViewModel = ViewModelProvider(this, ViewModelFactory(MainRepository(FirebaseFirestore.getInstance())))[HomeViewModel::class.java]
+        authViewModel.getCurrentUser()
+        authViewModel.currentUser.observe(viewLifecycleOwner) { currentUser ->
+            UID = currentUser?.uid.toString()
 
-        homeViewModel.userLiveData.observe(viewLifecycleOwner) { user ->
-            val fullName = user?.userName
-            val firstName = fullName?.split(" ")?.firstOrNull()
-            binding.textUsername.text = firstName
-        }
-        homeViewModel.fetchUser(UID)
+            mainViewModel.fetchUser(UID)
+            mainViewModel.userLiveData.observe(viewLifecycleOwner) { user ->
+                val fullName = user?.userName
+                val firstName = fullName?.split(" ")?.firstOrNull()
+                binding.textUsername.text = firstName
+            }
 
-        homeViewModel.roomsLiveData.observe(viewLifecycleOwner) { rooms ->
-            if (rooms != null) {
-                initRoomRecyclerView(rooms)
+            mainViewModel.fetchRooms(UID)
+            mainViewModel.roomsLiveData.observe(viewLifecycleOwner) { rooms ->
+                if (rooms != null) {
+                    initRoomRecyclerView(rooms)
+                }
             }
         }
-        homeViewModel.fetchRooms(UID)
 
 
         // ========================= BASIC VIEW ========================= //
+
+        // Progress Bar
+        binding.progressLinear.visibility = View.VISIBLE
 
         // Get Current Time
         getCurrentTime { formattedTime ->
@@ -147,18 +155,6 @@ class HomeFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-
-        homeViewModel.userLiveData.removeObservers(viewLifecycleOwner)
-        homeViewModel.roomsLiveData.removeObservers(viewLifecycleOwner)
-        homeViewModel.lampsLiveData.removeObservers(viewLifecycleOwner)
-        homeViewModel.powerConsumedLiveData.removeObservers(viewLifecycleOwner)
-        homeViewModel.totalPowerConsumedLiveData.removeObservers(viewLifecycleOwner)
-        homeViewModel.lampBrightnessLiveData.removeObservers(viewLifecycleOwner)
-        homeViewModel.lampIsPowerOnLiveData.removeObservers(viewLifecycleOwner)
-        homeViewModel.lampScheduleLiveData.removeObservers(viewLifecycleOwner)
-        homeViewModel.lampSelectedModeLiveData.removeObservers(viewLifecycleOwner)
-        homeViewModel.selectedRoom.removeObservers(viewLifecycleOwner)
-        homeViewModel.selectedLamp.removeObservers(viewLifecycleOwner)
     }
 
     private fun refreshHomeFragment() {
@@ -175,7 +171,7 @@ class HomeFragment : Fragment() {
 
     private fun initRoomRecyclerView(rooms: List<RoomModel>) {
         if (!::roomAdapter.isInitialized) {
-            roomAdapter = RoomAdapter(rooms, { selectedRoom -> showRoomProperties(selectedRoom) }, homeViewModel)
+            roomAdapter = RoomAdapter(rooms, { selectedRoom -> showRoomProperties(selectedRoom) }, mainViewModel)
             binding.rvIconRoom.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             binding.rvIconRoom.adapter = roomAdapter
             roomAdapter.setInitialSelectedIndex(0)
@@ -186,7 +182,7 @@ class HomeFragment : Fragment() {
 
     private fun initLampRecyclerView(lamps: List<LampModel>) {
         if (!::lampAdapter.isInitialized) {
-            lampAdapter = LampAdapter(lamps, { selectedLamp -> showLampProperties(selectedLamp) }, homeViewModel)
+            lampAdapter = LampAdapter(lamps, { selectedLamp -> showLampProperties(selectedLamp) }, mainViewModel)
             binding.rvIconLamp.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
             binding.rvIconLamp.adapter = lampAdapter
             lampAdapter.setInitialSelectedIndex(0)
@@ -200,12 +196,12 @@ class HomeFragment : Fragment() {
     @SuppressLint("SetTextI18n")
     private fun showRoomProperties(selectedRoom: RoomModel) {
 
-        homeViewModel.lampsLiveData.observe(viewLifecycleOwner) { lamps ->
+        mainViewModel.lampsLiveData.observe(viewLifecycleOwner) { lamps ->
             if (lamps != null) {
                 initLampRecyclerView(lamps)
             }
         }
-        homeViewModel.fetchLamps(UID, selectedRoom.RID.toString())
+        mainViewModel.fetchLamps(UID, selectedRoom.RID.toString())
 
 
         // Room Name
@@ -231,33 +227,35 @@ class HomeFragment : Fragment() {
     private fun showLampProperties(selectedLamp: LampModel) {
 
         // Power Consumed
-        homeViewModel.powerConsumedLiveData.observe(viewLifecycleOwner) { powerConsumedMap ->
+        mainViewModel.powerConsumedLiveData.observe(viewLifecycleOwner) { powerConsumedMap ->
             val powerConsumed = powerConsumedMap[selectedLamp.LID]
             val formattedText = "${powerConsumed}Wh"
             binding.textPowerConsumed.text = formattedText
         }
 
         // Total Power Consumed
-        homeViewModel.totalPowerConsumedLiveData.observe(viewLifecycleOwner) { totalPowerConsumedMap ->
+        mainViewModel.totalPowerConsumedLiveData.observe(viewLifecycleOwner) { totalPowerConsumedMap ->
             val formattedText = "${totalPowerConsumedMap}Wh"
             binding.textTotalPowerConsumed.text = formattedText
         }
 
         // Lamp Brightness
-        homeViewModel.lampBrightnessLiveData.observe(viewLifecycleOwner) { brightness ->
+        mainViewModel.lampBrightnessLiveData.observe(viewLifecycleOwner) { brightness ->
             binding.sliderLampBrightness.value = brightness.toFloat()
         }
 
         // Lamp Switch Power
-        homeViewModel.lampIsPowerOnLiveData.observe(viewLifecycleOwner) { isPowerOn ->
+        mainViewModel.lampIsPowerOnLiveData.observe(viewLifecycleOwner) { isPowerOn ->
             binding.switchPower.isChecked = isPowerOn
         }
 
         // Lamp Schedule
-        homeViewModel.lampScheduleLiveData.observe(viewLifecycleOwner) { schedule ->
+        mainViewModel.lampScheduleLiveData.observe(viewLifecycleOwner) { schedule ->
             binding.textScheduleFrom.text = schedule.scheduleFrom
             binding.textScheduleTo.text = schedule.scheduleTo
         }
+
+        binding.progressLinear.visibility = View.GONE
 
         // Update
         updateLampProperties()
@@ -268,55 +266,55 @@ class HomeFragment : Fragment() {
     // ========================= UPDATE LAMP PROPERTIES ========================= //
 
     private fun updateLampProperties() {
-        homeViewModel.selectedRoom.observe(viewLifecycleOwner) { pair ->
-            homeViewModel.selectedLamp.observe(viewLifecycleOwner) { selectedLamp ->
+        mainViewModel.selectedRoom.observe(viewLifecycleOwner) { pair ->
+            mainViewModel.selectedLamp.observe(viewLifecycleOwner) { selectedLamp ->
 
                 // TEST
-                binding.textTest.text = "${pair.second}, ${selectedLamp.LID}"
+//                binding.textTest.text = "${pair.second}, ${selectedLamp.LID}"
 
 
 
                 // Lamp Brightness
                 binding.sliderLampBrightness.addOnChangeListener { _, value, fromUser ->
                     if (fromUser) {
-                        homeViewModel.updateLampBrightness(UID, pair.second.toString(), selectedLamp.LID.toString(), value.toInt())
+                        mainViewModel.updateLampBrightness(UID, pair.second.toString(), selectedLamp.LID.toString(), value.toInt())
                     }
                 }
 
                 // Lamp Switch Power
                 binding.switchPower.setOnCheckedChangeListener { _, isChecked ->
                     selectedLamp.lampIsPowerOn = isChecked
-                    homeViewModel.updateLampIsPowerOn(UID, pair.second.toString(), selectedLamp.LID.toString(), isChecked)
+                    mainViewModel.updateLampIsPowerOn(UID, pair.second.toString(), selectedLamp.LID.toString(), isChecked)
                 }
 
                 // Lamp Selected Mode
-                homeViewModel.lampSelectedModeLiveData.observe(viewLifecycleOwner) { selectedMode ->
+                mainViewModel.lampSelectedModeLiveData.observe(viewLifecycleOwner) { selectedMode ->
                     getButtonState(pair.first, selectedLamp, selectedMode)
                 }
                 binding.buttonAutomatic.setOnClickListener {
-                    homeViewModel.updateLampSelectedMode(UID, pair.second.toString(), selectedLamp.LID.toString(), LAMP_SELECTED_MODE_AUTOMATIC)
+                    mainViewModel.updateLampSelectedMode(UID, pair.second.toString(), selectedLamp.LID.toString(), LAMP_SELECTED_MODE_AUTOMATIC)
                 }
                 binding.buttonSchedule.setOnClickListener {
-                    homeViewModel.updateLampSelectedMode(UID, pair.second.toString(), selectedLamp.LID.toString(), LAMP_SELECTED_MODE_SCHEDULE)
+                    mainViewModel.updateLampSelectedMode(UID, pair.second.toString(), selectedLamp.LID.toString(), LAMP_SELECTED_MODE_SCHEDULE)
                 }
                 binding.buttonManual.setOnClickListener {
-                    homeViewModel.updateLampSelectedMode(UID, pair.second.toString(), selectedLamp.LID.toString(), LAMP_SELECTED_MODE_MANUAL)
+                    mainViewModel.updateLampSelectedMode(UID, pair.second.toString(), selectedLamp.LID.toString(), LAMP_SELECTED_MODE_MANUAL)
                 }
 
                 // Lamp Schedule
                 binding.textScheduleFrom.setOnClickListener {
                     openTimePicker(getString(R.string.text_schedule_title_start)) { selectedTime ->
-                        val newSchedule = homeViewModel.lampScheduleLiveData.value?.copy(scheduleFrom = selectedTime)
+                        val newSchedule = mainViewModel.lampScheduleLiveData.value?.copy(scheduleFrom = selectedTime)
                         newSchedule?.let {
-                            homeViewModel.updateLampSchedule(UID, pair.second.toString(), selectedLamp.LID.toString(), it)
+                            mainViewModel.updateLampSchedule(UID, pair.second.toString(), selectedLamp.LID.toString(), it)
                         }
                     }
                 }
                 binding.textScheduleTo.setOnClickListener {
                     openTimePicker(getString(R.string.text_schedule_title_start)) { selectedTime ->
-                        val newSchedule = homeViewModel.lampScheduleLiveData.value?.copy(scheduleTo = selectedTime)
+                        val newSchedule = mainViewModel.lampScheduleLiveData.value?.copy(scheduleTo = selectedTime)
                         newSchedule?.let {
-                            homeViewModel.updateLampSchedule(UID, pair.second.toString(), selectedLamp.LID.toString(), it)
+                            mainViewModel.updateLampSchedule(UID, pair.second.toString(), selectedLamp.LID.toString(), it)
 
                         }
                     }
@@ -332,14 +330,14 @@ class HomeFragment : Fragment() {
     private fun getButtonState(selectedRoom: RoomModel, selectedLamp: LampModel, selectedMode: String) {
         val isAutomatic = when (selectedMode) {
             LAMP_SELECTED_MODE_AUTOMATIC -> {
-                homeViewModel.sensorValueLiveData.observe(viewLifecycleOwner) { value ->
-                    homeViewModel.updateLampIsPowerOn(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), value)
+                mainViewModel.sensorValueLiveData.observe(viewLifecycleOwner) { value ->
+                    mainViewModel.updateLampIsPowerOn(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), value)
                 }
-                homeViewModel.fetchEnvironments(UID)
+                mainViewModel.fetchEnvironments(UID)
                 true
             }
             LAMP_SELECTED_MODE_SCHEDULE -> {
-                homeViewModel.lampScheduleLiveData.observe(viewLifecycleOwner) { schedule ->
+                mainViewModel.lampScheduleLiveData.observe(viewLifecycleOwner) { schedule ->
                     updatePowerStateIfInSchedule(selectedRoom, selectedLamp, schedule.scheduleFrom!!, schedule.scheduleTo!!)
                 }
                 false
@@ -348,7 +346,7 @@ class HomeFragment : Fragment() {
             else -> return
         }
 
-        homeViewModel.updateLampIsAutomaticOn(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), isAutomatic)
+        mainViewModel.updateLampIsAutomaticOn(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), isAutomatic)
 
         binding.toggleMode.check(
             when (selectedMode) {
@@ -383,15 +381,15 @@ class HomeFragment : Fragment() {
         if (currentTime.isAfter(scheduleFromDateTime) && currentTime.isBefore(scheduleToDateTime)) {
             binding.switchPower.setOnCheckedChangeListener { _, isChecked ->
                 selectedLamp.lampIsPowerOn = isChecked
-                homeViewModel.updateLampIsPowerOn(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), isChecked)
+                mainViewModel.updateLampIsPowerOn(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), isChecked)
             }
-            homeViewModel.updateLampIsPowerOn(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), true)
+            mainViewModel.updateLampIsPowerOn(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), true)
         } else {
             binding.switchPower.setOnCheckedChangeListener { _, isChecked ->
                 selectedLamp.lampIsPowerOn = isChecked
-                homeViewModel.updateLampIsPowerOn(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), isChecked)
+                mainViewModel.updateLampIsPowerOn(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), isChecked)
             }
-            homeViewModel.updateLampIsPowerOn(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), false)
+            mainViewModel.updateLampIsPowerOn(UID, selectedRoom.RID.toString(), selectedLamp.LID.toString(), false)
         }
     }
 

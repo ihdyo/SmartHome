@@ -8,12 +8,13 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.ihdyo.smarthome.R
 import com.ihdyo.smarthome.data.model.LampModel
+import com.ihdyo.smarthome.data.viewmodel.MainViewModel
 import com.ihdyo.smarthome.utils.UiUpdater
 
 class LampAdapter(
     private var items: List<LampModel>,
     private val onItemClickListener: (LampModel) -> Unit,
-    private val homeViewModel: HomeViewModel
+    private val mainViewModel: MainViewModel
     ): RecyclerView.Adapter<LampAdapter.ItemViewHolder>() {
 
     private var activePosition: Int = RecyclerView.NO_POSITION
@@ -45,7 +46,7 @@ class LampAdapter(
             notifyItemChanged(activePosition)
             val selectedLamp = items[activePosition]
             onItemClickListener(selectedLamp)
-            homeViewModel.setSelectedLamp(selectedLamp)
+            mainViewModel.setSelectedLamp(selectedLamp)
         }
     }
 
@@ -66,7 +67,7 @@ class LampAdapter(
 
                         val selectedLamp = items[position]
                         onItemClickListener(selectedLamp)
-                        homeViewModel.setSelectedLamp(selectedLamp)
+                        mainViewModel.setSelectedLamp(selectedLamp)
                     }
                 }
             }

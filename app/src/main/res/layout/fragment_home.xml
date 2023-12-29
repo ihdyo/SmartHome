@@ -13,6 +13,16 @@
         android:clipChildren="false"
         android:clipToPadding="false">
 
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/progress_linear"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:elevation="@dimen/sp_xl"
+            android:indeterminate="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
         <TextView
             android:id="@+id/text_test"
             style="@style/TextAppearance.Material3.TitleLarge"
@@ -20,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/sp_8xl"
             android:elevation="999dp"
-            android:text="error"
+            android:text="TEST"
             android:textAlignment="textStart"
             android:textColor="?attr/colorError"
             android:textStyle="bold"

@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
 import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -14,15 +16,21 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.PopupMenu
+import androidx.lifecycle.ViewModelProvider
+import com.google.firebase.auth.FirebaseAuth
 import com.ihdyo.smarthome.R
-import com.ihdyo.smarthome.data.preferences.AppPreferences
+import com.ihdyo.smarthome.data.AppPreferences
+import com.ihdyo.smarthome.data.factory.AuthFactory
+import com.ihdyo.smarthome.data.repository.AuthRepository
+import com.ihdyo.smarthome.data.viewmodel.AuthViewModel
 import com.ihdyo.smarthome.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
+    private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var appPreferences: AppPreferences
+    private lateinit var authViewModel: AuthViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +39,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         appPreferences = AppPreferences(this)
+
+        authViewModel = ViewModelProvider(
+            this,
+            AuthFactory(AuthRepository(FirebaseAuth.getInstance()))
+        )[AuthViewModel::class.java]
 
 
         // ========================= SET UP APP BAR ========================= //
@@ -49,6 +62,24 @@ class MainActivity : AppCompatActivity() {
 
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        // Header
+        val headerView = binding.navView.getHeaderView(0)
+        val username = headerView.findViewById<TextView>(R.id.text_username)
+        val email = headerView.findViewById<TextView>(R.id.text_email)
+        val verified = headerView.findViewById<ImageView>(R.id.icon_verification)
+
+        authViewModel.getCurrentUser()
+        authViewModel.currentUser.observe(this) { currentUser ->
+            username.text = currentUser?.displayName.toString()
+            email.text = currentUser?.email.toString()
+
+            if (currentUser?.isEmailVerified == true) {
+                verified.visibility = View.VISIBLE
+            } else {
+                verified.visibility = View.GONE
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
