@@ -94,7 +94,8 @@ class MainRepository(private val firestore: FirebaseFirestore) {
 
     // ========================= PUT METHOD ========================= //
 
-    fun putLampBrightness(userId: String, roomId: String, lampId: String, lampBrightness: Int) {
+    fun putLampBrightness(userId: String, roomId: String, lampBrightnessMap: Map<String, Int>) {
+        val (lampId, lampBrightness) = lampBrightnessMap.entries.first()
         putLampField(userId, roomId, lampId, FIELD_LAMP_BRIGHTNESS, lampBrightness)
     }
 

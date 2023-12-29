@@ -49,8 +49,11 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
     private val _sensorValueLiveData = MutableLiveData<Boolean>()
     val sensorValueLiveData: LiveData<Boolean> get() = _sensorValueLiveData
 
-    private val _lampBrightnessLiveData = MutableLiveData<Int>()
-    val lampBrightnessLiveData: LiveData<Int> get() = _lampBrightnessLiveData
+
+    private val _lampBrightnessLiveData = MutableLiveData<Map<String, Int>>()
+    val lampBrightnessLiveData: LiveData<Map<String, Int>> get() = _lampBrightnessLiveData
+
+
 
     private val _lampIsAutomaticOnLiveData = MutableLiveData<Boolean>()
     val lampIsAutomaticOnLiveData: LiveData<Boolean> get() = _lampIsAutomaticOnLiveData
@@ -160,8 +163,8 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
                 val totalPowerConsumedMap = fetchTotalPowerConsumed(powerConsumedMap)
                 _totalPowerConsumedLiveData.postValue(totalPowerConsumedMap)
 
-                val lampBrightness = fetchLampBrightness(lamps)
-                _lampBrightnessLiveData.postValue(lampBrightness)
+                val lampBrightnessMap = fetchLampBrightness(lamps)
+                _lampBrightnessLiveData.postValue(lampBrightnessMap)
 
                 val lampIsPowerOn = fetchLampIsPowerOn(lamps)
                 _lampIsPowerOnLiveData.postValue(lampIsPowerOn)
@@ -208,15 +211,19 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
         return totalPowerConsumed
     }
 
-    private fun fetchLampBrightness(lamps: List<LampModel>): Int {
-        return try {
-            val brightness = lamps.firstOrNull()?.lampBrightness ?: 0
-            Log.d(TAG, "Successfully fetched lamp brightness: $brightness")
-            brightness
+    private fun fetchLampBrightness(lamps: List<LampModel>): Map<String, Int> {
+        val lampBrightnessMap = mutableMapOf<String, Int>()
+
+        try {
+            for (lamp in lamps) {
+                lampBrightnessMap[lamp.LID.orEmpty()] = lamp.lampBrightness
+            }
+            Log.d(TAG, "Successfully fetching lamp brightness")
         } catch (e: Exception) {
             Log.e(TAG, "Error fetching lamp brightness: $e")
-            0
         }
+
+        return lampBrightnessMap
     }
 
     private fun fetchLampIsPowerOn(lamps: List<LampModel>): Boolean {
@@ -267,12 +274,12 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
         }
     }
 
-    fun updateLampBrightness(userId: String, roomId: String, lampId: String, brightness: Int) {
+    fun updateLampBrightness(userId: String, roomId: String, lampBrightnessMap: Map<String, Int>) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                mainRepository.putLampBrightness(userId, roomId, lampId, brightness)
-                _lampBrightnessLiveData.postValue(brightness)
-                Log.d(TAG, "Success updating lamp brightness for $lampId in $roomId")
+                mainRepository.putLampBrightness(userId, roomId, lampBrightnessMap)
+                _lampBrightnessLiveData.postValue(lampBrightnessMap)
+                Log.d(TAG, "Success updating lamp brightness $lampBrightnessMap")
             } catch (e: Exception) {
                 Log.e(TAG, "Error updating lamp brightness: $e")
             }
