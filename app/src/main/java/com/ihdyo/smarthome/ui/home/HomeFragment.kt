@@ -270,7 +270,7 @@ class HomeFragment : Fragment() {
             mainViewModel.selectedLamp.observe(viewLifecycleOwner) { selectedLamp ->
 
                 // TEST
-//                binding.textTest.text = "${pair.second}, ${selectedLamp.LID}"
+                binding.textTest.text = "${pair.second}, ${selectedLamp.LID}"
 
 
 

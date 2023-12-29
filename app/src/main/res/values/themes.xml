@@ -57,10 +57,4 @@
         <item name="android:textStyle">bold</item>
     </style>
 
-    // Custom Theme
-    <style name="DialogAnimation">
-        <item name="android:windowEnterAnimation">@anim/dialog_slide_in_bottom</item>
-        <item name="android:windowExitAnimation">@anim/dialog_slide_out_bottom</item>
-    </style>
-
 </resources>
