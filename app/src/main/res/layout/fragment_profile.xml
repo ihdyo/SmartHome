@@ -7,6 +7,62 @@
     tools:context=".ui.profile.ProfileFragment">
 
     <Button
+        android:id="@+id/button_verification"
+        style="@style/Widget.Material3.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/sp_xl"
+        android:layout_marginHorizontal="@dimen/sp_xl"
+        android:text="Send Email Verification"
+        android:textAlignment="center"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_change_password" />
+
+    <Button
+        android:id="@+id/button_change_username"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/sp_xl"
+        android:drawableEnd="@drawable/bx_chevron_right"
+        android:drawableTint="?attr/colorPrimary"
+        android:text="Change Username"
+        android:textAlignment="textStart"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/button_change_email"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/sp_xl"
+        android:drawableEnd="@drawable/bx_chevron_right"
+        android:drawableTint="?attr/colorPrimary"
+        android:text="Update Email"
+        android:textAlignment="textStart"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_change_username" />
+
+    <Button
+        android:id="@+id/button_change_password"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/sp_xl"
+        android:drawableEnd="@drawable/bx_chevron_right"
+        android:drawableTint="?attr/colorPrimary"
+        android:text="Change Password"
+        android:textAlignment="textStart"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_change_email" />
+
+    <Button
         android:id="@+id/button_logout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

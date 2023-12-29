@@ -1,5 +1,6 @@
 package com.ihdyo.smarthome.data.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -18,31 +19,71 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
 
     // ========================= EMAIL AUTH ========================= //
 
-    fun signInWithEmail(email: String, password: String) {
+    fun signInWithEmail(email: String, password: String, onSuccess: () -> Unit, onFailed: (errorMessage: String) -> Unit) {
         viewModelScope.launch {
-            val user = authRepository.signInWithEmail(email, password)
-            if (user != null) {
+            try {
+                val user = authRepository.signInWithEmail(email, password)
                 _currentUser.value = user
-            } else {
-                _authError.value = "Error signing in with email"
+                Log.d(TAG, "Sign in with email successful: $email")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error signing in with email: $email", e)
             }
         }
     }
 
-    // ========================= GOOGLE AUTH ========================= //
 
-    fun signInWithGoogle(idToken: String) {
+    // ========================= GOOGLE SIGN IN ========================= //
+
+    fun signInWithGoogle(idToken: String, onSuccess: (FirebaseUser) -> Unit, onFailed: (String) -> Unit) {
         viewModelScope.launch {
-            val user = authRepository.signInWithGoogle(idToken)
-            if (user != null) {
-                _currentUser.value = user
-            } else {
-                _authError.value = "Error signing in with Google"
+            try {
+                val user = authRepository.signInWithGoogle(idToken)
+                if (user != null) {
+                    _currentUser.value = user
+                    onSuccess(user)
+                    Log.d(TAG, "Sign in with Google successful")
+                } else {
+                    onFailed("Authentication failed")
+                }
+            } catch (e: Exception) {
+                onFailed("Error signing in with Google: ${e.message}")
+                Log.e(TAG, "Error signing in with Google", e)
             }
         }
     }
+
 
     // ========================= OTHER METHOD ========================= //
+
+    fun requestPasswordReset(email: String) {
+        viewModelScope.launch {
+            try {
+                val success = authRepository.forgotPassword(email)
+                if (success) {
+                    Log.d(TAG, "Password reset email sent successfully to $email")
+                } else {
+                    Log.e(TAG, "Error sending password reset email to $email")
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error sending password reset email to $email", e)
+            }
+        }
+    }
+
+    fun requestEmailVerification() {
+        viewModelScope.launch {
+            try {
+                val success = authRepository.emailVerification()
+                if (success) {
+                    Log.d(TAG, "Email verification sent successfully")
+                } else {
+                    Log.e(TAG, "Error sending email verification")
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error sending email verification", e)
+            }
+        }
+    }
 
     fun signOut() {
         authRepository.signOut()
@@ -51,6 +92,10 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
 
     fun getCurrentUser() {
         _currentUser.value = authRepository.getCurrentUser()
+    }
+
+    companion object {
+        private const val TAG = "AuthViewModel"
     }
 
 }

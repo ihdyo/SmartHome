@@ -6,7 +6,7 @@ import com.ihdyo.smarthome.data.repository.MainRepository
 import com.ihdyo.smarthome.data.viewmodel.MainViewModel
 
 @Suppress("UNCHECKED_CAST")
-class MainFactory(private val mainRepository: MainRepository) : ViewModelProvider.Factory {
+class MainViewModelFactory(private val mainRepository: MainRepository) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MainViewModel::class.java)) {

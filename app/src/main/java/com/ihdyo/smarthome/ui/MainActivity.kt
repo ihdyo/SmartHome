@@ -18,11 +18,15 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.ihdyo.smarthome.R
 import com.ihdyo.smarthome.data.AppPreferences
-import com.ihdyo.smarthome.data.factory.AuthFactory
+import com.ihdyo.smarthome.data.factory.AuthViewModelFactory
+import com.ihdyo.smarthome.data.factory.MainViewModelFactory
 import com.ihdyo.smarthome.data.repository.AuthRepository
+import com.ihdyo.smarthome.data.repository.MainRepository
 import com.ihdyo.smarthome.data.viewmodel.AuthViewModel
+import com.ihdyo.smarthome.data.viewmodel.MainViewModel
 import com.ihdyo.smarthome.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -31,6 +35,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var appPreferences: AppPreferences
     private lateinit var authViewModel: AuthViewModel
+    private lateinit var mainViewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,9 +45,14 @@ class MainActivity : AppCompatActivity() {
 
         appPreferences = AppPreferences(this)
 
+        mainViewModel = ViewModelProvider(
+            this,
+            MainViewModelFactory(MainRepository(FirebaseFirestore.getInstance()))
+        )[MainViewModel::class.java]
+
         authViewModel = ViewModelProvider(
             this,
-            AuthFactory(AuthRepository(FirebaseAuth.getInstance()))
+            AuthViewModelFactory(AuthRepository(FirebaseAuth.getInstance()))
         )[AuthViewModel::class.java]
 
 
@@ -71,13 +81,22 @@ class MainActivity : AppCompatActivity() {
 
         authViewModel.getCurrentUser()
         authViewModel.currentUser.observe(this) { currentUser ->
-            username.text = currentUser?.displayName.toString()
-            email.text = currentUser?.email.toString()
+            if (currentUser != null) {
 
-            if (currentUser?.isEmailVerified == true) {
-                verified.visibility = View.VISIBLE
-            } else {
-                verified.visibility = View.GONE
+                mainViewModel.fetchUser(currentUser.uid)
+                mainViewModel.userLiveData.observe(this) {user ->
+                    if (user != null) {
+                        username.text = user.userName
+                    }
+                }
+
+                email.text = currentUser.email.toString()
+
+                if (currentUser.isEmailVerified) {
+                    verified.visibility = View.VISIBLE
+                } else {
+                    verified.visibility = View.GONE
+                }
             }
         }
     }

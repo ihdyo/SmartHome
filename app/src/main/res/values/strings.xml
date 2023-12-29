@@ -30,7 +30,6 @@
     <string name="hint_old_password">Current password</string>
     <string name="hint_new_password">New password</string>
     <string name="hint_retype_password">Retype new password</string>
-    <string name="hint_username">Username</string>
     <string name="hint_new_username">New username</string>
 
     <string name="text_welcome">Welcome!</string>
@@ -58,7 +57,10 @@
     <string name="prompt_no">No</string>
     <string name="prompt_yes">Yes</string>
     <string name="prompt_retry">Retry</string>
+    <string name="prompt_close">Close</string>
     <string name="prompt_register">Register</string>
+    <string name="prompt_next">Next</string>
+    <string name="prompt_send">Send</string>
     <string name="prompt_connection_no">No connection</string>
     <string name="prompt_connection_check">Please re-check your internet connection</string>
     <string name="prompt_connection_restart">Restart</string>
@@ -67,10 +69,19 @@
     <string name="prompt_login_with_google">Login with Google</string>
     <string name="prompt_logout">Log Out</string>
     <string name="prompt_logout_check">Are you sure want to log out?</string>
+    <string name="prompt_change_username_success">Your username changed successfully</string>
+    <string name="prompt_change_username_failed">Failed while changing your username</string>
     <string name="prompt_change_email">Change Email</string>
     <string name="prompt_change_email_check">Are you sure want to change your email?</string>
+    <string name="prompt_change_email_current_failed">Your current email was incorrect!</string>
+    <string name="prompt_change_email_success">Your email changed successfully</string>
+    <string name="prompt_change_email_failed">Failed while changing your email</string>
     <string name="prompt_change_password">Change Password</string>
     <string name="prompt_change_password_check">Are you sure want to change your password?</string>
+    <string name="prompt_change_password_not_match">Your password is incorrect</string>
+    <string name="prompt_change_password_new_not_match">Your password is not match!</string>
+    <string name="prompt_change_password_success">Your password changed successfully</string>
+    <string name="prompt_change_password_failed">Failed while changing your password</string>
     <string name="prompt_auth_success">Successfully signed in</string>
     <string name="prompt_auth_failed">Failed to signing in, user is not registered yet</string>
     <string name="prompt_auth_email_failed">Failed signing in with email, recheck your email and password</string>
@@ -78,6 +89,8 @@
     <string name="prompt_invalid_email">Invalid email format</string>
     <string name="prompt_empty_email">Email cannot be empty</string>
     <string name="prompt_empty_password">Password cannot be empty</string>
+    <string name="prompt_email_verification_success">Email verification success</string>
+    <string name="prompt_email_verification_failed">Email verification failed</string>
 
     <string name="placeholder_email">this email</string>
     <string name="placeholder_username"> This User</string>

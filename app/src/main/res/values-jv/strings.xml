@@ -30,7 +30,6 @@
     <string name="hint_old_password">Sandi saiki</string>
     <string name="hint_new_password">Sandi anyar</string>
     <string name="hint_retype_password">Ngulangi Sandi Anyar</string>
-    <string name="hint_username">Jeneng Panganggo</string>
     <string name="hint_new_username">Jeneng Panganggo Anyar</string>
 
     <string name="text_welcome">Sugeng Rawuh!</string>
@@ -58,7 +57,10 @@
     <string name="prompt_no">Ora</string>
     <string name="prompt_yes">Ya</string>
     <string name="prompt_retry">Coba maneh</string>
+    <string name="prompt_close">Tutup</string>
     <string name="prompt_register">Dhaptar</string>
+    <string name="prompt_next">Sabanjure</string>
+    <string name="prompt_send">Ngirim</string>
     <string name="prompt_connection_no">Ora ana sambungan</string>
     <string name="prompt_connection_check">Mangga priksa sambungan sampeyan</string>
     <string name="prompt_connection_restart">Ulangi</string>
@@ -67,17 +69,28 @@
     <string name="prompt_login_with_google">Mlebu karo Google</string>
     <string name="prompt_logout">Metu</string>
     <string name="prompt_logout_check">Apa sampeyan yakin arep metu?</string>
+    <string name="prompt_change_username_success">Jeneng pananggo diganti kasil</string>
+    <string name="prompt_change_username_failed">Gagal nalika ngganti jeneng panganggo</string>
     <string name="prompt_change_email">Ganti Email</string>
     <string name="prompt_change_email_check">Apa sampeyan yakin arep ganti email?</string>
+    <string name="prompt_change_email_current_failed" >Email sampeyan salah!</string>
+    <string name="prompt_change_email_success">Email sampeyan kasil diganti</string>
+    <string name="prompt_change_email_failed" >Gagal nalika ngganti email sampeyan</string>
     <string name="prompt_change_password">Ganti Sandi</string>
     <string name="prompt_change_password_check">Apa sampeyan yakin arep ganti sandhi?</string>
-    <string name="prompt_auth_success">Berhasil mlebu</string>
+    <string name="prompt_change_password_not_match" >Sandhi sampeyan salah</string>
+    <string name="prompt_change_password_new_not_match" >Sandhi sampeyan ora cocog!</string>
+    <string name="prompt_change_password_success" >Sandhi sampeyan kasil diganti</string>
+    <string name="prompt_change_password_failed" >Gagal nalika ngganti sandhi</string>
+    <string name="prompt_auth_success">Kasil mlebu</string>
     <string name="prompt_auth_failed">Gagal mlebu, panganggo ora kadhaptar</string>
     <string name="prompt_auth_email_failed">Gagal mlebu nganggo email, priksa maneh email lan sandhine sampeyan</string>
     <string name="prompt_auth_google_failed">Gagal mlebu nganggo Google</string>
     <string name="prompt_invalid_email">Format email ora bener</string>
     <string name="prompt_empty_email">Email ora bisa kosong</string>
     <string name="prompt_empty_password">Sandi ora bisa kosong</string>
+    <string name="prompt_email_verification_success">Kasil verifikasi email</string>
+    <string name="prompt_email_verification_failed" >Verifikasi email gagal</string>
 
     <string name="placeholder_email">email iki</string>
     <string name="placeholder_username">Panganggo Iki</string>

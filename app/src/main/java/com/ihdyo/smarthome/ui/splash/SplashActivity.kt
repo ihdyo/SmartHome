@@ -20,7 +20,7 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.ihdyo.smarthome.R
-import com.ihdyo.smarthome.data.factory.AuthFactory
+import com.ihdyo.smarthome.data.factory.AuthViewModelFactory
 import com.ihdyo.smarthome.data.repository.AuthRepository
 import com.ihdyo.smarthome.data.viewmodel.AuthViewModel
 import com.ihdyo.smarthome.databinding.ActivitySplashBinding
@@ -46,7 +46,7 @@ class SplashActivity : AppCompatActivity() {
 
         authViewModel = ViewModelProvider(
             this,
-            AuthFactory(AuthRepository(FirebaseAuth.getInstance()))
+            AuthViewModelFactory(AuthRepository(FirebaseAuth.getInstance()))
         )[AuthViewModel::class.java]
 
         askPermission()

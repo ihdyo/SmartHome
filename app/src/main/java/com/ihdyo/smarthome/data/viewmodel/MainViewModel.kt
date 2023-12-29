@@ -43,6 +43,9 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
     val totalPowerConsumedLiveData: LiveData<Int> get() = _totalPowerConsumedLiveData
 
 
+    private val _userNameLiveData = MutableLiveData<String>()
+    val userNameLiveData: LiveData<String> get() = _userNameLiveData
+
     private val _sensorValueLiveData = MutableLiveData<Boolean>()
     val sensorValueLiveData: LiveData<Boolean> get() = _sensorValueLiveData
 
@@ -84,10 +87,25 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
             try {
                 val user = mainRepository.getUser(userId)
                 _userLiveData.postValue(user)
+
+                val userNameMap = fetchUserName(user!!)
+                _userNameLiveData.postValue(userNameMap)
+
                 Log.d(TAG, "Successfully fetched user with ID: $userId")
             } catch (e: Exception) {
                 Log.e(TAG, "Error fetching user: $e")
             }
+        }
+    }
+
+    private fun fetchUserName(users: UserModel): String {
+        return try {
+            val userName = users.userName ?: ""
+            Log.d(TAG, "Successfully fetched: $userName")
+            userName
+        } catch (e: Exception) {
+            Log.e(TAG, "Error fetching: $e")
+            ""
         }
     }
 
@@ -237,6 +255,18 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
 
     // ========================= UPDATE OPERATOR ========================= //
 
+    fun updateUserName(userId: String, userName: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                mainRepository.putUserName(userId, userName)
+                _userNameLiveData.postValue(userName)
+                Log.d(TAG, "Success updating username $userName in $userId")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error updating username $userName in $userId: $e")
+            }
+        }
+    }
+
     fun updateLampBrightness(userId: String, roomId: String, lampId: String, brightness: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -298,7 +328,7 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
     }
 
     companion object {
-        const val TAG = "MainViewModel"
+        private const val TAG = "MainViewModel"
     }
 
 }

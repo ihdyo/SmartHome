@@ -28,8 +28,8 @@ import com.google.android.material.timepicker.TimeFormat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.ihdyo.smarthome.R
-import com.ihdyo.smarthome.data.factory.AuthFactory
-import com.ihdyo.smarthome.data.factory.MainFactory
+import com.ihdyo.smarthome.data.factory.AuthViewModelFactory
+import com.ihdyo.smarthome.data.factory.MainViewModelFactory
 import com.ihdyo.smarthome.data.model.LampModel
 import com.ihdyo.smarthome.data.model.RoomModel
 import com.ihdyo.smarthome.data.repository.AuthRepository
@@ -73,12 +73,12 @@ class HomeFragment : Fragment() {
 
         mainViewModel = ViewModelProvider(
             this,
-            MainFactory(MainRepository(FirebaseFirestore.getInstance()))
+            MainViewModelFactory(MainRepository(FirebaseFirestore.getInstance()))
         )[MainViewModel::class.java]
 
         authViewModel = ViewModelProvider(
             this,
-            AuthFactory(AuthRepository(FirebaseAuth.getInstance()))
+            AuthViewModelFactory(AuthRepository(FirebaseAuth.getInstance()))
         )[AuthViewModel::class.java]
 
         return binding.root

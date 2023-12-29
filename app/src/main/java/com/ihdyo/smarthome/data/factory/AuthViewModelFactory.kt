@@ -6,7 +6,7 @@ import com.ihdyo.smarthome.data.repository.AuthRepository
 import com.ihdyo.smarthome.data.viewmodel.AuthViewModel
 
 @Suppress("UNCHECKED_CAST")
-class AuthFactory(private val authRepository: AuthRepository) : ViewModelProvider.Factory {
+class AuthViewModelFactory(private val authRepository: AuthRepository) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(AuthViewModel::class.java)) {

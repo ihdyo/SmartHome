@@ -1,6 +1,7 @@
 package com.ihdyo.smarthome.data.repository
 
 import android.util.Log
+import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
@@ -19,6 +20,7 @@ import com.ihdyo.smarthome.utils.Const.FIELD_LAMP_IS_AUTOMATIC_ON
 import com.ihdyo.smarthome.utils.Const.FIELD_LAMP_IS_POWER_ON
 import com.ihdyo.smarthome.utils.Const.FIELD_LAMP_SCHEDULE
 import com.ihdyo.smarthome.utils.Const.FIELD_LAMP_SELECTED_MODE
+import com.ihdyo.smarthome.utils.Const.FIELD_USER_NAME
 import com.ihdyo.smarthome.utils.Const.MAP_FIELD_SCHEDULE_FROM
 import com.ihdyo.smarthome.utils.Const.MAP_FIELD_SCHEDULE_TO
 import kotlinx.coroutines.tasks.await
@@ -129,6 +131,18 @@ class MainRepository(private val firestore: FirebaseFirestore) {
             }
             .addOnFailureListener { exception ->
                 Log.e(TAG, "Error updating $field for $lampId in $roomId", exception)
+            }
+    }
+
+    fun putUserName(userId: String, userName: String) {
+        firestore.collection(COLLECTION_USERS)
+            .document(userId)
+            .update(FIELD_USER_NAME, userName)
+            .addOnSuccessListener {
+                Log.d(TAG, "Successfully updated $FIELD_USER_NAME to $userName")
+            }
+            .addOnFailureListener { exception ->
+                Log.e(TAG, "Error updating $FIELD_USER_NAME for $userName", exception)
             }
     }
 

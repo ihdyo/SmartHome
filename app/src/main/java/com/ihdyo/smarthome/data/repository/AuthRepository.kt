@@ -42,6 +42,29 @@ class AuthRepository(private val auth: FirebaseAuth) {
 
     // ========================= OTHER METHOD ========================= //
 
+    suspend fun forgotPassword(email: String): Boolean {
+        return try {
+            auth.sendPasswordResetEmail(email).await()
+            Log.d(TAG, "Password reset email sent successfully to $email")
+            true
+        } catch (e: Exception) {
+            Log.e(TAG, "Error sending password reset email to $email", e)
+            false
+        }
+    }
+
+    suspend fun emailVerification(): Boolean {
+        return try {
+            val user = auth.currentUser
+            user?.sendEmailVerification()?.await()
+            Log.d(TAG, "Email verification sent successfully to ${user?.email}")
+            true
+        } catch (e: Exception) {
+            Log.e(TAG, "Error sending email verification", e)
+            false
+        }
+    }
+
     fun signOut() {
         auth.signOut()
     }

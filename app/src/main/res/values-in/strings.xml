@@ -30,7 +30,6 @@
     <string name="hint_old_password">Kata sandi sekarang</string>
     <string name="hint_new_password">Kata sandi baru</string>
     <string name="hint_retype_password">Ketik ulang kata sandi baru</string>
-    <string name="hint_username">Nama pengguna</string>
     <string name="hint_new_username">Nama pengguna baru</string>
 
     <string name="text_welcome">Selamat Datang!</string>
@@ -58,7 +57,10 @@
     <string name="prompt_no">Tidak</string>
     <string name="prompt_yes">Ya</string>
     <string name="prompt_retry">Coba lagi</string>
+    <string name="prompt_close">Tutup</string>
     <string name="prompt_register">Daftar</string>
+    <string name="prompt_next">Selanjutnya</string>
+    <string name="prompt_send">Kirim</string>
     <string name="prompt_connection_no">Tidak ada koneksi</string>
     <string name="prompt_connection_check">Mohon periksa ulang koneksimu</string>
     <string name="prompt_connection_restart">Mulai Ulang</string>
@@ -67,10 +69,19 @@
     <string name="prompt_login_with_google">Masuk dengan Google</string>
     <string name="prompt_logout">Keluar</string>
     <string name="prompt_logout_check">Apakah kamu yakin ingin keluar?</string>
-    <string name="prompt_change_email">Ubah Surel</string>
-    <string name="prompt_change_email_check">Apakah kamu yakin ingin mengganti surel?</string>
+    <string name="prompt_change_username_success">Nama pengguna telah diperbarui</string>
+    <string name="prompt_change_username_failed">Gagal mengganti nama pengguna</string>
+    <string name="prompt_change_email">Ubah Email</string>
+    <string name="prompt_change_email_check">Apakah kamu yakin ingin mengganti email?</string>
+    <string name="prompt_change_email_current_failed">Your current email was incorrect!</string>
+    <string name="prompt_change_email_success">Email berhasil diperbarui</string>
+    <string name="prompt_change_email_failed">Gagal mengganti email</string>
     <string name="prompt_change_password">Ubah Kata Sandi</string>
     <string name="prompt_change_password_check">Apakah kamu yakin ingin mengganti kata sandi?</string>
+    <string name="prompt_change_password_not_match">Kata sandi salah!</string>
+    <string name="prompt_change_password_new_not_match">Kata sandi tidak cocok!</string>
+    <string name="prompt_change_password_success">Kata sandi telah diperbarui</string>
+    <string name="prompt_change_password_failed">Gagal mengganti kata sandi</string>
     <string name="prompt_auth_success">Berhasil masuk</string>
     <string name="prompt_auth_failed">Gagal masuk, pengguna belum terdaftar</string>
     <string name="prompt_auth_email_failed">Gagal masuk menggunakan email, periksa lagi email dan kata sandimu</string>
@@ -78,6 +89,8 @@
     <string name="prompt_invalid_email">Format email tidak sah</string>
     <string name="prompt_empty_email">Email tidak boleh kosong</string>
     <string name="prompt_empty_password">Kata sandi tidak boleh kosong</string>
+    <string name="prompt_email_verification_success">Berhasil verifikasi email</string>
+    <string name="prompt_email_verification_failed">Gagal verifikasi email</string>
 
     <string name="placeholder_email">email ini</string>
     <string name="placeholder_username">Pengguna Ini</string>
