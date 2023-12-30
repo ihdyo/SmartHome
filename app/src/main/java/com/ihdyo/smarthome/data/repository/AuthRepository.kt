@@ -70,7 +70,13 @@ class AuthRepository(private val auth: FirebaseAuth) {
     }
 
     fun getCurrentUser(): FirebaseUser? {
-        return auth.currentUser
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            Log.d(TAG, "Successfully retrieved current user: ${currentUser.uid}")
+        } else {
+            Log.e(TAG, "Error retrieving current user. User is null.")
+        }
+        return currentUser
     }
 
     companion object {

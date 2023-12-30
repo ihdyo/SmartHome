@@ -89,7 +89,7 @@ class ProfileFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
 
                 // Change Username
                 if (title == getString(R.string.text_change_username)) {
-                    mainViewModel.updateUserName(currentUser.uid, text)
+                    mainViewModel.updateUserName(text)
                     Snackbar.make(binding.root, R.string.prompt_change_username_success, Snackbar.LENGTH_SHORT)
                         .setAction(getString(R.string.prompt_ok)) { }
                         .show()

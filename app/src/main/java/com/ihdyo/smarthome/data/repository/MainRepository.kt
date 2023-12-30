@@ -1,9 +1,6 @@
 package com.ihdyo.smarthome.data.repository
 
 import android.util.Log
-import android.widget.Toast
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Source
 import com.ihdyo.smarthome.data.model.EnvironmentModel
@@ -99,18 +96,21 @@ class MainRepository(private val firestore: FirebaseFirestore) {
         putLampField(userId, roomId, lampId, FIELD_LAMP_BRIGHTNESS, lampBrightness)
     }
 
-    fun putLampIsAutomaticOn(userId: String, roomId: String, lampId: String, isAutomaticOn: Boolean) {
-        putLampField(userId, roomId, lampId, FIELD_LAMP_IS_AUTOMATIC_ON, isAutomaticOn)
+    fun putLampIsAutomaticOn(userId: String, roomId: String, lampIsAutomaticOnMap: Map<String, Boolean>) {
+        val (lampId, lampIsAutomaticOn) = lampIsAutomaticOnMap.entries.first()
+        putLampField(userId, roomId, lampId, FIELD_LAMP_IS_AUTOMATIC_ON, lampIsAutomaticOn)
     }
 
-    fun putLampIsPowerOn(userId: String, roomId: String, lampId: String, isPowerOn: Boolean) {
-        putLampField(userId, roomId, lampId, FIELD_LAMP_IS_POWER_ON, isPowerOn)
+    fun putLampIsPowerOn(userId: String, roomId: String, lampIsPowerOnMap: Map<String, Boolean>) {
+        val (lampId, lampIsPowerOn) = lampIsPowerOnMap.entries.first()
+        putLampField(userId, roomId, lampId, FIELD_LAMP_IS_POWER_ON, lampIsPowerOn)
     }
 
-    fun putLampSchedule(userId: String, roomId: String, lampId: String, lampSchedule: LampSchedule) {
+    fun putLampSchedule(userId: String, roomId: String, lampScheduleMap: Map<String, LampSchedule>) {
+        val (lampId, lampSchedule) = lampScheduleMap.entries.first()
         val scheduleMap = mapOf(
-            MAP_FIELD_SCHEDULE_FROM to lampSchedule.scheduleFrom,
-            MAP_FIELD_SCHEDULE_TO to lampSchedule.scheduleTo
+            MAP_FIELD_SCHEDULE_FROM to lampSchedule.scheduleFrom.orEmpty(),
+            MAP_FIELD_SCHEDULE_TO to lampSchedule.scheduleTo.orEmpty()
         )
         putLampField(userId, roomId, lampId, FIELD_LAMP_SCHEDULE, scheduleMap)
     }

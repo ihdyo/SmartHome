@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity() {
         authViewModel.currentUser.observe(this) { currentUser ->
             if (currentUser != null) {
 
-                mainViewModel.fetchUser(currentUser.uid)
+                mainViewModel.fetchUser()
                 mainViewModel.userLiveData.observe(this) {user ->
                     if (user != null) {
                         username.text = user.userName
