@@ -91,8 +91,12 @@ class MainRepository(private val firestore: FirebaseFirestore) {
 
     // ========================= PUT METHOD ========================= //
 
-    fun putLampBrightness(userId: String, roomId: String, lampBrightnessMap: Map<String, Int>) {
-        val (lampId, lampBrightness) = lampBrightnessMap.entries.first()
+//    fun putLampBrightness(userId: String, roomId: String, lampBrightnessMap: Map<String, Int>) {
+//        val (lampId, lampBrightness) = lampBrightnessMap.entries.first()
+//        putLampField(userId, roomId, lampId, FIELD_LAMP_BRIGHTNESS, lampBrightness)
+//    }
+
+    fun putLampBrightness(userId: String, roomId: String, lampId: String, lampBrightness: Int) {
         putLampField(userId, roomId, lampId, FIELD_LAMP_BRIGHTNESS, lampBrightness)
     }
 
@@ -101,9 +105,13 @@ class MainRepository(private val firestore: FirebaseFirestore) {
         putLampField(userId, roomId, lampId, FIELD_LAMP_IS_AUTOMATIC_ON, lampIsAutomaticOn)
     }
 
-    fun putLampIsPowerOn(userId: String, roomId: String, lampIsPowerOnMap: Map<String, Boolean>) {
-        val (lampId, lampIsPowerOn) = lampIsPowerOnMap.entries.first()
-        putLampField(userId, roomId, lampId, FIELD_LAMP_IS_POWER_ON, lampIsPowerOn)
+//    fun putLampIsPowerOn(userId: String, roomId: String, lampIsPowerOnMap: Map<String, Boolean>) {
+//        val (lampId, lampIsPowerOn) = lampIsPowerOnMap.entries.first()
+//        putLampField(userId, roomId, lampId, FIELD_LAMP_IS_POWER_ON, lampIsPowerOn)
+//    }
+
+    fun putLampIsPowerOn(userId: String, roomId: String, lampId: String, isPowerOn: Boolean) {
+        putLampField(userId, roomId, lampId, FIELD_LAMP_IS_POWER_ON, isPowerOn)
     }
 
     fun putLampSchedule(userId: String, roomId: String, lampScheduleMap: Map<String, LampSchedule>) {

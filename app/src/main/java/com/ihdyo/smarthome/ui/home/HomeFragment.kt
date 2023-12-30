@@ -262,16 +262,37 @@ class HomeFragment : Fragment(), LampAdapter.OnItemClickListener {
             if (brightness != null) {
                 binding.sliderLampBrightness.value = brightness.toFloat()
             }
-//            binding.textTest.text = "$brightnessMap"
+            binding.textTest.text = "$currentLampId $brightnessMap"
         }
-
-        // Lamp Switch Power
-        mainViewModel.lampIsPowerOnLiveData.observe(viewLifecycleOwner) { isPowerOnMap ->
-            val isPowerOn = isPowerOnMap[currentLampId]
-            if (isPowerOn != null) {
-                binding.switchPower.isChecked = isPowerOn
+        binding.sliderLampBrightness.addOnChangeListener { _, value, fromUser ->
+            val lampBrightness = mapOf(currentLampId to value.toInt())
+            if (fromUser) {
+                mainViewModel.updateLampBrightness(lampBrightness)
             }
         }
+
+
+
+
+        // Lamp Switch Power
+//        mainViewModel.lampIsPowerOnLiveData.observe(viewLifecycleOwner) { isPowerOnMap ->
+//            val isPowerOn = isPowerOnMap[currentLampId]
+//            if (isPowerOn != null) {
+//                binding.switchPower.isChecked = isPowerOn
+//            }
+//        }
+
+        mainViewModel.lampIsPowerOnLiveData.observe(viewLifecycleOwner) { isPowerOn ->
+            binding.switchPower.isChecked = isPowerOn
+//            binding.textTest.text = "$currentLampId $isPowerOn"
+        }
+
+
+        binding.switchPower.setOnCheckedChangeListener { _, isChecked ->
+            mainViewModel.updateLampIsPowerOn(isChecked)
+        }
+
+
 
         // Lamp Schedule
         mainViewModel.lampScheduleLiveData.observe(viewLifecycleOwner) { scheduleMap ->
