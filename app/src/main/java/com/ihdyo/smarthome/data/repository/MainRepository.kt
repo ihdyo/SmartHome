@@ -115,8 +115,9 @@ class MainRepository(private val firestore: FirebaseFirestore) {
         putLampField(userId, roomId, lampId, FIELD_LAMP_SCHEDULE, scheduleMap)
     }
 
-    fun putLampSelectedMode(userId: String, roomId: String, lampId: String, selectedMode: String) {
-        putLampField(userId, roomId, lampId, FIELD_LAMP_SELECTED_MODE, selectedMode)
+    fun putLampSelectedMode(userId: String, roomId: String, lampSelectedModeMap: Map<String, String>) {
+        val (lampId, lampSelectedMode) = lampSelectedModeMap.entries.first()
+        putLampField(userId, roomId, lampId, FIELD_LAMP_SELECTED_MODE, lampSelectedMode)
     }
 
     private fun putLampField(userId: String, roomId: String, lampId: String, field: String, value: Any) {

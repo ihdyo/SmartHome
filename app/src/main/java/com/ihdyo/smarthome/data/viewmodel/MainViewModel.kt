@@ -64,8 +64,8 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
     private val _lampScheduleLiveData = MutableLiveData<LampSchedule>()
     val lampScheduleLiveData: LiveData<LampSchedule> get() = _lampScheduleLiveData
 
-    private val _lampSelectedModeLiveData = MutableLiveData<String>()
-    val lampSelectedModeLiveData: LiveData<String> get() = _lampSelectedModeLiveData
+    private val _lampSelectedModeLiveData = MutableLiveData<Map<String, String>>()
+    val lampSelectedModeLiveData: LiveData<Map<String, String>> get() = _lampSelectedModeLiveData
 
 
     // ========================= SET OPERATOR ========================= //
@@ -248,15 +248,19 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
         }
     }
 
-    private fun fetchLampSelectedMode(lamps: List<LampModel>): String {
-        return try {
-            val selectedMode = lamps.firstOrNull()?.lampSelectedMode ?: "manual"
-            Log.d(TAG, "Successfully fetched lamp selected mode: $selectedMode")
-            selectedMode
+    private fun fetchLampSelectedMode(lamps: List<LampModel>): Map<String, String> {
+        val lampSelectedModeMap = mutableMapOf<String, String>()
+
+        try {
+            for (lamp in lamps) {
+                lampSelectedModeMap[lamp.LID.orEmpty()] = lamp.lampSelectedMode
+            }
+            Log.d(TAG, "Successfully fetching selected mode")
         } catch (e: Exception) {
-            Log.e(TAG, "Error fetching lamp selected mode: $e")
-            "manual"
+            Log.e(TAG, "Error fetching selected mode: $e")
         }
+
+        return lampSelectedModeMap
     }
 
 
@@ -279,6 +283,7 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
             try {
                 mainRepository.putLampBrightness(userId, roomId, lampBrightnessMap)
                 _lampBrightnessLiveData.postValue(lampBrightnessMap)
+
                 Log.d(TAG, "Success updating lamp brightness $lampBrightnessMap")
             } catch (e: Exception) {
                 Log.e(TAG, "Error updating lamp brightness: $e")
@@ -322,12 +327,12 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
         }
     }
 
-    fun updateLampSelectedMode(userId: String, roomId: String, lampId: String, selectedMode: String) {
+    fun updateLampSelectedMode(userId: String, roomId: String, lampSelectedModeMap: Map<String, String>) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                mainRepository.putLampSelectedMode(userId, roomId, lampId, selectedMode)
-                _lampSelectedModeLiveData.postValue(selectedMode)
-                Log.d(TAG, "Success updating selected mode for $lampId in $roomId")
+                mainRepository.putLampSelectedMode(userId, roomId, lampSelectedModeMap)
+                _lampSelectedModeLiveData.postValue(lampSelectedModeMap)
+                Log.d(TAG, "Success updating selected mode $lampSelectedModeMap")
             } catch (e: Exception) {
                 Log.e(TAG, "Error updating selected mode: $e")
             }

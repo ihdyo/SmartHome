@@ -66,11 +66,13 @@ class RoomAdapter(
                     if (position != activePosition) {
                         val previousActivePosition = activePosition
                         activePosition = position
+
                         notifyItemChanged(previousActivePosition)
                         notifyItemChanged(activePosition)
 
                         val selectedRoom = items[position]
                         onItemClickListener(selectedRoom)
+
                         mainViewModel.setSelectedRoom(selectedRoom, selectedRoom.RID)
                     }
                 }

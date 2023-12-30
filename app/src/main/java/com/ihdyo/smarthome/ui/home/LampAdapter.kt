@@ -13,11 +13,15 @@ import com.ihdyo.smarthome.utils.UiUpdater
 
 class LampAdapter(
     private var items: List<LampModel>,
-    private val onItemClickListener: (LampModel) -> Unit,
+    private val itemClickListener: OnItemClickListener,
     private val mainViewModel: MainViewModel
-    ): RecyclerView.Adapter<LampAdapter.ItemViewHolder>() {
+) : RecyclerView.Adapter<LampAdapter.ItemViewHolder>() {
 
-    private var activePosition: Int = RecyclerView.NO_POSITION
+    interface OnItemClickListener {
+        fun onItemClick(lampModel: LampModel)
+    }
+
+    var activePosition: Int = RecyclerView.NO_POSITION
     private var uiUpdater: UiUpdater = UiUpdater()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
@@ -35,17 +39,22 @@ class LampAdapter(
 
     @SuppressLint("NotifyDataSetChanged")
     fun setItems(item: List<LampModel>) {
-        this.items = emptyList()
         this.items = item
         notifyDataSetChanged()
+    }
+
+    fun updateItem(position: Int) {
+        notifyItemChanged(position)
     }
 
     fun setInitialSelectedIndex(index: Int) {
         if (index >= 0 && index < items.size) {
             activePosition = index
+
             notifyItemChanged(activePosition)
+
             val selectedLamp = items[activePosition]
-            onItemClickListener(selectedLamp)
+            itemClickListener.onItemClick(selectedLamp)
             mainViewModel.setSelectedLamp(selectedLamp)
         }
     }
@@ -66,21 +75,20 @@ class LampAdapter(
                         notifyItemChanged(activePosition)
 
                         val selectedLamp = items[position]
-                        onItemClickListener(selectedLamp)
+                        itemClickListener.onItemClick(selectedLamp)
+
                         mainViewModel.setSelectedLamp(selectedLamp)
+
                     }
                 }
             }
         }
 
-        @SuppressLint("SetTextI18n")
         fun bind(position: Int) {
             currentPosition = position
             val isActive = position == activePosition
 
             uiUpdater.updateIconLampState(itemView.context, iconLamp, isActive)
         }
-
     }
-
 }
