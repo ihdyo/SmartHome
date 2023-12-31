@@ -1,6 +1,7 @@
 package com.ihdyo.smarthome.data.repository
 
 import android.util.Log
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Source
 import com.ihdyo.smarthome.data.model.EnvironmentModel
@@ -72,6 +73,40 @@ class MainRepository(private val firestore: FirebaseFirestore) {
         }
     }
 
+    suspend fun getAllLamps(userId: String): List<LampModel> {
+        return try {
+            val querySnapshot = firestore.collection(COLLECTION_USERS)
+                .document(userId)
+                .collection(COLLECTION_ROOMS)
+                .get(Source.DEFAULT)
+                .await()
+
+            val lamps = mutableListOf<LampModel>()
+
+            for (roomDocument in querySnapshot.documents) {
+                val roomId = roomDocument.id
+                val roomLampsCollection = firestore.collection(COLLECTION_USERS)
+                    .document(userId)
+                    .collection(COLLECTION_ROOMS)
+                    .document(roomId)
+                    .collection(COLLECTION_LAMPS)
+
+                val roomLamps = roomLampsCollection.get(Source.DEFAULT).await().documents
+                    .mapNotNull { documentSnapshot ->
+                        documentSnapshot.toObject(LampModel::class.java)
+                    }
+
+                lamps.addAll(roomLamps)
+            }
+
+            Log.d(TAG, "Successfully get all lamps for user with ID: $userId")
+            lamps
+        } catch (e: Exception) {
+            Log.e(TAG, "Error getting lamps: $e")
+            emptyList()
+        }
+    }
+
     suspend fun getEnvironments(userId: String): List<EnvironmentModel> {
         return try {
             val querySnapshot = firestore.collection(COLLECTION_USERS).document(userId)
@@ -91,31 +126,19 @@ class MainRepository(private val firestore: FirebaseFirestore) {
 
     // ========================= PUT METHOD ========================= //
 
-//    fun putLampBrightness(userId: String, roomId: String, lampBrightnessMap: Map<String, Int>) {
-//        val (lampId, lampBrightness) = lampBrightnessMap.entries.first()
-//        putLampField(userId, roomId, lampId, FIELD_LAMP_BRIGHTNESS, lampBrightness)
-//    }
-
     fun putLampBrightness(userId: String, roomId: String, lampId: String, lampBrightness: Int) {
         putLampField(userId, roomId, lampId, FIELD_LAMP_BRIGHTNESS, lampBrightness)
     }
 
-    fun putLampIsAutomaticOn(userId: String, roomId: String, lampIsAutomaticOnMap: Map<String, Boolean>) {
-        val (lampId, lampIsAutomaticOn) = lampIsAutomaticOnMap.entries.first()
+    fun putLampIsAutomaticOn(userId: String, roomId: String, lampId: String, lampIsAutomaticOn: Boolean) {
         putLampField(userId, roomId, lampId, FIELD_LAMP_IS_AUTOMATIC_ON, lampIsAutomaticOn)
     }
 
-//    fun putLampIsPowerOn(userId: String, roomId: String, lampIsPowerOnMap: Map<String, Boolean>) {
-//        val (lampId, lampIsPowerOn) = lampIsPowerOnMap.entries.first()
-//        putLampField(userId, roomId, lampId, FIELD_LAMP_IS_POWER_ON, lampIsPowerOn)
-//    }
-
-    fun putLampIsPowerOn(userId: String, roomId: String, lampId: String, isPowerOn: Boolean) {
-        putLampField(userId, roomId, lampId, FIELD_LAMP_IS_POWER_ON, isPowerOn)
+    fun putLampIsPowerOn(userId: String, roomId: String, lampId: String, lampIsPowerOn: Boolean) {
+        putLampField(userId, roomId, lampId, FIELD_LAMP_IS_POWER_ON, lampIsPowerOn)
     }
 
-    fun putLampSchedule(userId: String, roomId: String, lampScheduleMap: Map<String, LampSchedule>) {
-        val (lampId, lampSchedule) = lampScheduleMap.entries.first()
+    fun putLampSchedule(userId: String, roomId: String, lampId: String, lampSchedule: LampSchedule) {
         val scheduleMap = mapOf(
             MAP_FIELD_SCHEDULE_FROM to lampSchedule.scheduleFrom.orEmpty(),
             MAP_FIELD_SCHEDULE_TO to lampSchedule.scheduleTo.orEmpty()
@@ -123,8 +146,7 @@ class MainRepository(private val firestore: FirebaseFirestore) {
         putLampField(userId, roomId, lampId, FIELD_LAMP_SCHEDULE, scheduleMap)
     }
 
-    fun putLampSelectedMode(userId: String, roomId: String, lampSelectedModeMap: Map<String, String>) {
-        val (lampId, lampSelectedMode) = lampSelectedModeMap.entries.first()
+    fun putLampSelectedMode(userId: String, roomId: String, lampId: String, lampSelectedMode: String) {
         putLampField(userId, roomId, lampId, FIELD_LAMP_SELECTED_MODE, lampSelectedMode)
     }
 
@@ -144,15 +166,15 @@ class MainRepository(private val firestore: FirebaseFirestore) {
             }
     }
 
-    fun putUserName(userId: String, userName: String) {
+    fun putUserName(userId: String, value: String) {
         firestore.collection(COLLECTION_USERS)
             .document(userId)
-            .update(FIELD_USER_NAME, userName)
+            .update(FIELD_USER_NAME, value)
             .addOnSuccessListener {
-                Log.d(TAG, "Successfully updated $FIELD_USER_NAME to $userName")
+                Log.d(TAG, "Successfully updated $FIELD_USER_NAME to $value")
             }
             .addOnFailureListener { exception ->
-                Log.e(TAG, "Error updating $FIELD_USER_NAME for $userName", exception)
+                Log.e(TAG, "Error updating $FIELD_USER_NAME for $value", exception)
             }
     }
 

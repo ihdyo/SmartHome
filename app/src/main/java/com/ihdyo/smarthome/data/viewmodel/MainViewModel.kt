@@ -57,6 +57,10 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
     private val _powerConsumedLiveData = MutableLiveData<Map<String, Int>>()
     val powerConsumedLiveData: LiveData<Map<String, Int>> get() = _powerConsumedLiveData
 
+    private val _totalPowerConsumedLiveData = MutableLiveData<Int>()
+    val totalPowerConsumedLiveData: LiveData<Int> get() = _totalPowerConsumedLiveData
+
+
     private val _sensorValueLiveData = MutableLiveData<Boolean>()
     val sensorValueLiveData: LiveData<Boolean> get() = _sensorValueLiveData
 
@@ -66,11 +70,8 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
     private val _lampIsAutomaticOnLiveData = MutableLiveData<Map<String, Boolean>>()
     val lampIsAutomaticOnLiveData: LiveData<Map<String, Boolean>> get() = _lampIsAutomaticOnLiveData
 
-//    private val _lampIsPowerOnLiveData = MutableLiveData<Map<String, Boolean>>()
-//    val lampIsPowerOnLiveData: LiveData<Map<String, Boolean>> get() = _lampIsPowerOnLiveData
-
-    private val _lampIsPowerOnLiveData = MutableLiveData<Boolean>()
-    val lampIsPowerOnLiveData: LiveData<Boolean> get() = _lampIsPowerOnLiveData
+    private val _lampIsPowerOnLiveData = MutableLiveData<Map<String, Boolean>>()
+    val lampIsPowerOnLiveData: LiveData<Map<String, Boolean>> get() = _lampIsPowerOnLiveData
 
     private val _lampScheduleLiveData = MutableLiveData<Map<String, LampSchedule>>()
     val lampScheduleLiveData: LiveData<Map<String, LampSchedule>> get() = _lampScheduleLiveData
@@ -112,7 +113,7 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
     fun fetchUser() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val user = mainRepository.getUser(currentUserIdLiveData.value.toString())
+                val user = mainRepository.getUser(currentUserIdLiveData.value.orEmpty())
                 _userLiveData.postValue(user)
 
                 val userNameMap = fetchUserName(user!!)
@@ -139,7 +140,7 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
     fun fetchEnvironments() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val environments = mainRepository.getEnvironments(currentUserIdLiveData.value.toString())
+                val environments = mainRepository.getEnvironments(currentUserIdLiveData.value.orEmpty())
                 _environmentsLiveData.postValue(environments)
 
                 val sensorValueMap = fetchSensorValue(environments)
@@ -155,7 +156,7 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
     fun fetchRooms() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val rooms = mainRepository.getRooms(currentUserIdLiveData.value.toString())
+                val rooms = mainRepository.getRooms(currentUserIdLiveData.value.orEmpty())
                 _roomsLiveData.postValue(rooms)
                 Log.d(TAG, "Successfully fetched rooms for user with ID: ${currentUserIdLiveData.value}")
             } catch (e: Exception) {
@@ -178,7 +179,7 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
     fun fetchLamps() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val lamps = mainRepository.getLamps(currentUserIdLiveData.value.toString(), currentRoomIdLiveData.value.toString())
+                val lamps = mainRepository.getLamps(currentUserIdLiveData.value.orEmpty(), currentRoomIdLiveData.value.orEmpty())
                 _lampsLiveData.postValue(lamps)
 
                 val powerConsumedMap = fetchPowerConsumed(lamps)
@@ -203,13 +204,29 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
         }
     }
 
+    fun fetchTotalPowerConsumed() {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val lamps = mainRepository.getAllLamps(currentUserIdLiveData.value.orEmpty())
+
+                val totalPowerConsumed = lamps.sumByDouble { lamp ->
+                    (lamp.lampRuntime.div(3600)).times(lamp.lampWattPower).toDouble()
+                }
+                _totalPowerConsumedLiveData.postValue(totalPowerConsumed.toInt())
+                Log.d(TAG, "Total Power Consumed: $totalPowerConsumed")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error fetching lamps and calculating power consumption: $e")
+            }
+        }
+    }
+
     private fun fetchPowerConsumed(lamps: List<LampModel>): Map<String, Int> {
         val powerConsumedMap = mutableMapOf<String, Int>()
 
         try {
             for (lamp in lamps) {
                 val powerConsumed = (lamp.lampRuntime.div(3600)).times(lamp.lampWattPower)
-                powerConsumedMap[currentLampIdLiveData.value.toString()] = powerConsumed
+                powerConsumedMap[lamp.LID.orEmpty()] = powerConsumed
             }
             Log.d(TAG, "Successfully calculating power consumed")
         } catch (e: Exception) {
@@ -235,38 +252,20 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
         return lampBrightnessMap
     }
 
-//    private fun fetchLampIsPowerOn(lamps: List<LampModel>): Map<String, Boolean> {
-//        val lampIsPowerOnMap = mutableMapOf<String, Boolean>()
-//
-//        try {
-//            for (lamp in lamps) {
-//                lampIsPowerOnMap[currentLampIdLiveData.value.toString()] = lamp.lampIsPowerOn!!
-//            }
-//            Log.d(TAG, "Successfully fetching lamp power state")
-//        } catch (e: Exception) {
-//            Log.e(TAG, "Error fetching lamp power state: $e")
-//        }
-//
-//        return lampIsPowerOnMap
-//    }
+    private fun fetchLampIsPowerOn(lamps: List<LampModel>): Map<String, Boolean> {
+        val lampIsPowerOnMap = mutableMapOf<String, Boolean>()
 
-    private fun fetchLampIsPowerOn(lamps: List<LampModel>): Boolean {
-        return try {
-            val firstLamp = lamps.firstOrNull()
-            if (firstLamp != null) {
-                val isPowerOn = firstLamp.lampIsPowerOn ?: false
-                Log.d(TAG, "Successfully fetched lamp power state: $isPowerOn")
-                isPowerOn
-            } else {
-                Log.d(TAG, "Lamps list is empty. Assuming default power state: false")
-                false
+        try {
+            for (lamp in lamps) {
+                lampIsPowerOnMap[lamp.LID.orEmpty()] = lamp.lampIsPowerOn ?: false
             }
+            Log.d(TAG, "Successfully fetching lamp power state")
         } catch (e: Exception) {
             Log.e(TAG, "Error fetching lamp power state: $e")
-            false
         }
-    }
 
+        return lampIsPowerOnMap
+    }
 
     private fun fetchLampSchedule(lamps: List<LampModel>): Map<String, LampSchedule> {
         val lampScheduleMap = mutableMapOf<String, LampSchedule>()
@@ -304,7 +303,7 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
     fun updateUserName(userName: String) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                mainRepository.putUserName(currentUserIdLiveData.value.toString(), userName)
+                mainRepository.putUserName(currentUserIdLiveData.value.orEmpty(), userName)
                 _userNameLiveData.postValue(userName)
                 Log.d(TAG, "Success updating username $userName to ${currentUserIdLiveData.value}")
             } catch (e: Exception) {
@@ -313,84 +312,31 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
         }
     }
 
-//    fun updateLampBrightness(lampBrightnessMap: Map<String, Int>) {
-//        viewModelScope.launch(Dispatchers.IO) {
-//            try {
-//                mainRepository.putLampBrightness(currentUserIdLiveData.value.toString(), currentRoomIdLiveData.value.toString(), lampBrightnessMap)
-//                _lampBrightnessLiveData.postValue(lampBrightnessMap)
-//
-//                Log.d(TAG, "Success updating lamp brightness $lampBrightnessMap in ${currentRoomIdLiveData.value}")
-//            } catch (e: Exception) {
-//                Log.e(TAG, "Error updating lamp brightness: $e")
-//            }
-//        }
-//    }
-
-    fun updateLampIsAutomaticOn(lampIsAutomaticOnMap: Map<String, Boolean>) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                mainRepository.putLampIsAutomaticOn(currentUserIdLiveData.value.toString(), currentRoomIdLiveData.value.toString(), lampIsAutomaticOnMap)
-                _lampIsAutomaticOnLiveData.postValue(lampIsAutomaticOnMap)
-
-                Log.d(TAG, "Success updating lamp automatic state: $lampIsAutomaticOnMap in ${currentRoomIdLiveData.value}")
-            } catch (e: Exception) {
-                Log.e(TAG, "Error updating lamp automatic state: $e")
-            }
-        }
-    }
-
-//    fun updateLampIsPowerOn(lampIsPowerOnMap: Map<String, Boolean>) {
-//        viewModelScope.launch(Dispatchers.IO) {
-//            try {
-//                mainRepository.putLampIsPowerOn(currentUserIdLiveData.value.toString(), currentRoomIdLiveData.value.toString(), lampIsPowerOnMap)
-//                _lampIsPowerOnLiveData.postValue(lampIsPowerOnMap)
-//
-//                Log.d(TAG, "Success updating lamp power state: $lampIsPowerOnMap in ${currentRoomIdLiveData.value}")
-//            } catch (e: Exception) {
-//                Log.e(TAG, "Error updating lamp power state: $e")
-//            }
-//        }
-//    }
-
-    fun updateLampIsPowerOn(isPowerOn: Boolean) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                mainRepository.putLampIsPowerOn(currentUserIdLiveData.value.toString(), currentRoomIdLiveData.value.toString(), currentLampIdLiveData.value.toString(), isPowerOn)
-                _lampIsPowerOnLiveData.postValue(isPowerOn)
-                Log.d(TAG, "Success updating power state to $isPowerOn in ${currentLampIdLiveData.value}, ${currentRoomIdLiveData.value}")
-            } catch (e: Exception) {
-                Log.e(TAG, "Error updating power state: $e")
-            }
-        }
-    }
-
     fun updateLampBrightness(lampBrightnessMap: Map<String, Int>) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
+                val currentUserId = currentUserIdLiveData.value.orEmpty()
+                val currentRoomId = currentRoomIdLiveData.value.orEmpty()
                 val currentLampId = currentLampIdLiveData.value.orEmpty()
                 val currentLampBrightness = lampBrightnessMap[currentLampId]
 
                 if (currentLampBrightness != null) {
                     mutex.withLock {
                         val updatedMap = _lampBrightnessLiveData.value?.toMutableMap() ?: mutableMapOf()
-
-                        // Update only the entry for the current lamp ID in the LiveData
                         updatedMap[currentLampId] = currentLampBrightness
 
                         mainRepository.putLampBrightness(
-                            currentUserIdLiveData.value.orEmpty(),
-                            currentRoomIdLiveData.value.orEmpty(),
+                            currentUserId,
+                            currentRoomId,
                             currentLampId,
                             currentLampBrightness
                         )
 
-                        // Post the entire updated map to LiveData
                         _lampBrightnessLiveData.postValue(updatedMap)
                     }
-
-                    Log.d(TAG, "Success updating lamp brightness $currentLampBrightness in ${currentRoomIdLiveData.value}")
+                    Log.d(TAG, "Success updating lamp brightness $currentLampBrightness in $currentLampId, $currentRoomId")
                 } else {
-                    Log.e(TAG, "Error updating lamp brightness: Entry for $currentLampId not found in lampBrightnessMap")
+                    Log.e(TAG, "Error updating lamp brightness: Entry for $currentLampId not found in $lampBrightnessMap")
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Error updating lamp brightness: $e")
@@ -398,15 +344,90 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
         }
     }
 
+    fun updateLampIsAutomaticOn(lampIsAutomaticOnMap: Map<String, Boolean>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val currentUserId = currentUserIdLiveData.value.orEmpty()
+                val currentRoomId = currentRoomIdLiveData.value.orEmpty()
+                val currentLampId = currentLampIdLiveData.value.orEmpty()
+                val currentLampIsAutomaticOn = lampIsAutomaticOnMap[currentLampId]
 
+                if (currentLampIsAutomaticOn != null) {
+                    mutex.withLock {
+                        val updatedMap = _lampIsAutomaticOnLiveData.value?.toMutableMap() ?: mutableMapOf()
+                        updatedMap[currentLampId] = currentLampIsAutomaticOn
+
+                        mainRepository.putLampIsAutomaticOn(
+                            currentUserId,
+                            currentRoomId,
+                            currentLampId,
+                            currentLampIsAutomaticOn
+                        )
+
+                        _lampIsAutomaticOnLiveData.postValue(updatedMap)
+                    }
+                    Log.d(TAG, "Success updating lamp automatic state $currentLampIsAutomaticOn in $currentLampId, $currentRoomId")
+                } else {
+                    Log.e(TAG, "Error updating lamp automatic state: Entry for $currentLampId not found in $lampIsAutomaticOnMap")
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error updating lamp automatic state: $e")
+            }
+        }
+    }
+
+    fun updateLampIsPowerOn(lampIsPowerOnMap: Map<String, Boolean>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val currentUserId = currentUserIdLiveData.value.orEmpty()
+                val currentRoomId = currentRoomIdLiveData.value.orEmpty()
+                val currentLampId = currentLampIdLiveData.value.orEmpty()
+                val currentLampIsPowerOn = lampIsPowerOnMap[currentLampId]
+
+                if (currentLampIsPowerOn != null) {
+                    mutex.withLock {
+                        val updatedMap = _lampIsPowerOnLiveData.value?.toMutableMap() ?: mutableMapOf()
+                        updatedMap[currentLampId] = currentLampIsPowerOn
+
+                        mainRepository.putLampIsPowerOn(
+                            currentUserId,
+                            currentRoomId,
+                            currentLampId,
+                            currentLampIsPowerOn
+                        )
+
+                        _lampIsPowerOnLiveData.postValue(updatedMap)
+                    }
+                    Log.d(TAG, "Success updating lamp power state $currentLampIsPowerOn in $currentLampId, $currentRoomId")
+                } else {
+                    Log.e(TAG, "Error updating lamp power state: Entry for $currentLampId not found in $lampIsPowerOnMap")
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error updating lamp power state: $e")
+            }
+        }
+    }
 
     fun updateLampSchedule(lampScheduleMap: Map<String, LampSchedule>) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                mainRepository.putLampSchedule(currentUserIdLiveData.value.toString(), currentRoomIdLiveData.value.toString(), lampScheduleMap)
-                _lampScheduleLiveData.postValue(lampScheduleMap)
+                val currentUserId = currentUserIdLiveData.value.orEmpty()
+                val currentRoomId = currentRoomIdLiveData.value.orEmpty()
+                val currentLampId = currentLampIdLiveData.value.orEmpty()
+                val currentLampSchedule = lampScheduleMap[currentLampId]
 
-                Log.d(TAG, "Success updating lamp schedule: $lampScheduleMap in ${currentRoomIdLiveData.value}")
+                if (currentLampSchedule != null) {
+                    mutex.withLock {
+                        val updatedMap = _lampScheduleLiveData.value?.toMutableMap() ?: mutableMapOf()
+                        updatedMap[currentLampId] = currentLampSchedule
+
+                        mainRepository.putLampSchedule(currentUserId, currentRoomId, currentLampId, currentLampSchedule)
+                        _lampScheduleLiveData.postValue(updatedMap)
+                    }
+                    Log.d(TAG, "Success updating lamp schedule $currentLampSchedule in $currentLampId, $currentRoomId")
+                } else {
+                    Log.e(TAG, "Error updating lamp schedule: Entry for $currentLampId not found in $lampScheduleMap")
+                }
             } catch (e: Exception) {
                 Log.e(TAG, "Error updating lamp schedule: $e")
             }
@@ -416,9 +437,23 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
     fun updateLampSelectedMode(lampSelectedModeMap: Map<String, String>) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                mainRepository.putLampSelectedMode(currentUserIdLiveData.value.toString(), currentRoomIdLiveData.value.toString(), lampSelectedModeMap)
-                _lampSelectedModeLiveData.postValue(lampSelectedModeMap)
-                Log.d(TAG, "Success updating selected mode: $lampSelectedModeMap in ${currentRoomIdLiveData.value}")
+                val currentUserId = currentUserIdLiveData.value.orEmpty()
+                val currentRoomId = currentRoomIdLiveData.value.orEmpty()
+                val currentLampId = currentLampIdLiveData.value.orEmpty()
+                val lampSelectedMode = lampSelectedModeMap[currentLampId]
+
+                if (lampSelectedMode != null) {
+                    mutex.withLock {
+                        val updatedMap = _lampSelectedModeLiveData.value?.toMutableMap() ?: mutableMapOf()
+                        updatedMap[currentLampId] = lampSelectedMode
+
+                        mainRepository.putLampSelectedMode(currentUserId, currentRoomId, currentLampId, lampSelectedMode)
+                        _lampSelectedModeLiveData.postValue(updatedMap)
+                    }
+                    Log.d(TAG, "Success updating selected mode $lampSelectedMode in $currentLampId, $currentRoomId")
+                } else {
+                    Log.e(TAG, "Error updating selected mode: Entry for $currentLampId not found in $lampSelectedModeMap")
+                }
             } catch (e: Exception) {
                 Log.e(TAG, "Error updating selected mode: $e")
             }
