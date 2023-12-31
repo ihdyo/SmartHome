@@ -13,8 +13,12 @@ import com.ihdyo.smarthome.data.model.RoomModel
 import com.ihdyo.smarthome.data.model.UserModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
+
+    private val mutex = Mutex()
 
     private val _selectedRoom = MutableLiveData<Pair<RoomModel, String?>>()
     val selectedRoom: LiveData<Pair<RoomModel, String?>> get() = _selectedRoom
@@ -362,12 +366,32 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
 
     fun updateLampBrightness(lampBrightnessMap: Map<String, Int>) {
         viewModelScope.launch(Dispatchers.IO) {
-            val (_, lampBrightness) = lampBrightnessMap.entries.first()
             try {
-                mainRepository.putLampBrightness(currentUserIdLiveData.value.orEmpty(), currentRoomIdLiveData.value.orEmpty(), currentLampIdLiveData.value.orEmpty(), lampBrightness)
-                _lampBrightnessLiveData.postValue(lampBrightnessMap)
+                val currentLampId = currentLampIdLiveData.value.orEmpty()
+                val currentLampBrightness = lampBrightnessMap[currentLampId]
 
-                Log.d(TAG, "Success updating lamp brightness $lampBrightness in ${currentLampIdLiveData.value}, ${currentRoomIdLiveData.value}")
+                if (currentLampBrightness != null) {
+                    mutex.withLock {
+                        val updatedMap = _lampBrightnessLiveData.value?.toMutableMap() ?: mutableMapOf()
+
+                        // Update only the entry for the current lamp ID in the LiveData
+                        updatedMap[currentLampId] = currentLampBrightness
+
+                        mainRepository.putLampBrightness(
+                            currentUserIdLiveData.value.orEmpty(),
+                            currentRoomIdLiveData.value.orEmpty(),
+                            currentLampId,
+                            currentLampBrightness
+                        )
+
+                        // Post the entire updated map to LiveData
+                        _lampBrightnessLiveData.postValue(updatedMap)
+                    }
+
+                    Log.d(TAG, "Success updating lamp brightness $currentLampBrightness in ${currentRoomIdLiveData.value}")
+                } else {
+                    Log.e(TAG, "Error updating lamp brightness: Entry for $currentLampId not found in lampBrightnessMap")
+                }
             } catch (e: Exception) {
                 Log.e(TAG, "Error updating lamp brightness: $e")
             }
