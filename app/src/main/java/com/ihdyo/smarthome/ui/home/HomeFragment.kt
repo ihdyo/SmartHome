@@ -17,7 +17,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import coil.request.CachePolicy
@@ -52,7 +51,7 @@ import java.util.Calendar
 import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
-class HomeFragment : Fragment(), LampAdapter.OnItemClickListener {
+class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
@@ -94,12 +93,10 @@ class HomeFragment : Fragment(), LampAdapter.OnItemClickListener {
         authViewModel.currentUser.observe(viewLifecycleOwner) { currentUser ->
             if (currentUser != null) {
                 mainViewModel.setCurrentUserId(currentUser.uid)
-                mainViewModel.setCurrentRoomId("room_001")
 
                 mainViewModel.fetchUser()
                 mainViewModel.fetchRooms()
                 mainViewModel.fetchEnvironments()
-                mainViewModel.fetchLamps()
                 mainViewModel.fetchTotalPowerConsumed()
             }
         }
@@ -117,6 +114,11 @@ class HomeFragment : Fragment(), LampAdapter.OnItemClickListener {
             }
         }
 
+        mainViewModel.lampsLiveData.observe(viewLifecycleOwner) { lamps ->
+            if (lamps != null) {
+                initLampRecyclerView(lamps)
+            }
+        }
 
         // Total Power Consumed
         mainViewModel.totalPowerConsumedLiveData.observe(viewLifecycleOwner) { totalPowerConsumed ->
@@ -126,33 +128,9 @@ class HomeFragment : Fragment(), LampAdapter.OnItemClickListener {
             }
         }
 
-
-
-        mainViewModel.lampsLiveData.observe(viewLifecycleOwner) { lamp ->
-            lampAdapter.setItems(ArrayList(lamp!!))
-        }
-
-        mainViewModel.currentLampIdLiveData.observe(viewLifecycleOwner) { currentLampId ->
-            showLampProperties(currentLampId)
-        }
-
-
-
-
-
-
-        // Recycler View
-        initLampRecyclerView()
-
         // Basic Views
         basicView()
     }
-
-    override fun onLampItemClick(lampId: String) {
-        mainViewModel.setCurrentLampId(lampId)
-    }
-
-
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -223,16 +201,23 @@ class HomeFragment : Fragment(), LampAdapter.OnItemClickListener {
         }
     }
 
-    private fun initLampRecyclerView() {
-        lampAdapter = LampAdapter(this)
-        binding.rvIconLamp.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-        binding.rvIconLamp.adapter = lampAdapter
+    private fun initLampRecyclerView(lamps: List<LampModel>) {
+        if (!::lampAdapter.isInitialized) {
+            lampAdapter = LampAdapter(lamps, { selectedLamp -> showLampProperties(selectedLamp) }, mainViewModel)
+            binding.rvIconLamp.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+            binding.rvIconLamp.adapter = lampAdapter
+            lampAdapter.setInitialSelectedIndex(0)
+        } else {
+            lampAdapter.setItems(lamps)
+        }
     }
 
     // ========================= SHOW ROOM PROPERTIES ========================= //
 
     @SuppressLint("SetTextI18n")
     private fun showRoomProperties(selectedRoom: RoomModel) {
+
+        mainViewModel.fetchLamps()
 
         // Room Name
         val roomName = selectedRoom.roomName
@@ -254,7 +239,11 @@ class HomeFragment : Fragment(), LampAdapter.OnItemClickListener {
 
     // ========================= SHOW LAMP PROPERTIES ========================= //
 
-    private fun showLampProperties(currentLampId: String) {
+    private fun showLampProperties(selectedLamp: LampModel) {
+
+        val currentLampId = selectedLamp.LID.orEmpty()
+
+        binding.textTest.text = "$currentLampId \n $selectedLamp"
 
         // Power Consumed
         mainViewModel.powerConsumedLiveData.observe(viewLifecycleOwner) { powerConsumedMap ->
@@ -347,10 +336,6 @@ class HomeFragment : Fragment(), LampAdapter.OnItemClickListener {
 
         binding.progressLinear.visibility = View.GONE
     }
-
-
-    // ========================= UPDATE LAMP PROPERTIES ========================= //
-
 
 
     // ========================= OTHER FUNCTION ========================= //

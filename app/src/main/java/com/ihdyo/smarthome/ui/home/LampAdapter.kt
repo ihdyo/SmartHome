@@ -8,53 +8,79 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.ihdyo.smarthome.R
 import com.ihdyo.smarthome.data.model.LampModel
-import com.ihdyo.smarthome.databinding.ItemLampBinding
+import com.ihdyo.smarthome.data.viewmodel.MainViewModel
 import com.ihdyo.smarthome.utils.UiUpdater
 
-class LampAdapter(private var listener: OnItemClickListener, ) : RecyclerView.Adapter<LampAdapter.ItemViewHolder>() {
+class LampAdapter(
+    private var items: List<LampModel>,
+    private val onItemClickListener: (LampModel) -> Unit,
+    private val mainViewModel: MainViewModel
+    ): RecyclerView.Adapter<LampAdapter.ItemViewHolder>() {
 
-    interface OnItemClickListener {
-        fun onLampItemClick(lampId: String)
-    }
-
+    private var activePosition: Int = RecyclerView.NO_POSITION
     private var uiUpdater: UiUpdater = UiUpdater()
 
-    private val items = ArrayList<LampModel>()
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_lamp, parent, false)
+        return ItemViewHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
+        holder.bind(position)
+    }
+
+    override fun getItemCount(): Int {
+        return items.size
+    }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun setItems(items: ArrayList<LampModel>) {
-        this.items.clear()
-        this.items.addAll(items)
+    fun setItems(item: List<LampModel>) {
+        this.items = emptyList()
+        this.items = item
         notifyDataSetChanged()
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-        val binding: ItemLampBinding = ItemLampBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ItemViewHolder(binding, listener)
+    fun setInitialSelectedIndex(index: Int) {
+        if (index >= 0 && index < items.size) {
+            activePosition = index
+            notifyItemChanged(activePosition)
+            val selectedLamp = items[activePosition]
+            onItemClickListener(selectedLamp)
+            mainViewModel.setSelectedLamp(selectedLamp, selectedLamp.LID)
+        }
     }
 
-    override fun getItemCount(): Int = items.size
-
-    override fun onBindViewHolder(holder: ItemViewHolder, position: Int) = holder.bind(items[position])
-
-    inner class ItemViewHolder(private val itemBinding: ItemLampBinding, private val listener: OnItemClickListener) :
-        RecyclerView.ViewHolder(itemBinding.root),
-        View.OnClickListener {
-
-        private lateinit var lamp: LampModel
+    inner class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val iconLamp: ImageView = itemView.findViewById(R.id.icon_lamp)
+        private var currentPosition: Int = RecyclerView.NO_POSITION
 
         init {
-            itemBinding.root.setOnClickListener(this)
+            iconLamp.setOnClickListener {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    if (position != activePosition) {
+                        val previousActivePosition = activePosition
+                        activePosition = position
+
+                        notifyItemChanged(previousActivePosition)
+                        notifyItemChanged(activePosition)
+
+                        val selectedLamp = items[position]
+                        onItemClickListener(selectedLamp)
+                        mainViewModel.setSelectedLamp(selectedLamp, selectedLamp.LID)
+                    }
+                }
+            }
         }
 
-        fun bind(item: LampModel) {
-            this.lamp = item
+        @SuppressLint("SetTextI18n")
+        fun bind(position: Int) {
+            currentPosition = position
+            val isActive = position == activePosition
 
-//            uiUpdater.updateIconLampState(itemView.context, itemBinding.iconLamp, isActive)
+            uiUpdater.updateIconLampState(itemView.context, iconLamp, isActive)
         }
 
-        override fun onClick(v: View?) {
-            listener.onLampItemClick(lamp.LID!!)
-        }
     }
+
 }

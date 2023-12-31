@@ -20,12 +20,11 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
 
     private val mutex = Mutex()
 
-    private val _selectedRoom = MutableLiveData<Pair<RoomModel, String?>>()
-    val selectedRoom: LiveData<Pair<RoomModel, String?>> get() = _selectedRoom
+    private val _selectedRoomLiveData = MutableLiveData<Pair<RoomModel, String?>>()
+    val selectedRoomLiveData: LiveData<Pair<RoomModel, String?>> get() = _selectedRoomLiveData
 
-    private val _selectedLamp = MutableLiveData<LampModel>()
-    val selectedLamp: LiveData<LampModel> get() = _selectedLamp
-
+    private val _selectedLampLiveData = MutableLiveData<Pair<LampModel, String?>>()
+    val selectedLampLiveData: LiveData<Pair<LampModel, String?>> get() = _selectedLampLiveData
 
 
     private val _userLiveData = MutableLiveData<UserModel?>()
@@ -44,12 +43,6 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
     private val _currentUserIdLiveData = MutableLiveData<String>()
     val currentUserIdLiveData: LiveData<String> get() = _currentUserIdLiveData
 
-    private val _currentRoomIdLiveData = MutableLiveData<String>()
-    val currentRoomIdLiveData: LiveData<String> get() = _currentRoomIdLiveData
-
-    private val _currentLampIdLiveData = MutableLiveData<String>()
-    val currentLampIdLiveData: LiveData<String> get() = _currentLampIdLiveData
-
 
     private val _userNameLiveData = MutableLiveData<String>()
     val userNameLiveData: LiveData<String> get() = _userNameLiveData
@@ -59,7 +52,6 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
 
     private val _totalPowerConsumedLiveData = MutableLiveData<Int>()
     val totalPowerConsumedLiveData: LiveData<Int> get() = _totalPowerConsumedLiveData
-
 
     private val _sensorValueLiveData = MutableLiveData<Boolean>()
     val sensorValueLiveData: LiveData<Boolean> get() = _sensorValueLiveData
@@ -84,27 +76,18 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
 
     fun setSelectedRoom(room: RoomModel, documentId: String?) {
         viewModelScope.launch {
-            _selectedRoom.postValue(Pair(room, documentId))
+            _selectedRoomLiveData.value = Pair(room, documentId)
         }
     }
 
-    fun setSelectedLamp(lamp: LampModel) {
+    fun setSelectedLamp(lamp: LampModel, documentId: String?) {
         viewModelScope.launch {
-            _selectedLamp.postValue(lamp)
+            _selectedLampLiveData.value = Pair(lamp, documentId)
         }
     }
-
 
     fun setCurrentUserId(userId: String) {
         _currentUserIdLiveData.value = userId
-    }
-
-    fun setCurrentRoomId(roomId: String) {
-        _currentRoomIdLiveData.value = roomId
-    }
-
-    fun setCurrentLampId(lampId: String) {
-        _currentLampIdLiveData.value = lampId
     }
 
 
@@ -129,7 +112,7 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
     private fun fetchUserName(users: UserModel): String {
         return try {
             val userName = users.userName ?: ""
-            Log.d(TAG, "Successfully fetched username: $userName")
+            Log.d(TAG, "Successfully fetched: $userName")
             userName
         } catch (e: Exception) {
             Log.e(TAG, "Error fetching: $e")
@@ -165,6 +148,19 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
         }
     }
 
+    fun fetchRoomById(roomId: String): RoomModel? {
+        return try {
+            val roomDetails = _roomsLiveData.value?.find { it.RID == roomId }
+            if (roomDetails != null) {
+                Log.d(TAG, "Successfully fetched: $roomId")
+            }
+            roomDetails
+        } catch (e: Exception) {
+            Log.e(TAG, "Error fetching: $roomId", e)
+            null
+        }
+    }
+
     private fun fetchSensorValue(environments: List<EnvironmentModel>): Boolean {
         return try {
             val value = environments.firstOrNull()?.sensorValue!!
@@ -179,7 +175,10 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
     fun fetchLamps() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val lamps = mainRepository.getLamps(currentUserIdLiveData.value.orEmpty(), currentRoomIdLiveData.value.orEmpty())
+                val userId = currentUserIdLiveData.value.orEmpty()
+                val roomId = selectedRoomLiveData.value?.second.orEmpty()
+
+                val lamps = mainRepository.getLamps(userId, roomId)
                 _lampsLiveData.postValue(lamps)
 
                 val powerConsumedMap = fetchPowerConsumed(lamps)
@@ -197,7 +196,10 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
                 val lampSelectedModeMap = fetchLampSelectedMode(lamps)
                 _lampSelectedModeLiveData.postValue(lampSelectedModeMap)
 
-                Log.d(TAG, "Successfully fetched lamps for user ${currentUserIdLiveData.value} And room ${currentRoomIdLiveData.value}")
+                Log.d(
+                    TAG,
+                    "Successfully fetched lamps for user $userId And room $roomId"
+                )
             } catch (e: Exception) {
                 Log.e(TAG, "Error fetching lamps: $e")
             }
@@ -314,8 +316,8 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val currentUserId = currentUserIdLiveData.value.orEmpty()
-                val currentRoomId = currentRoomIdLiveData.value.orEmpty()
-                val currentLampId = currentLampIdLiveData.value.orEmpty()
+                val currentRoomId = selectedRoomLiveData.value?.second.orEmpty()
+                val currentLampId = selectedLampLiveData.value?.second.orEmpty()
                 val currentLampBrightness = lampBrightnessMap[currentLampId]
 
                 if (currentLampBrightness != null) {
@@ -346,8 +348,8 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val currentUserId = currentUserIdLiveData.value.orEmpty()
-                val currentRoomId = currentRoomIdLiveData.value.orEmpty()
-                val currentLampId = currentLampIdLiveData.value.orEmpty()
+                val currentRoomId = selectedRoomLiveData.value?.second.orEmpty()
+                val currentLampId = selectedLampLiveData.value?.second.orEmpty()
                 val currentLampIsAutomaticOn = lampIsAutomaticOnMap[currentLampId]
 
                 if (currentLampIsAutomaticOn != null) {
@@ -378,8 +380,8 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val currentUserId = currentUserIdLiveData.value.orEmpty()
-                val currentRoomId = currentRoomIdLiveData.value.orEmpty()
-                val currentLampId = currentLampIdLiveData.value.orEmpty()
+                val currentRoomId = selectedRoomLiveData.value?.second.orEmpty()
+                val currentLampId = selectedLampLiveData.value?.second.orEmpty()
                 val currentLampIsPowerOn = lampIsPowerOnMap[currentLampId]
 
                 if (currentLampIsPowerOn != null) {
@@ -418,7 +420,7 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
                     mutex.withLock {
                         mainRepository.putLampSchedule(
                             currentUserIdLiveData.value.orEmpty(),
-                            currentRoomIdLiveData.value.orEmpty(),
+                            selectedRoomLiveData.value?.second.orEmpty(),
                             lampId,
                             schedule
                         )
@@ -443,7 +445,7 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
                     mutex.withLock {
                         mainRepository.putLampSchedule(
                             currentUserIdLiveData.value.orEmpty(),
-                            currentRoomIdLiveData.value.orEmpty(),
+                            selectedRoomLiveData.value?.second.orEmpty(),
                             lampId,
                             schedule
                         )
@@ -462,8 +464,8 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val currentUserId = currentUserIdLiveData.value.orEmpty()
-                val currentRoomId = currentRoomIdLiveData.value.orEmpty()
-                val currentLampId = currentLampIdLiveData.value.orEmpty()
+                val currentRoomId = selectedRoomLiveData.value?.second.orEmpty()
+                val currentLampId = selectedLampLiveData.value?.second.orEmpty()
                 val lampSelectedMode = lampSelectedModeMap[currentLampId]
 
                 if (lampSelectedMode != null) {
