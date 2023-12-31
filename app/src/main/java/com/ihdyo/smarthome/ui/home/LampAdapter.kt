@@ -4,20 +4,16 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
-import com.ihdyo.smarthome.R
 import com.ihdyo.smarthome.data.model.LampModel
 import com.ihdyo.smarthome.databinding.ItemLampBinding
 import com.ihdyo.smarthome.utils.UiUpdater
 
-class LampAdapter(private var listener: OnItemClickListener, ) : RecyclerView.Adapter<LampAdapter.ItemViewHolder>() {
+class LampAdapter(private var listener: OnItemClickListener ) : RecyclerView.Adapter<LampAdapter.ItemViewHolder>() {
 
     interface OnItemClickListener {
         fun onLampItemClick(lampId: String)
     }
-
-    private var uiUpdater: UiUpdater = UiUpdater()
 
     private val items = ArrayList<LampModel>()
 
@@ -42,6 +38,8 @@ class LampAdapter(private var listener: OnItemClickListener, ) : RecyclerView.Ad
         View.OnClickListener {
 
         private lateinit var lamp: LampModel
+        private var isItemClicked: Boolean = false
+        private val uiUpdater: UiUpdater = UiUpdater()
 
         init {
             itemBinding.root.setOnClickListener(this)
@@ -49,11 +47,12 @@ class LampAdapter(private var listener: OnItemClickListener, ) : RecyclerView.Ad
 
         fun bind(item: LampModel) {
             this.lamp = item
-
-//            uiUpdater.updateIconLampState(itemView.context, itemBinding.iconLamp, isActive)
+            uiUpdater.updateIconLampState(itemView.context, itemBinding.iconLamp, isItemClicked)
         }
 
         override fun onClick(v: View?) {
+            isItemClicked = !isItemClicked
+            bind(lamp)
             listener.onLampItemClick(lamp.LID!!)
         }
     }

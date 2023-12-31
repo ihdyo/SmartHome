@@ -20,13 +20,6 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
 
     private val mutex = Mutex()
 
-    private val _selectedRoom = MutableLiveData<Pair<RoomModel, String?>>()
-    val selectedRoom: LiveData<Pair<RoomModel, String?>> get() = _selectedRoom
-
-    private val _selectedLamp = MutableLiveData<LampModel>()
-    val selectedLamp: LiveData<LampModel> get() = _selectedLamp
-
-
 
     private val _userLiveData = MutableLiveData<UserModel?>()
     val userLiveData: LiveData<UserModel?> get() = _userLiveData
@@ -60,7 +53,6 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
     private val _totalPowerConsumedLiveData = MutableLiveData<Int>()
     val totalPowerConsumedLiveData: LiveData<Int> get() = _totalPowerConsumedLiveData
 
-
     private val _sensorValueLiveData = MutableLiveData<Boolean>()
     val sensorValueLiveData: LiveData<Boolean> get() = _sensorValueLiveData
 
@@ -81,19 +73,6 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
 
 
     // ========================= SET OPERATOR ========================= //
-
-    fun setSelectedRoom(room: RoomModel, documentId: String?) {
-        viewModelScope.launch {
-            _selectedRoom.postValue(Pair(room, documentId))
-        }
-    }
-
-    fun setSelectedLamp(lamp: LampModel) {
-        viewModelScope.launch {
-            _selectedLamp.postValue(lamp)
-        }
-    }
-
 
     fun setCurrentUserId(userId: String) {
         _currentUserIdLiveData.value = userId
@@ -162,6 +141,19 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
             } catch (e: Exception) {
                 Log.e(TAG, "Error fetching rooms: $e")
             }
+        }
+    }
+
+    fun fetchRoomById(roomId: String): RoomModel? {
+        return try {
+            val roomDetails = _roomsLiveData.value?.find { it.RID == roomId }
+            if (roomDetails != null) {
+                Log.d(TAG, "Successfully fetched: $roomId")
+            }
+            roomDetails
+        } catch (e: Exception) {
+            Log.e(TAG, "Error fetching: $roomId", e)
+            null
         }
     }
 

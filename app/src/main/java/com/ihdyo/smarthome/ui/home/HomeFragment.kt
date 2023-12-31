@@ -17,7 +17,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import coil.request.CachePolicy
@@ -31,8 +30,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.ihdyo.smarthome.R
 import com.ihdyo.smarthome.data.factory.AuthViewModelFactory
 import com.ihdyo.smarthome.data.factory.MainViewModelFactory
-import com.ihdyo.smarthome.data.model.LampModel
-import com.ihdyo.smarthome.data.model.RoomModel
 import com.ihdyo.smarthome.data.repository.AuthRepository
 import com.ihdyo.smarthome.data.repository.MainRepository
 import com.ihdyo.smarthome.data.viewmodel.AuthViewModel
@@ -52,7 +49,7 @@ import java.util.Calendar
 import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
-class HomeFragment : Fragment(), LampAdapter.OnItemClickListener {
+class HomeFragment : Fragment(), LampAdapter.OnItemClickListener, RoomAdapter.OnItemClickListener {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
@@ -90,11 +87,12 @@ class HomeFragment : Fragment(), LampAdapter.OnItemClickListener {
 
         // ========================= INITIATE VIEW MODEL WITH UID ========================= //
 
+        // User Data
         authViewModel.getCurrentUser()
         authViewModel.currentUser.observe(viewLifecycleOwner) { currentUser ->
             if (currentUser != null) {
                 mainViewModel.setCurrentUserId(currentUser.uid)
-                mainViewModel.setCurrentRoomId("room_001")
+                binding.textTest.text = "${mainViewModel.currentUserIdLiveData.value}\n${mainViewModel.currentRoomIdLiveData.value}\n${mainViewModel.currentLampIdLiveData.value}"
 
                 mainViewModel.fetchUser()
                 mainViewModel.fetchRooms()
@@ -111,12 +109,29 @@ class HomeFragment : Fragment(), LampAdapter.OnItemClickListener {
             }
         }
 
+        // Rooms Data
         mainViewModel.roomsLiveData.observe(viewLifecycleOwner) { rooms ->
             if (rooms != null) {
-                initRoomRecyclerView(rooms)
+                roomAdapter.setItems(ArrayList(rooms))
+            }
+        }
+        mainViewModel.currentRoomIdLiveData.observe(viewLifecycleOwner) { currentRoomId ->
+            if (currentRoomId != null) {
+                showRoomProperties(currentRoomId)
             }
         }
 
+        // Lamps Data
+        mainViewModel.lampsLiveData.observe(viewLifecycleOwner) { lamps ->
+            if (lamps != null) {
+                lampAdapter.setItems(ArrayList(lamps))
+            }
+        }
+        mainViewModel.currentLampIdLiveData.observe(viewLifecycleOwner) { currentLampId ->
+            if (currentLampId != null) {
+                showLampProperties(currentLampId)
+            }
+        }
 
         // Total Power Consumed
         mainViewModel.totalPowerConsumedLiveData.observe(viewLifecycleOwner) { totalPowerConsumed ->
@@ -127,32 +142,24 @@ class HomeFragment : Fragment(), LampAdapter.OnItemClickListener {
         }
 
 
-
-        mainViewModel.lampsLiveData.observe(viewLifecycleOwner) { lamp ->
-            lampAdapter.setItems(ArrayList(lamp!!))
-        }
-
-        mainViewModel.currentLampIdLiveData.observe(viewLifecycleOwner) { currentLampId ->
-            showLampProperties(currentLampId)
-        }
+//        binding.textTest.text = "${mainViewModel.currentUserIdLiveData.value}\n${mainViewModel.currentRoomIdLiveData.value}\n${mainViewModel.currentLampIdLiveData.value}"
 
 
-
-
-
-
-        // Recycler View
+        // Recycler View Init
+        initRoomRecyclerView()
         initLampRecyclerView()
 
         // Basic Views
         basicView()
     }
 
+    override fun onRoomItemClick(roomId: String) {
+        mainViewModel.setCurrentRoomId(roomId)
+    }
+
     override fun onLampItemClick(lampId: String) {
         mainViewModel.setCurrentLampId(lampId)
     }
-
-
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -212,15 +219,10 @@ class HomeFragment : Fragment(), LampAdapter.OnItemClickListener {
 
     // ========================= INITIATE RECYCLERVIEW ========================= //
 
-    private fun initRoomRecyclerView(rooms: List<RoomModel>) {
-        if (!::roomAdapter.isInitialized) {
-            roomAdapter = RoomAdapter(rooms, { selectedRoom -> showRoomProperties(selectedRoom) }, mainViewModel)
-            binding.rvIconRoom.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-            binding.rvIconRoom.adapter = roomAdapter
-            roomAdapter.setInitialSelectedIndex(0)
-        } else {
-            roomAdapter.setItems(rooms)
-        }
+    private fun initRoomRecyclerView() {
+        roomAdapter = RoomAdapter(this)
+        binding.rvIconRoom.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        binding.rvIconRoom.adapter = roomAdapter
     }
 
     private fun initLampRecyclerView() {
@@ -232,22 +234,26 @@ class HomeFragment : Fragment(), LampAdapter.OnItemClickListener {
     // ========================= SHOW ROOM PROPERTIES ========================= //
 
     @SuppressLint("SetTextI18n")
-    private fun showRoomProperties(selectedRoom: RoomModel) {
+    private fun showRoomProperties(currentRoomId: String) {
 
-        // Room Name
-        val roomName = selectedRoom.roomName
-        binding.textRoom.text = roomName
-        binding.textRoomDecoration.text = roomName
+        val selectedRoom = mainViewModel.fetchRoomById(currentRoomId)
+        if (selectedRoom != null) {
 
-        // Room Floor
-        binding.textRoomFloor.text = "${selectedRoom.roomFloor}F"
+            // Room Name
+            val roomName = selectedRoom.roomName
+            binding.textRoom.text = roomName
+            binding.textRoomDecoration.text = roomName
 
-        // Room Image
-        binding.imageRoom.load(selectedRoom.roomImage) {
-            placeholder(R.drawable.shape_placeholder)
-            error(R.drawable.bx_landscape)
-            crossfade(true)
-            memoryCachePolicy(CachePolicy.ENABLED)
+            // Room Floor
+            binding.textRoomFloor.text = "${selectedRoom.roomFloor}F"
+
+            // Room Image
+            binding.imageRoom.load(selectedRoom.roomImage) {
+                placeholder(R.drawable.shape_placeholder)
+                error(R.drawable.bx_landscape)
+                crossfade(true)
+                memoryCachePolicy(CachePolicy.ENABLED)
+            }
         }
     }
 
@@ -347,10 +353,6 @@ class HomeFragment : Fragment(), LampAdapter.OnItemClickListener {
 
         binding.progressLinear.visibility = View.GONE
     }
-
-
-    // ========================= UPDATE LAMP PROPERTIES ========================= //
-
 
 
     // ========================= OTHER FUNCTION ========================= //

@@ -4,86 +4,55 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import androidx.recyclerview.widget.RecyclerView
 import coil.decode.SvgDecoder
 import coil.load
 import coil.request.CachePolicy
 import com.ihdyo.smarthome.R
 import com.ihdyo.smarthome.data.model.RoomModel
-import com.ihdyo.smarthome.data.viewmodel.MainViewModel
+import com.ihdyo.smarthome.databinding.ItemRoomBinding
 import com.ihdyo.smarthome.utils.UiUpdater
 
-class RoomAdapter(
-    private var items: List<RoomModel>,
-    private val onItemClickListener: (RoomModel) -> Unit,
-    private val mainViewModel: MainViewModel
-    ): RecyclerView.Adapter<RoomAdapter.ItemViewHolder>() {
+class RoomAdapter(private var listener: OnItemClickListener ) : RecyclerView.Adapter<RoomAdapter.ItemViewHolder>() {
 
-    private var activePosition: Int = RecyclerView.NO_POSITION
-    private var uiUpdater: UiUpdater = UiUpdater()
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_room, parent, false)
-        return ItemViewHolder(view)
+    interface OnItemClickListener {
+        fun onRoomItemClick(roomId: String)
     }
 
-    override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        val item = items[position]
-        holder.bind(item, position)
-    }
-
-    override fun getItemCount(): Int {
-        return items.size
-    }
+    private val items = ArrayList<RoomModel>()
 
     @SuppressLint("NotifyDataSetChanged")
-    fun setItems(item: List<RoomModel>) {
-        this.items = emptyList()
-        this.items = item
+    fun setItems(items: ArrayList<RoomModel>) {
+        this.items.clear()
+        this.items.addAll(items)
         notifyDataSetChanged()
     }
 
-    fun setInitialSelectedIndex(index: Int) {
-        if (index >= 0 && index < items.size) {
-            activePosition = index
-            notifyItemChanged(activePosition)
-            val selectedRoom = items[activePosition]
-            onItemClickListener(selectedRoom)
-            mainViewModel.setSelectedRoom(selectedRoom, selectedRoom.RID)
-        }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
+        val binding: ItemRoomBinding = ItemRoomBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ItemViewHolder(binding, listener)
     }
 
-    inner class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    override fun getItemCount(): Int = items.size
 
-        private val iconRoom: ImageButton = itemView.findViewById(R.id.icon_room)
-        private var currentPosition: Int = RecyclerView.NO_POSITION
+    override fun onBindViewHolder(holder: ItemViewHolder, position: Int) = holder.bind(items[position])
+
+    inner class ItemViewHolder(private val itemBinding: ItemRoomBinding, private val listener: OnItemClickListener) :
+        RecyclerView.ViewHolder(itemBinding.root),
+        View.OnClickListener {
+
+        private lateinit var room: RoomModel
+        private var isItemClicked: Boolean = false
+        private val uiUpdater: UiUpdater = UiUpdater()
 
         init {
-            iconRoom.setOnClickListener {
-                val position = adapterPosition
-                if (position != RecyclerView.NO_POSITION) {
-                    if (position != activePosition) {
-                        val previousActivePosition = activePosition
-                        activePosition = position
-
-                        notifyItemChanged(previousActivePosition)
-                        notifyItemChanged(activePosition)
-
-                        val selectedRoom = items[position]
-                        onItemClickListener(selectedRoom)
-
-                        mainViewModel.setSelectedRoom(selectedRoom, selectedRoom.RID)
-                    }
-                }
-            }
+            itemBinding.root.setOnClickListener(this)
         }
 
-        fun bind(item: RoomModel, position: Int) {
-            currentPosition = position
-            val isActive = position == activePosition
+        fun bind(item: RoomModel) {
+            this.room = item
 
-            iconRoom.load(item.roomIcon) {
+            itemBinding.iconRoom.load(item.roomIcon) {
                 placeholder(R.drawable.bx_landscape)
                 error(R.drawable.bx_error)
                 crossfade(true)
@@ -91,9 +60,13 @@ class RoomAdapter(
                 memoryCachePolicy(CachePolicy.ENABLED)
             }
 
-            uiUpdater.updateIconRoomState(itemView.context, iconRoom, isActive)
+            uiUpdater.updateIconRoomState(itemView.context, itemBinding.iconRoom, isItemClicked)
         }
 
+        override fun onClick(v: View?) {
+            isItemClicked = !isItemClicked
+            bind(room)
+            listener.onRoomItemClick(room.RID!!)
+        }
     }
-
 }
