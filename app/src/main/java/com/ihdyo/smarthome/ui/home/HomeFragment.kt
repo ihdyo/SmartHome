@@ -298,12 +298,15 @@ class HomeFragment : Fragment(), LampAdapter.OnItemClickListener {
             mainViewModel.updateLampIsPowerOn(lampIsPowerOnMap)
         }
 
+
+
+
         // Lamp Selected Mode
         mainViewModel.lampSelectedModeLiveData.observe(viewLifecycleOwner) { selectedModeMap ->
             if (selectedModeMap != null) {
                 val lampSelectedMode = selectedModeMap[currentLampId]
                 if (lampSelectedMode != null) {
-                    getButtonState(lampSelectedMode)
+//                    getButtonState(lampSelectedMode)
                 }
             }
         }
