@@ -209,10 +209,10 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
             try {
                 val lamps = mainRepository.getAllLamps(currentUserIdLiveData.value.orEmpty())
 
-                val totalPowerConsumed = lamps.sumByDouble { lamp ->
-                    (lamp.lampRuntime.div(3600)).times(lamp.lampWattPower).toDouble()
+                val totalPowerConsumed = lamps.sumOf { lamp ->
+                    (lamp.lampRuntime.div(3600)).times(lamp.lampWattPower)
                 }
-                _totalPowerConsumedLiveData.postValue(totalPowerConsumed.toInt())
+                _totalPowerConsumedLiveData.postValue(totalPowerConsumed)
                 Log.d(TAG, "Total Power Consumed: $totalPowerConsumed")
             } catch (e: Exception) {
                 Log.e(TAG, "Error fetching lamps and calculating power consumption: $e")
@@ -394,7 +394,7 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
                             currentLampIsPowerOn
                         )
 
-//                        _lampIsPowerOnLiveData.postValue(updatedMap)
+                        _lampIsPowerOnLiveData.postValue(updatedMap)
                     }
                     Log.d(TAG, "Success updating lamp power state $currentLampIsPowerOn in $currentLampId, $currentRoomId")
                 } else {
@@ -407,31 +407,56 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
     }
 
 
-    fun updateLampSchedule(lampScheduleMap: Map<String, LampSchedule>) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val currentUserId = currentUserIdLiveData.value.orEmpty()
-                val currentRoomId = currentRoomIdLiveData.value.orEmpty()
-                val currentLampId = currentLampIdLiveData.value.orEmpty()
-                val currentLampSchedule = lampScheduleMap[currentLampId]
+    fun updateScheduleFrom(lampId: String, newScheduleFrom: String) {
+        val updatedSchedule = _lampScheduleLiveData.value?.get(lampId)?.copy(scheduleFrom = newScheduleFrom)
+        updatedSchedule?.let { schedule ->
+            val updatedMap = _lampScheduleLiveData.value?.toMutableMap() ?: mutableMapOf()
+            updatedMap[lampId] = schedule
 
-                if (currentLampSchedule != null) {
+            viewModelScope.launch(Dispatchers.IO) {
+                try {
                     mutex.withLock {
-                        val updatedMap = _lampScheduleLiveData.value?.toMutableMap() ?: mutableMapOf()
-                        updatedMap[currentLampId] = currentLampSchedule
-
-                        mainRepository.putLampSchedule(currentUserId, currentRoomId, currentLampId, currentLampSchedule)
+                        mainRepository.putLampSchedule(
+                            currentUserIdLiveData.value.orEmpty(),
+                            currentRoomIdLiveData.value.orEmpty(),
+                            lampId,
+                            schedule
+                        )
                         _lampScheduleLiveData.postValue(updatedMap)
                     }
-                    Log.d(TAG, "Success updating lamp schedule $currentLampSchedule in $currentLampId, $currentRoomId")
-                } else {
-                    Log.e(TAG, "Error updating lamp schedule: Entry for $currentLampId not found in $lampScheduleMap")
+                    Log.d(TAG, "Success updating lamp scheduleFrom $newScheduleFrom in $lampId")
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error updating lamp scheduleFrom: $e")
                 }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error updating lamp schedule: $e")
             }
         }
     }
+
+    fun updateScheduleTo(lampId: String, newScheduleTo: String) {
+        val updatedSchedule = _lampScheduleLiveData.value?.get(lampId)?.copy(scheduleTo = newScheduleTo)
+        updatedSchedule?.let { schedule ->
+            val updatedMap = _lampScheduleLiveData.value?.toMutableMap() ?: mutableMapOf()
+            updatedMap[lampId] = schedule
+
+            viewModelScope.launch(Dispatchers.IO) {
+                try {
+                    mutex.withLock {
+                        mainRepository.putLampSchedule(
+                            currentUserIdLiveData.value.orEmpty(),
+                            currentRoomIdLiveData.value.orEmpty(),
+                            lampId,
+                            schedule
+                        )
+                        _lampScheduleLiveData.postValue(updatedMap)
+                    }
+                    Log.d(TAG, "Success updating lamp scheduleTo $newScheduleTo for $lampId")
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error updating lamp scheduleTo: $e")
+                }
+            }
+        }
+    }
+
 
     fun updateLampSelectedMode(lampSelectedModeMap: Map<String, String>) {
         viewModelScope.launch(Dispatchers.IO) {
