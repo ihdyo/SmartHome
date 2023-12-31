@@ -262,7 +262,6 @@ class HomeFragment : Fragment(), LampAdapter.OnItemClickListener {
                 val powerConsumed = powerConsumedMap[currentLampId]
                 val formattedText = "${powerConsumed}Wh"
                 binding.textPowerConsumed.text = formattedText
-//                binding.textTest.text = "$currentLampId\n$powerConsumedMap\n$powerConsumed"
             }
         }
 
@@ -272,7 +271,6 @@ class HomeFragment : Fragment(), LampAdapter.OnItemClickListener {
                 val brightness = brightnessMap[currentLampId]
                 if (brightness != null) {
                     binding.sliderLampBrightness.value = brightness.toFloat()
-//                    binding.textTest.text = "$currentLampId\n$brightnessMap\n$brightness"
                 }
             }
         }
@@ -288,8 +286,7 @@ class HomeFragment : Fragment(), LampAdapter.OnItemClickListener {
             if (isPowerOnMap != null) {
                 val isPowerOn = isPowerOnMap[currentLampId]
                 if (isPowerOn != null) {
-                    binding.switchPower.isChecked = isPowerOn
-                    binding.textTest.text = "$currentLampId\n$isPowerOnMap\n$isPowerOn"
+                    binding.switchPower.isChecked = isPowerOn == true
                 }
             }
         }
@@ -301,12 +298,13 @@ class HomeFragment : Fragment(), LampAdapter.OnItemClickListener {
 
 
 
+
         // Lamp Selected Mode
         mainViewModel.lampSelectedModeLiveData.observe(viewLifecycleOwner) { selectedModeMap ->
             if (selectedModeMap != null) {
                 val lampSelectedMode = selectedModeMap[currentLampId]
                 if (lampSelectedMode != null) {
-//                    getButtonState(lampSelectedMode)
+                    getButtonState(lampSelectedMode)
                 }
             }
         }
