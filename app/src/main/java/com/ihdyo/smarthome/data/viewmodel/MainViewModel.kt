@@ -217,7 +217,7 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
                 val lamps = mainRepository.getAllLamps(currentUserIdLiveData.value.orEmpty())
 
                 val totalPowerConsumed = lamps.sumOf { lamp ->
-                    (lamp.lampRuntime.div(3600)).times(lamp.lampWattPower)
+                    (lamp.lampRuntime.div(3600).div(1000)).times(lamp.lampWattPower)
                 }
                 _totalPowerConsumedLiveData.postValue(totalPowerConsumed)
                 Log.d(TAG, "Total Power Consumed: $totalPowerConsumed")
@@ -232,7 +232,7 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
 
         try {
             for (lamp in lamps) {
-                powerConsumedMap[lamp.LID.orEmpty()] = (lamp.lampRuntime.div(3600)).times(lamp.lampWattPower)
+                powerConsumedMap[lamp.LID.orEmpty()] = (lamp.lampRuntime.div(3600).div(1000)).times(lamp.lampWattPower)
             }
             Log.d(TAG, "Successfully calculating power consumed")
         } catch (e: Exception) {

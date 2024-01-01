@@ -51,6 +51,8 @@
     <string name="text_change_email">Change Email</string>
     <string name="text_change_password">Change Password</string>
     <string name="text_change_username">Change Username</string>
+    <string name="text_select_room">select room</string>
+    <string name="text_select_lamp">select lamp</string>
 
     <string name="prompt_ok">OK</string>
     <string name="prompt_cancel">Cancel</string>
@@ -96,12 +98,12 @@
     <string name="prompt_qr_scanner_error_check">Delete Google Play Services data and cache, then reopen the apps</string>
     <string name="prompt_order_new_device">-- Please write your specific requirements --</string>
 
-    <string name="placeholder_email">this email</string>
-    <string name="placeholder_username"> This User</string>
+    <string name="placeholder_email">Email</string>
+    <string name="placeholder_username">User</string>
     <string name="placeholder_greeting">Hello,</string>
-    <string name="placeholder_city">This City</string>
-    <string name="placeholder_room">This Room</string>
+    <string name="placeholder_city">City</string>
+    <string name="placeholder_room">Room</string>
     <string name="placeholder_room_floor">-F</string>
-    <string name="placeholder_power_consumed">0Wh</string>
-    <string name="placeholder_schedule">00:00</string>
+    <string name="placeholder_power_consumed">0kWh</string>
+    <string name="placeholder_schedule">-:-</string>
 </resources>

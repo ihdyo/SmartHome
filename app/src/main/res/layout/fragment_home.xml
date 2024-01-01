@@ -38,16 +38,26 @@
             android:id="@+id/rv_icon_room"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:clipToPadding="false"
-            android:clipChildren="false"
-            android:layout_marginTop="@dimen/sp_7xl"
             android:layout_gravity="center"
-            tools:orientation="vertical"
-            tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:layout_marginTop="@dimen/sp_7xl"
+            android:clipChildren="false"
+            android:clipToPadding="false"
             app:layout_constraintEnd_toEndOf="@+id/rectangle"
             app:layout_constraintStart_toStartOf="@id/rectangle"
             app:layout_constraintTop_toTopOf="parent"
-            tools:listitem="@layout/item_room" />
+            tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/item_room"
+            tools:orientation="vertical" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_room"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
+            android:enabled="false"
+            android:text="@string/text_select_room"
+            app:layout_constraintStart_toEndOf="@+id/rv_icon_room"
+            app:layout_constraintTop_toTopOf="@+id/rv_icon_room" />
 
         <TextView
             android:id="@+id/text_room"
@@ -82,7 +92,7 @@
             android:layout_height="560dp"
             android:elevation="-2dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/shape_placeholder"
+            android:src="@drawable/img_house_a"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -191,15 +201,26 @@
             app:layout_constraintEnd_toEndOf="@+id/text_room_decoration"
             app:layout_constraintTop_toTopOf="@+id/text_room_decoration" />
 
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_lamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:text="@string/text_select_lamp"
+            android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
+            app:layout_constraintBottom_toTopOf="@+id/rv_icon_lamp"
+            app:layout_constraintStart_toStartOf="@+id/rv_icon_lamp" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_icon_lamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:clipToPadding="false"
-            android:clipChildren="false"
+            android:layout_marginBottom="@dimen/sp_sm"
             android:layout_gravity="center"
-            app:layout_constraintEnd_toEndOf="@+id/text_room_decoration"
-            app:layout_constraintTop_toBottomOf="@+id/text_room_decoration"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            app:layout_constraintBottom_toTopOf="@+id/toggle_mode"
+            app:layout_constraintStart_toStartOf="@+id/toggle_mode"
             tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/item_lamp"
             tools:orientation="horizontal" />
@@ -208,7 +229,7 @@
             android:id="@+id/slider_lamp_brightness"
             android:layout_width="@dimen/sp_11xl"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="-112dp"
+            android:layout_marginEnd="-116dp"
             android:rotation="-90"
             android:stepSize="1.0"
             android:value="10.0"
@@ -216,7 +237,7 @@
             android:valueTo="10.0"
             app:layout_constraintBottom_toTopOf="@+id/switch_power"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/rv_icon_lamp"
+            app:layout_constraintTop_toBottomOf="@+id/text_room_decoration"
             app:thumbElevation="@dimen/sp_0"
             app:tickVisible="false" />
 

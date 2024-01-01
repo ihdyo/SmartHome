@@ -51,6 +51,8 @@
     <string name="text_change_email">Ubah Email</string>
     <string name="text_change_password">Ubah Kata Sandi</string>
     <string name="text_change_username">Ubah Nama Pengguna</string>
+    <string name="text_select_room">pilih ruangan</string>
+    <string name="text_select_lamp">pilih lampu</string>
 
     <string name="prompt_ok">OK</string>
     <string name="prompt_cancel">Batal</string>
@@ -96,12 +98,12 @@
     <string name="prompt_qr_scanner_error_check">Hapus data dan cache Layanan Google Play, kemudian buka kembali aplikasi</string>
     <string name="prompt_order_new_device">-- Mohon tuliskan kebutuhanmu secara detail --</string>
 
-    <string name="placeholder_email">email ini</string>
-    <string name="placeholder_username">Pengguna Ini</string>
+    <string name="placeholder_email">Email</string>
+    <string name="placeholder_username">Pengguna</string>
     <string name="placeholder_greeting">Halo,</string>
-    <string name="placeholder_city">Kota Ini</string>
-    <string name="placeholder_room">Ruangan Ini</string>
+    <string name="placeholder_city">Kota</string>
+    <string name="placeholder_room">Ruangan</string>
     <string name="placeholder_room_floor">-F</string>
-    <string name="placeholder_power_consumed">0Wh</string>
-    <string name="placeholder_schedule">00:00</string>
+    <string name="placeholder_power_consumed">0kWh</string>
+    <string name="placeholder_schedule">-:-</string>
 </resources>

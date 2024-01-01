@@ -108,6 +108,8 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
         // Rooms Data
         mainViewModel.roomsLiveData.observe(viewLifecycleOwner) { rooms ->
             if (rooms != null) {
+                binding.progressLinear.visibility = View.GONE
+                binding.chipRoom.visibility = View.VISIBLE
                 roomAdapter.setItems(ArrayList(rooms))
             }
         }
@@ -120,7 +122,7 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
         // Total Power Consumed
         mainViewModel.totalPowerConsumedLiveData.observe(viewLifecycleOwner) { totalPowerConsumed ->
             if (totalPowerConsumed != null) {
-                val formattedText = "${totalPowerConsumed}Wh"
+                val formattedText = "${totalPowerConsumed}kWh"
                 binding.textTotalPowerConsumed.text = formattedText
             }
         }
@@ -133,13 +135,18 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
         basicView()
     }
 
+    // Item Click
     override fun onRoomItemClick(roomId: String) {
+        binding.progressLinear.visibility = View.VISIBLE
+        binding.chipRoom.visibility = View.GONE
+        binding.chipLamp.visibility = View.VISIBLE
         mainViewModel.setCurrentRoomId(roomId)
 
         // Lamps Data
         mainViewModel.fetchLamps()
         mainViewModel.lampsLiveData.observe(viewLifecycleOwner) { lamps ->
             if (lamps != null) {
+                binding.progressLinear.visibility = View.GONE
                 lampAdapter.setItems(ArrayList(lamps))
             }
         }
@@ -151,6 +158,7 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
     }
 
     override fun onLampItemClick(lampId: String) {
+        binding.progressLinear.visibility = View.VISIBLE
         mainViewModel.setCurrentLampId(lampId)
     }
 
@@ -165,8 +173,11 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
     @SuppressLint("ClickableViewAccessibility")
     private fun basicView() {
 
-        // Progress Bar
+        // Show Views
+        showViews(isRoomActive = false, isLampActive = false)
         binding.progressLinear.visibility = View.VISIBLE
+        binding.chipRoom.visibility = View.GONE
+        binding.chipLamp.visibility = View.GONE
 
         // Get Current Time
         getCurrentTime { formattedTime ->
@@ -209,6 +220,36 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
         }
     }
 
+    // Show Views
+    private fun showViews(isRoomActive: Boolean, isLampActive: Boolean) {
+        val roomViewsToToggle = listOf(
+            binding.textRoom,
+            binding.textRoomDecoration,
+            binding.textRoomFloor,
+            binding.imageRoom
+        )
+
+        val lampViewsToToggle = listOf(
+            binding.textPowerConsumed,
+            binding.sliderLampBrightness,
+            binding.switchPower,
+            binding.textFrom,
+            binding.textScheduleFrom,
+            binding.textTo,
+            binding.textScheduleTo,
+            binding.toggleMode
+        )
+
+        roomViewsToToggle.forEach { view ->
+            view.visibility = if (isRoomActive) View.VISIBLE else View.GONE
+        }
+
+        lampViewsToToggle.forEach { view ->
+            view.visibility = if (isLampActive) View.VISIBLE else View.GONE
+        }
+    }
+
+
 
     // ========================= INITIATE RECYCLERVIEW ========================= //
 
@@ -228,6 +269,9 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
 
     @SuppressLint("SetTextI18n")
     private fun showRoomProperties(currentRoomId: String) {
+
+        // Show View
+        showViews(isRoomActive = true, isLampActive = false)
 
         val selectedRoom = mainViewModel.fetchRoomById(currentRoomId)
         if (selectedRoom != null) {
@@ -254,12 +298,17 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
     // ========================= SHOW LAMP PROPERTIES ========================= //
 
     private fun showLampProperties(currentLampId: String) {
+        binding.progressLinear.visibility = View.GONE
+        binding.chipLamp.visibility = View.GONE
+
+        // Show Views
+        showViews(isRoomActive = true, isLampActive = true)
 
         // Power Consumed
         mainViewModel.powerConsumedLiveData.observe(viewLifecycleOwner) { powerConsumedMap ->
             if (powerConsumedMap != null) {
                 val powerConsumed = powerConsumedMap[currentLampId]
-                val formattedText = "${powerConsumed}Wh"
+                val formattedText = "${powerConsumed}kWh"
                 binding.textPowerConsumed.text = formattedText
             }
         }
@@ -282,13 +331,8 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
 
         // Lamp Switch Power
         mainViewModel.lampIsPowerOnLiveData.observe(viewLifecycleOwner) { isPowerOnMap ->
-            if (isPowerOnMap != null) {
-                val isPowerOn = isPowerOnMap[currentLampId]
-                if (isPowerOn != null) {
-                    if (isPowerOn == true) {binding.switchPower.isChecked}
-                    else {!binding.switchPower.isChecked}
-                }
-            }
+            val isPowerOn = isPowerOnMap?.get(currentLampId)
+            binding.switchPower.isChecked = isPowerOn == true
         }
         binding.switchPower.setOnCheckedChangeListener { _, isChecked ->
             val lampIsPowerOnMap = mapOf(currentLampId to isChecked)
@@ -343,8 +387,6 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
                 }
             }
         }
-
-        binding.progressLinear.visibility = View.GONE
     }
 
 
@@ -446,10 +488,10 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
     private fun getCurrentTime(callback: (String) -> Unit) {
         val currentTime = Calendar.getInstance()
         val greeting = when (currentTime.get(Calendar.HOUR_OF_DAY)) {
-            in 0..5 -> getString(R.string.text_greeting_night)
-            in 6..11 -> getString(R.string.text_greeting_morning)
-            in 12..17 -> getString(R.string.text_greeting_afternoon)
-            else -> getString(R.string.text_greeting_evening)
+            in 0..5 -> getString(R.string.text_greeting_night) + " "
+            in 6..11 -> getString(R.string.text_greeting_morning) + " "
+            in 12..17 -> getString(R.string.text_greeting_afternoon) + " "
+            else -> getString(R.string.text_greeting_evening) + " "
         }
         callback(greeting)
     }
