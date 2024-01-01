@@ -9,9 +9,24 @@ import kotlinx.coroutines.tasks.await
 class AuthRepository(private val auth: FirebaseAuth) {
 
 
+    // ========================= ANONYMOUS AUTH ========================= //
+
+    suspend fun authAnonymously(userId: String): FirebaseUser? {
+        return try {
+            auth.signInAnonymously().await()
+            val user = auth.currentUser
+            Log.d(TAG, "Authentication with Firebase successful for userId: $userId")
+            user
+        } catch (e: Exception) {
+            Log.e(TAG, "Error authenticating with Firebase for userId: $userId", e)
+            throw e
+        }
+    }
+
+
     // ========================= EMAIL AUTH ========================= //
 
-    suspend fun signInWithEmail(email: String, password: String): FirebaseUser? {
+    suspend fun authWithEmail(email: String, password: String): FirebaseUser? {
         return try {
             val result = auth.signInWithEmailAndPassword(email, password).await()
             val user = result.user
@@ -26,7 +41,7 @@ class AuthRepository(private val auth: FirebaseAuth) {
 
     // ========================= GOOGLE AUTH ========================= //
 
-    suspend fun signInWithGoogle(idToken: String): FirebaseUser? {
+    suspend fun authWithGoogle(idToken: String): FirebaseUser? {
         return try {
             val credential: AuthCredential = GoogleAuthProvider.getCredential(idToken, null)
             val result = auth.signInWithCredential(credential).await()

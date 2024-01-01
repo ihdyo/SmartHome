@@ -83,7 +83,8 @@
     <string name="prompt_change_password_success">Your password changed successfully</string>
     <string name="prompt_change_password_failed">Failed while changing your password</string>
     <string name="prompt_auth_success">Successfully signed in</string>
-    <string name="prompt_auth_failed">Failed to signing in, user is not registered yet</string>
+    <string name="prompt_auth_failed">Failed to signing in</string>
+    <string name="prompt_auth_failed_check">This user credential are not registered!</string>
     <string name="prompt_auth_email_failed">Failed signing in with email, recheck your email and password</string>
     <string name="prompt_auth_google_failed">Failed signing in with Google</string>
     <string name="prompt_invalid_email">Invalid email format</string>
@@ -91,6 +92,8 @@
     <string name="prompt_empty_password">Password cannot be empty</string>
     <string name="prompt_email_verification_success">Email verification success</string>
     <string name="prompt_email_verification_failed">Email verification failed</string>
+    <string name="prompt_qr_scanner_error">QR Scanner Error</string>
+    <string name="prompt_qr_scanner_error_check">Delete Google Play Services data and cache, then reopen the apps</string>
 
     <string name="placeholder_email">this email</string>
     <string name="placeholder_username"> This User</string>

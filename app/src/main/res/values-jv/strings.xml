@@ -84,6 +84,7 @@
     <string name="prompt_change_password_failed" >Gagal nalika ngganti sandhi</string>
     <string name="prompt_auth_success">Kasil mlebu</string>
     <string name="prompt_auth_failed">Gagal mlebu, panganggo ora kadhaptar</string>
+    <string name="prompt_auth_failed_check">Informasi panganggo iki durung kadhaptar!</string>
     <string name="prompt_auth_email_failed">Gagal mlebu nganggo email, priksa maneh email lan sandhine sampeyan</string>
     <string name="prompt_auth_google_failed">Gagal mlebu nganggo Google</string>
     <string name="prompt_invalid_email">Format email ora bener</string>
@@ -91,6 +92,8 @@
     <string name="prompt_empty_password">Sandi ora bisa kosong</string>
     <string name="prompt_email_verification_success">Kasil verifikasi email</string>
     <string name="prompt_email_verification_failed" >Verifikasi email gagal</string>
+    <string name="prompt_qr_scanner_error">Kesalahan Pamindai QR</string>
+    <string name="prompt_qr_scanner_error_check">Hapus data lan cache Layanan Google Play, banjur buka maneh aplikasi iki</string>
 
     <string name="placeholder_email">email iki</string>
     <string name="placeholder_username">Panganggo Iki</string>

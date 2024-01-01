@@ -58,15 +58,13 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
     private lateinit var authViewModel: AuthViewModel
     private lateinit var roomAdapter: RoomAdapter
     private lateinit var lampAdapter: LampAdapter
-    private lateinit var uiUpdater: UiUpdater
 
+    private var uiUpdater: UiUpdater = UiUpdater()
     private var fusedLocationProviderClient: FusedLocationProviderClient? = null
     private var isRefreshTriggeredManually: Boolean? = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
-
-        uiUpdater = UiUpdater()
 
         mainViewModel = ViewModelProvider(
             this,
@@ -131,7 +129,7 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
         initRoomRecyclerView()
         initLampRecyclerView()
 
-        // Basic Views
+        // Basic View
         basicView()
     }
 

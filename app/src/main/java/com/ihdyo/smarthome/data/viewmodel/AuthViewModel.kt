@@ -14,15 +14,13 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
     private val _currentUser = MutableLiveData<FirebaseUser?>()
     val currentUser: LiveData<FirebaseUser?> get() = _currentUser
 
-    private val _authError = MutableLiveData<String>()
-    val authError: LiveData<String> get() = _authError
 
     // ========================= EMAIL AUTH ========================= //
 
-    fun signInWithEmail(email: String, password: String, onSuccess: () -> Unit, onFailed: (errorMessage: String) -> Unit) {
+    fun signInWithEmail(email: String, password: String) {
         viewModelScope.launch {
             try {
-                val user = authRepository.signInWithEmail(email, password)
+                val user = authRepository.authWithEmail(email, password)
                 _currentUser.value = user
                 Log.d(TAG, "Sign in with email successful: $email")
             } catch (e: Exception) {
@@ -37,7 +35,7 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
     fun signInWithGoogle(idToken: String, onSuccess: (FirebaseUser) -> Unit, onFailed: (String) -> Unit) {
         viewModelScope.launch {
             try {
-                val user = authRepository.signInWithGoogle(idToken)
+                val user = authRepository.authWithGoogle(idToken)
                 if (user != null) {
                     _currentUser.value = user
                     onSuccess(user)

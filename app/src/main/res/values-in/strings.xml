@@ -83,7 +83,8 @@
     <string name="prompt_change_password_success">Kata sandi telah diperbarui</string>
     <string name="prompt_change_password_failed">Gagal mengganti kata sandi</string>
     <string name="prompt_auth_success">Berhasil masuk</string>
-    <string name="prompt_auth_failed">Gagal masuk, pengguna belum terdaftar</string>
+    <string name="prompt_auth_failed">Gagal masuk</string>
+    <string name="prompt_auth_failed_check">Informasi pengguna ini belum terdaftar!</string>
     <string name="prompt_auth_email_failed">Gagal masuk menggunakan email, periksa lagi email dan kata sandimu</string>
     <string name="prompt_auth_google_failed">Gagal masuk menggunakan Google</string>
     <string name="prompt_invalid_email">Format email tidak sah</string>
@@ -91,6 +92,8 @@
     <string name="prompt_empty_password">Kata sandi tidak boleh kosong</string>
     <string name="prompt_email_verification_success">Berhasil verifikasi email</string>
     <string name="prompt_email_verification_failed">Gagal verifikasi email</string>
+    <string name="prompt_qr_scanner_error">Kesalahan Pemindai QR</string>
+    <string name="prompt_qr_scanner_error_check">Hapus data dan cache Layanan Google Play, kemudian buka kembali aplikasi</string>
 
     <string name="placeholder_email">email ini</string>
     <string name="placeholder_username">Pengguna Ini</string>
