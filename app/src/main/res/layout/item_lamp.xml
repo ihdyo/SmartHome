@@ -13,7 +13,7 @@
         android:layout_height="@dimen/sp_xl"
         android:layout_margin="@dimen/sp_2xs"
         android:padding="@dimen/sp_2xs"
-        android:background="@drawable/shape_squircle_active"
+        android:background="@drawable/shape_squircle_md"
         android:src="@drawable/bx_bulb"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

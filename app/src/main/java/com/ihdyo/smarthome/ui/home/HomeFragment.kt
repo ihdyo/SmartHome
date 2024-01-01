@@ -255,8 +255,6 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
 
     private fun showLampProperties(currentLampId: String) {
 
-        binding.textTest.text = "${mainViewModel.currentUserIdLiveData.value}\n${mainViewModel.currentRoomIdLiveData.value}\n${mainViewModel.currentLampIdLiveData.value}"
-
         // Power Consumed
         mainViewModel.powerConsumedLiveData.observe(viewLifecycleOwner) { powerConsumedMap ->
             if (powerConsumedMap != null) {
@@ -471,6 +469,9 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
                     }
                 }
             }
+        } else {
+            binding.textCity.visibility = View.GONE
+            callback(null)
         }
     }
 

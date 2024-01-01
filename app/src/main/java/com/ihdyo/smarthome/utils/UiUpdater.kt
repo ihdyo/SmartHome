@@ -91,21 +91,30 @@ class UiUpdater {
             iconRoom.layoutParams = layoutParams
         }
 
+        if (isActive) {
+            iconRoom.setBackgroundResource(R.drawable.shape_squircle_md)
+        } else {
+            iconRoom.setBackgroundResource(R.drawable.shape_squircle_lg)
+        }
+
         val paddingAnimator = resources.getDimensionPixelSize(padding)
         iconRoom.setPadding(paddingAnimator, paddingAnimator, paddingAnimator, paddingAnimator)
 
         val elevationAnimator = ObjectAnimator.ofFloat(iconRoom, "elevation", iconRoom.elevation, elevation)
 
+        val iconColor = if (isActive) getThemeColor(context, com.google.android.material.R.attr.colorSurface) else getThemeColor(context, com.google.android.material.R.attr.colorPrimary)
+        val backgroundColor = if (isActive) getThemeColor(context, com.google.android.material.R.attr.colorPrimary) else getThemeColor(context, com.google.android.material.R.attr.colorSurfaceVariant)
+
+        iconRoom.imageTintList = ColorStateList.valueOf(iconColor)
+        iconRoom.backgroundTintList = ColorStateList.valueOf(backgroundColor)
+
         val animatorSet = AnimatorSet()
-        animatorSet.duration = 0
+        animatorSet.duration = 150
         animatorSet.playTogether(heightAnimator, widthAnimator, elevationAnimator)
         animatorSet.start()
 
-        if (isActive) iconRoom.setBackgroundResource(R.drawable.shape_squircle_active) else iconRoom.setBackgroundResource(R.drawable.shape_squircle_inactive)
-
-        val colorFilter = if (isActive) getThemeColor(context, com.google.android.material.R.attr.colorOnPrimary) else getThemeColor(context, com.google.android.material.R.attr.colorPrimary)
-        iconRoom.imageTintList = ColorStateList.valueOf(colorFilter)
     }
+
 
     fun updateIconLampState(context: Context, iconLamp: ImageView, isActive: Boolean) {
         val resources = context.resources
@@ -128,21 +137,22 @@ class UiUpdater {
             iconLamp.layoutParams = layoutParams
         }
 
-        val animatorSet = AnimatorSet()
-        animatorSet.duration = 0
-        animatorSet.playTogether(heightAnimator, widthAnimator)
-        animatorSet.start()
-
         if (isActive) {
-            iconLamp.setBackgroundResource(R.drawable.shape_squircle_active)
             iconLamp.setImageResource(R.drawable.bx_bulb)
         } else {
-            iconLamp.setBackgroundResource(R.drawable.shape_squircle_inactive)
             iconLamp.setImageResource(0)
         }
 
-        val colorFilter = if (isActive) getThemeColor(context, com.google.android.material.R.attr.colorSurface) else getThemeColor(context, com.google.android.material.R.attr.colorPrimary)
-        iconLamp.imageTintList = ColorStateList.valueOf(colorFilter)
+        val iconColor = if (isActive) getThemeColor(context, com.google.android.material.R.attr.colorSurface) else getThemeColor(context, com.google.android.material.R.attr.colorPrimary)
+        val backgroundColor = if (isActive) getThemeColor(context, com.google.android.material.R.attr.colorPrimary) else getThemeColor(context, com.google.android.material.R.attr.colorSurfaceVariant)
+
+        iconLamp.imageTintList = ColorStateList.valueOf(iconColor)
+        iconLamp.backgroundTintList = ColorStateList.valueOf(backgroundColor)
+
+        val animatorSet = AnimatorSet()
+        animatorSet.duration = 50
+        animatorSet.playTogether(heightAnimator, widthAnimator)
+        animatorSet.start()
     }
 
 

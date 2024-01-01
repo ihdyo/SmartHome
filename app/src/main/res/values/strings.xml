@@ -33,7 +33,7 @@
     <string name="hint_new_username">New username</string>
 
     <string name="text_welcome">Welcome!</string>
-    <string name="text_welcome_description">Welcome to Lumos!, please login to your registered account to connect with your smart lamp systems</string>
+    <string name="text_welcome_description">Please sign in to your registered account to connect with your smart lamp systems</string>
     <string name="text_forgot_password">Forgot Password?</string>
     <string name="text_choice">or</string>
     <string name="text_unregistered_user">Didn\'t have our product yet?</string>
@@ -94,6 +94,7 @@
     <string name="prompt_email_verification_failed">Email verification failed</string>
     <string name="prompt_qr_scanner_error">QR Scanner Error</string>
     <string name="prompt_qr_scanner_error_check">Delete Google Play Services data and cache, then reopen the apps</string>
+    <string name="prompt_order_new_device">-- Please write your specific requirements --</string>
 
     <string name="placeholder_email">this email</string>
     <string name="placeholder_username"> This User</string>

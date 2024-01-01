@@ -127,6 +127,7 @@ class LoginActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListener 
 
         if (requestCode == RC_SIGN_IN) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+            ProgressBar.showLoading(this)
 
             try {
                 val account = task.getResult(ApiException::class.java)
@@ -146,9 +147,11 @@ class LoginActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListener 
         authViewModel.signInWithGoogle(
             idToken,
             onSuccess = { user ->
+                ProgressBar.hideLoading()
                 checkRegistered(user)
             },
             onFailed = { errorMessage ->
+                ProgressBar.hideLoading()
                 Snackbar.make(binding.root, errorMessage, Snackbar.LENGTH_SHORT)
                     .setAction(getString(R.string.prompt_ok)) { }
                     .show()
@@ -174,7 +177,6 @@ class LoginActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListener 
             }
         )
     }
-
 
 
     // ========================= CHECK IF USER REGISTERED ========================= //
@@ -294,7 +296,7 @@ class LoginActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListener 
             TextInputLayout.END_ICON_NONE,
             R.drawable.bx_user,
             android.text.InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS,
-            getString(R.string.text_forgot_password)
+            getString(R.string.prompt_send)
         )
 
         bottomSheetFragment.setListener(this)
@@ -308,7 +310,7 @@ class LoginActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListener 
     private fun registerNewMember() {
         val recipient = "yodhi.himatika@gmail.com"
         val subject = "Lumos: Order New Devices"
-        val body = "--Please write your specific requirements--"
+        val body = getString(R.string.prompt_order_new_device)
         val emailIntent = Intent(Intent.ACTION_SENDTO)
 
         val uriText = "mailto:$recipient?subject=${Uri.encode(subject)}&body=${Uri.encode(body)}"

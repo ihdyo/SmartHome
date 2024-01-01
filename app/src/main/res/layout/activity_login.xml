@@ -11,10 +11,9 @@
 
     <ImageView
         android:id="@+id/image_decoration"
-        android:layout_width="@dimen/sp_12xl"
-        android:layout_height="@dimen/sp_12xl"
-        android:layout_marginTop="-12dp"
-        android:layout_marginEnd="-124dp"
+        android:layout_width="@dimen/sp_11xl"
+        android:layout_height="@dimen/sp_11xl"
+        android:layout_marginEnd="-96dp"
         android:elevation="-1dp"
         android:scaleType="fitStart"
         android:src="@drawable/img_house_d"
@@ -26,15 +25,43 @@
         android:id="@+id/text_room_decoration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/sp_xl"
         android:fontFamily="@font/juliette_regular"
         android:text="@string/app_tagline"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.Material3.DisplaySmall"
         android:textColor="?attr/colorPrimary"
         app:layout_constraintBottom_toBottomOf="@+id/image_decoration"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/image_app_icon"
         app:layout_constraintTop_toTopOf="@+id/image_decoration" />
+
+    <ImageView
+        android:id="@+id/image_app_icon"
+        android:layout_width="@dimen/sp_4xl"
+        android:layout_height="@dimen/sp_4xl"
+        android:layout_marginTop="@dimen/sp_xl"
+        android:layout_marginStart="@dimen/sp_xl"
+        android:background="@drawable/shape_squircle_md"
+        android:backgroundTint="?attr/colorSurfaceContainer"
+        android:scaleType="fitStart"
+        android:src="@drawable/app_icon"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/text_app_name"
+        style="@style/TextAppearance.Material3.TitleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:layout_marginStart="@dimen/sp_sm"
+        android:layout_marginBottom="@dimen/sp_2xs"
+        android:textColor="?attr/colorPrimary"
+        android:text="@string/app_name"
+        android:textAlignment="textStart"
+        app:layout_constraintBottom_toBottomOf="@+id/image_app_icon"
+        app:layout_constraintStart_toEndOf="@+id/image_app_icon"
+        app:layout_constraintTop_toTopOf="@+id/image_app_icon" />
 
     <TextView
         android:id="@+id/text_welcome"
@@ -109,6 +136,7 @@
         style="@style/TextAppearance.Material3.LabelMedium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="-12dp"
         android:text="@string/text_forgot_password"
         android:textAlignment="textEnd"
         android:textColor="?attr/colorPrimary"
@@ -132,8 +160,8 @@
     <Button
         android:id="@+id/button_scan"
         style="@style/Widget.Material3.Button.OutlinedButton"
-        android:layout_width="@dimen/sp_3xl"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/sp_4xl"
+        android:layout_height="@dimen/sp_4xl"
         android:layout_marginBottom="@dimen/sp_sm"
         android:paddingEnd="@dimen/sp_lg"
         app:icon="@drawable/bx_qr_scan"

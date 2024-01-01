@@ -33,7 +33,7 @@
     <string name="hint_new_username">Nama pengguna baru</string>
 
     <string name="text_welcome">Selamat Datang!</string>
-    <string name="text_welcome_description">Selamat datang di Lumos!, mohon masuk ke akun yang telah terdaftar untuk terhubung dengan sistem lampu pintarmu</string>
+    <string name="text_welcome_description">Mohon masuk ke akun yang telah terdaftar untuk terhubung dengan sistem lampu pintarmu</string>
     <string name="text_forgot_password">Lupa Kata Sandi?</string>
     <string name="text_choice">atau</string>
     <string name="text_unregistered_user">Belum memiliki produk kami?</string>
@@ -94,6 +94,7 @@
     <string name="prompt_email_verification_failed">Gagal verifikasi email</string>
     <string name="prompt_qr_scanner_error">Kesalahan Pemindai QR</string>
     <string name="prompt_qr_scanner_error_check">Hapus data dan cache Layanan Google Play, kemudian buka kembali aplikasi</string>
+    <string name="prompt_order_new_device">-- Mohon tuliskan kebutuhanmu secara detail --</string>
 
     <string name="placeholder_email">email ini</string>
     <string name="placeholder_username">Pengguna Ini</string>

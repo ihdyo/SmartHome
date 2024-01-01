@@ -13,7 +13,7 @@
         android:layout_height="@dimen/sp_4xl"
         android:layout_margin="@dimen/sp_md"
         android:padding="@dimen/sp_sm"
-        android:background="@drawable/shape_squircle_inactive"
+        android:background="@drawable/shape_squircle_md"
         android:elevation="@dimen/sp_0"
         android:outlineSpotShadowColor="?attr/colorPrimary"
         android:src="@drawable/bx_landscape"
