@@ -1,5 +1,6 @@
 package com.ihdyo.smarthome.data.repository
 import android.util.Log
+import com.google.android.gms.auth.api.Auth
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -7,21 +8,6 @@ import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.tasks.await
 
 class AuthRepository(private val auth: FirebaseAuth) {
-
-
-    // ========================= ANONYMOUS AUTH ========================= //
-
-    suspend fun authAnonymously(userId: String): FirebaseUser? {
-        return try {
-            auth.signInAnonymously().await()
-            val user = auth.currentUser
-            Log.d(TAG, "Authentication with Firebase successful for userId: $userId")
-            user
-        } catch (e: Exception) {
-            Log.e(TAG, "Error authenticating with Firebase for userId: $userId", e)
-            throw e
-        }
-    }
 
 
     // ========================= EMAIL AUTH ========================= //

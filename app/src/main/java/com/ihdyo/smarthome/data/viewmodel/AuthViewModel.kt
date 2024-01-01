@@ -17,14 +17,20 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
 
     // ========================= EMAIL AUTH ========================= //
 
-    fun signInWithEmail(email: String, password: String) {
+    fun signInWithEmail(email: String, password: String, onSuccess: (FirebaseUser) -> Unit, onFailed: (String) -> Unit) {
         viewModelScope.launch {
             try {
                 val user = authRepository.authWithEmail(email, password)
-                _currentUser.value = user
-                Log.d(TAG, "Sign in with email successful: $email")
+                if (user != null) {
+                    _currentUser.value = user
+                    onSuccess(user)
+                    Log.d(TAG, "Sign in with email successful")
+                } else {
+                    onFailed("Authentication failed")
+                }
             } catch (e: Exception) {
-                Log.e(TAG, "Error signing in with email: $email", e)
+                onFailed("Error signing in with email: ${e.message}")
+                Log.e(TAG, "Error signing in with email", e)
             }
         }
     }

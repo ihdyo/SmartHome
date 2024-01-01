@@ -21,6 +21,9 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
     private val mutex = Mutex()
 
 
+    private val _allUsersLiveData = MutableLiveData<List<UserModel>?>()
+    val allUsersLiveData: MutableLiveData<List<UserModel>?> get() = _allUsersLiveData
+
     private val _userLiveData = MutableLiveData<UserModel?>()
     val userLiveData: LiveData<UserModel?> get() = _userLiveData
 
@@ -88,6 +91,18 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
 
 
     // ========================= FETCH OPERATOR ========================= //
+
+    fun fetchAllUsers() {
+        viewModelScope.launch {
+            val allUsers = mainRepository.getAllUsers()
+            if (allUsers != null) {
+                _allUsersLiveData.postValue(allUsers)
+                Log.d(TAG, "Successfully fetched all user")
+            } else {
+                Log.e(TAG, "Error fetching all user")
+            }
+        }
+    }
 
     fun fetchUser() {
         viewModelScope.launch(Dispatchers.IO) {

@@ -28,6 +28,25 @@ class MainRepository(private val firestore: FirebaseFirestore) {
 
     // ========================= GET METHOD ========================= //
 
+    suspend fun getAllUsers(): List<UserModel>? {
+        return try {
+            val querySnapshot = firestore.collection(COLLECTION_USERS).get().await()
+            val userList = mutableListOf<UserModel>()
+
+            for (document in querySnapshot.documents) {
+                val user = document.toObject(UserModel::class.java)
+                user?.let { userList.add(it) }
+            }
+
+            Log.d(TAG, "Successfully retrieved all users.")
+            userList
+        } catch (e: Exception) {
+            Log.e(TAG, "Error getting all users: $e")
+            null
+        }
+    }
+
+
     suspend fun getUser(userId: String): UserModel? {
         return try {
             val documentSnapshot = firestore.collection(COLLECTION_USERS).document(userId).get(Source.DEFAULT).await()

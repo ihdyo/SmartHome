@@ -2,6 +2,7 @@ package com.ihdyo.smarthome.ui.login
 
 import android.annotation.SuppressLint
 import android.app.ActivityOptions
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -9,6 +10,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -20,7 +22,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
@@ -39,6 +41,7 @@ import com.ihdyo.smarthome.utils.Const.WEB_CLIENT_ID
 import com.ihdyo.smarthome.utils.ModalBottomSheet
 import com.ihdyo.smarthome.utils.ProgressBar
 import java.util.Base64
+
 
 @Suppress("DEPRECATION")
 @RequiresApi(Build.VERSION_CODES.O)
@@ -69,17 +72,19 @@ class LoginActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListener 
         firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
 
+        mainViewModel.fetchAllUsers()
+
         // Basic View
         basicView()
 
         // Google Sign In
-        val googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(WEB_CLIENT_ID)
-            .requestEmail()
-            .build()
-        val googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions)
-
         binding.buttonGoogle.setOnClickListener {
+            val googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(WEB_CLIENT_ID)
+                .requestEmail()
+                .build()
+            val googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions)
+
             startActivityForResult(googleSignInClient.signInIntent, RC_SIGN_IN)
         }
 
@@ -107,7 +112,7 @@ class LoginActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListener 
     override fun onTextEntered(title: String, text: String) {
         if (title == getString(R.string.text_forgot_password)) {
             authViewModel.requestPasswordReset(text)
-            Snackbar.make(binding.root, "Verfication code sent to $text", Snackbar.LENGTH_SHORT)
+            Snackbar.make(binding.root, "Reset password code sent to $text", Snackbar.LENGTH_SHORT)
                 .setAction(getString(R.string.prompt_ok)) { }
                 .show()
         }
@@ -127,20 +132,28 @@ class LoginActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListener 
                 val account = task.getResult(ApiException::class.java)
 
                 if (account != null) {
-                    val credential = GoogleAuthProvider.getCredential(account.idToken, null)
-
-                    auth.signInWithCredential(credential).addOnCompleteListener { taskSignin ->
-                        if (taskSignin.isSuccessful) {
-                            checkRegistered()
-                        } else {
-                            Snackbar.make(binding.root, R.string.prompt_auth_google_failed, Snackbar.LENGTH_SHORT)
-                                .setAction(getString(R.string.prompt_ok)) { }
-                                .show()
-                        }
-                    }
+                    signInWithGoogle(account.idToken.toString())
                 }
-            } catch (_: ApiException) { }
+            } catch (e: ApiException) {
+                Snackbar.make(binding.root, R.string.prompt_auth_google_failed, Snackbar.LENGTH_SHORT)
+                    .setAction(getString(R.string.prompt_ok)) { }
+                    .show()
+            }
         }
+    }
+
+    private fun signInWithGoogle(idToken: String) {
+        authViewModel.signInWithGoogle(
+            idToken,
+            onSuccess = { user ->
+                checkRegistered(user)
+            },
+            onFailed = { errorMessage ->
+                Snackbar.make(binding.root, errorMessage, Snackbar.LENGTH_SHORT)
+                    .setAction(getString(R.string.prompt_ok)) { }
+                    .show()
+            }
+        )
     }
 
 
@@ -148,60 +161,76 @@ class LoginActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListener 
 
     private fun emailSignIn(email: String, password: String) {
         ProgressBar.showLoading(this)
-        authViewModel.signInWithEmail(email.trim(), password.trim())
-        checkRegistered()
+
+        authViewModel.signInWithEmail(email.trim(), password.trim(),
+            onSuccess = { user ->
+                checkRegistered(user)
+            },
+            onFailed = { errorMessage ->
+                ProgressBar.hideLoading()
+                Snackbar.make(binding.root, errorMessage, Snackbar.LENGTH_SHORT)
+                    .setAction(getString(R.string.prompt_ok)) { }
+                    .show()
+            }
+        )
     }
+
 
 
     // ========================= CHECK IF USER REGISTERED ========================= //
 
-    private fun checkRegistered() {
+    private fun checkRegistered(user: FirebaseUser?) {
+        val registeredUsers = mainViewModel.allUsersLiveData.value
 
-        authViewModel.getCurrentUser()
-        authViewModel.currentUser.observe(this) {currentUser ->
+        if (user != null && !registeredUsers.isNullOrEmpty()) {
+            Log.d(TAG, "Current user UID: ${user.uid}")
 
-            if (currentUser != null) {
-                mainViewModel.fetchUser()
-                mainViewModel.setCurrentUserId(currentUser.uid)
-                mainViewModel.userLiveData.observe(this) { user ->
+            try {
+                val isRegistered = registeredUsers.any { it.UID == user.uid }
 
-                    if (user != null) {
+                if (isRegistered) {
 
-                        if (currentUser.uid.isNotEmpty() && currentUser.uid == user.UID) {
-                            Toast.makeText(this, getString(R.string.prompt_auth_success), Toast.LENGTH_SHORT).show()
+                    // User is registered
+                    Toast.makeText(this, getString(R.string.prompt_auth_success), Toast.LENGTH_SHORT).show()
 
-                            val animationBundle = ActivityOptions.makeCustomAnimation(
-                                this,
-                                R.anim.slide_in_top,
-                                R.anim.slide_out_bottom
-                            ).toBundle()
+                    val animationBundle = ActivityOptions.makeCustomAnimation(
+                        this,
+                        R.anim.slide_in_top,
+                        R.anim.slide_out_bottom
+                    ).toBundle()
 
-                            ProgressBar.hideLoading()
+                    ProgressBar.hideLoading()
 
-                            startActivity(Intent(this, MainActivity::class.java), animationBundle)
-                            finish()
-                        } else {
-                            ProgressBar.hideLoading()
-                            MaterialAlertDialogBuilder(this)
-                                .setIcon(R.drawable.bx_error)
-                                .setTitle(resources.getString(R.string.prompt_auth_failed))
-                                .setMessage(resources.getString(R.string.prompt_auth_failed_check))
-                                .setNeutralButton(resources.getString(R.string.prompt_close)) { _, _ ->
-                                    authViewModel.signOut()
-                                    closeContextMenu()
-                                }
-                                .setPositiveButton(resources.getString(R.string.prompt_register)) { _, _ ->
-                                    authViewModel.signOut()
-                                    registerNewMember()
-                                }
-                                .show()
+                    startActivity(Intent(this, MainActivity::class.java), animationBundle)
+                    finish()
+                } else {
 
+                    // User is not registered
+                    ProgressBar.hideLoading()
+                    MaterialAlertDialogBuilder(this)
+                        .setIcon(R.drawable.bx_error)
+                        .setTitle(resources.getString(R.string.prompt_auth_failed))
+                        .setMessage(resources.getString(R.string.prompt_auth_failed_check))
+                        .setNeutralButton(resources.getString(R.string.prompt_close)) { _, _ ->
+                            authViewModel.signOut()
+                            closeContextMenu()
                         }
-                    }
+                        .setPositiveButton(resources.getString(R.string.prompt_register)) { _, _ ->
+                            authViewModel.signOut()
+                            registerNewMember()
+                        }
+                        .show()
                 }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error checking user registration: ${e.message}", e)
             }
+        } else {
+            Log.e(TAG, "Invalid user or empty registered users list")
         }
     }
+
+
+
 
 
     // ========================= BASIC VIEW ========================= //
@@ -272,22 +301,26 @@ class LoginActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListener 
         bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
     }
 
+
+    // ========================= REGISTER NEW USER ========================= //
+
     @SuppressLint("QueryPermissionsNeeded")
     private fun registerNewMember() {
-
-        // Send email
-        val recipient = "yodhi.HIMATIKA@gmail.com"
-        val subject = "Lumos New Member"
-
+        val recipient = "yodhi.himatika@gmail.com"
+        val subject = "Lumos: Order New Devices"
+        val body = "--Please write your specific requirements--"
         val emailIntent = Intent(Intent.ACTION_SENDTO)
 
-        emailIntent.data = Uri.parse("mailto:$recipient")
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject)
+        val uriText = "mailto:$recipient?subject=${Uri.encode(subject)}&body=${Uri.encode(body)}"
+        emailIntent.data = Uri.parse(uriText)
 
-        if (emailIntent.resolveActivity(packageManager) != null) {
+        try {
             startActivity(emailIntent)
+        } catch (e: ActivityNotFoundException) {
+            Log.e(TAG, "No email client found on the device")
         }
     }
+
 
 
     // ========================= GOOGLE QR SCANNER ========================= //
@@ -321,7 +354,7 @@ class LoginActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListener 
             }
             .addOnFailureListener {
 
-                // Alert Dialog
+                // Clear Cache
                 MaterialAlertDialogBuilder(this)
                     .setIcon(R.drawable.bx_error)
                     .setTitle(resources.getString(R.string.prompt_qr_scanner_error))
@@ -336,4 +369,9 @@ class LoginActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListener 
             }
 
     }
+
+    companion object {
+        private const val TAG = "LoginActivity"
+    }
+
 }
