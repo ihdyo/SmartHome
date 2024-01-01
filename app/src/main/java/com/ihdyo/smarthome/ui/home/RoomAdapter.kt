@@ -13,13 +13,14 @@ import com.ihdyo.smarthome.data.model.RoomModel
 import com.ihdyo.smarthome.databinding.ItemRoomBinding
 import com.ihdyo.smarthome.utils.UiUpdater
 
-class RoomAdapter(private var listener: OnItemClickListener ) : RecyclerView.Adapter<RoomAdapter.ItemViewHolder>() {
+class RoomAdapter(private var listener: OnItemClickListener) : RecyclerView.Adapter<RoomAdapter.ItemViewHolder>() {
 
     interface OnItemClickListener {
         fun onRoomItemClick(roomId: String)
     }
 
     private val items = ArrayList<RoomModel>()
+    private var selectedItemPosition: Int = RecyclerView.NO_POSITION
 
     @SuppressLint("NotifyDataSetChanged")
     fun setItems(items: ArrayList<RoomModel>) {
@@ -35,21 +36,22 @@ class RoomAdapter(private var listener: OnItemClickListener ) : RecyclerView.Ada
 
     override fun getItemCount(): Int = items.size
 
-    override fun onBindViewHolder(holder: ItemViewHolder, position: Int) = holder.bind(items[position])
+    override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
+        holder.bind(items[position], position == selectedItemPosition)
+    }
 
     inner class ItemViewHolder(private val itemBinding: ItemRoomBinding, private val listener: OnItemClickListener) :
         RecyclerView.ViewHolder(itemBinding.root),
         View.OnClickListener {
 
         private lateinit var room: RoomModel
-        private var isItemClicked: Boolean = false
         private val uiUpdater: UiUpdater = UiUpdater()
 
         init {
             itemBinding.root.setOnClickListener(this)
         }
 
-        fun bind(item: RoomModel) {
+        fun bind(item: RoomModel, isSelected: Boolean) {
             this.room = item
 
             itemBinding.iconRoom.load(item.roomIcon) {
@@ -60,12 +62,16 @@ class RoomAdapter(private var listener: OnItemClickListener ) : RecyclerView.Ada
                 memoryCachePolicy(CachePolicy.ENABLED)
             }
 
-            uiUpdater.updateIconRoomState(itemView.context, itemBinding.iconRoom, isItemClicked)
+            uiUpdater.updateIconRoomState(itemView.context, itemBinding.iconRoom, isSelected)
         }
 
         override fun onClick(v: View?) {
-            isItemClicked = !isItemClicked
-            bind(room)
+            val previousSelectedItemPosition = selectedItemPosition
+            selectedItemPosition = adapterPosition
+
+            notifyItemChanged(previousSelectedItemPosition)
+            notifyItemChanged(selectedItemPosition)
+
             listener.onRoomItemClick(room.RID!!)
         }
     }

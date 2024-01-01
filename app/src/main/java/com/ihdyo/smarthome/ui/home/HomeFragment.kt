@@ -49,7 +49,7 @@ import java.util.Calendar
 import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
-class HomeFragment : Fragment(), LampAdapter.OnItemClickListener, RoomAdapter.OnItemClickListener {
+class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.OnItemClickListener {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
@@ -92,12 +92,10 @@ class HomeFragment : Fragment(), LampAdapter.OnItemClickListener, RoomAdapter.On
         authViewModel.currentUser.observe(viewLifecycleOwner) { currentUser ->
             if (currentUser != null) {
                 mainViewModel.setCurrentUserId(currentUser.uid)
-                binding.textTest.text = "${mainViewModel.currentUserIdLiveData.value}\n${mainViewModel.currentRoomIdLiveData.value}\n${mainViewModel.currentLampIdLiveData.value}"
 
                 mainViewModel.fetchUser()
                 mainViewModel.fetchRooms()
                 mainViewModel.fetchEnvironments()
-                mainViewModel.fetchLamps()
                 mainViewModel.fetchTotalPowerConsumed()
             }
         }
@@ -121,18 +119,6 @@ class HomeFragment : Fragment(), LampAdapter.OnItemClickListener, RoomAdapter.On
             }
         }
 
-        // Lamps Data
-        mainViewModel.lampsLiveData.observe(viewLifecycleOwner) { lamps ->
-            if (lamps != null) {
-                lampAdapter.setItems(ArrayList(lamps))
-            }
-        }
-        mainViewModel.currentLampIdLiveData.observe(viewLifecycleOwner) { currentLampId ->
-            if (currentLampId != null) {
-                showLampProperties(currentLampId)
-            }
-        }
-
         // Total Power Consumed
         mainViewModel.totalPowerConsumedLiveData.observe(viewLifecycleOwner) { totalPowerConsumed ->
             if (totalPowerConsumed != null) {
@@ -140,10 +126,6 @@ class HomeFragment : Fragment(), LampAdapter.OnItemClickListener, RoomAdapter.On
                 binding.textTotalPowerConsumed.text = formattedText
             }
         }
-
-
-//        binding.textTest.text = "${mainViewModel.currentUserIdLiveData.value}\n${mainViewModel.currentRoomIdLiveData.value}\n${mainViewModel.currentLampIdLiveData.value}"
-
 
         // Recycler View Init
         initRoomRecyclerView()
@@ -155,6 +137,19 @@ class HomeFragment : Fragment(), LampAdapter.OnItemClickListener, RoomAdapter.On
 
     override fun onRoomItemClick(roomId: String) {
         mainViewModel.setCurrentRoomId(roomId)
+
+        // Lamps Data
+        mainViewModel.fetchLamps()
+        mainViewModel.lampsLiveData.observe(viewLifecycleOwner) { lamps ->
+            if (lamps != null) {
+                lampAdapter.setItems(ArrayList(lamps))
+            }
+        }
+        mainViewModel.currentLampIdLiveData.observe(viewLifecycleOwner) { currentLampId ->
+            if (currentLampId != null) {
+                showLampProperties(currentLampId)
+            }
+        }
     }
 
     override fun onLampItemClick(lampId: String) {
@@ -261,6 +256,8 @@ class HomeFragment : Fragment(), LampAdapter.OnItemClickListener, RoomAdapter.On
     // ========================= SHOW LAMP PROPERTIES ========================= //
 
     private fun showLampProperties(currentLampId: String) {
+
+        binding.textTest.text = "${mainViewModel.currentUserIdLiveData.value}\n${mainViewModel.currentRoomIdLiveData.value}\n${mainViewModel.currentLampIdLiveData.value}"
 
         // Power Consumed
         mainViewModel.powerConsumedLiveData.observe(viewLifecycleOwner) { powerConsumedMap ->

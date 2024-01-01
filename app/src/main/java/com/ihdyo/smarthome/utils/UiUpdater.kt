@@ -73,10 +73,11 @@ class UiUpdater {
 
     // ========================= STYLE ITEM ========================= //
 
-    fun updateIconRoomState(context: Context, iconRoom: ImageButton, isActive: Boolean) {
+    fun updateIconRoomState(context: Context, iconRoom: ImageView, isActive: Boolean) {
         val resources = context.resources
         val newHeight = if (isActive) resources.getDimensionPixelSize(R.dimen.sp_5xl) else resources.getDimensionPixelSize(R.dimen.sp_4xl)
         val newWidth = if (isActive) resources.getDimensionPixelSize(R.dimen.sp_5xl) else resources.getDimensionPixelSize(R.dimen.sp_4xl)
+        val padding = if (isActive) R.dimen.sp_lg else R.dimen.sp_sm
         val elevation = if (isActive) 36f else 0f
 
         val heightAnimator = ObjectAnimator.ofInt(iconRoom.layoutParams.height, newHeight)
@@ -94,6 +95,9 @@ class UiUpdater {
             layoutParams.width = animatedValue
             iconRoom.layoutParams = layoutParams
         }
+
+        val paddingAnimator = resources.getDimensionPixelSize(padding)
+        iconRoom.setPadding(paddingAnimator, paddingAnimator, paddingAnimator, paddingAnimator)
 
         val elevationAnimator = ObjectAnimator.ofFloat(iconRoom, "elevation", iconRoom.elevation, elevation)
 

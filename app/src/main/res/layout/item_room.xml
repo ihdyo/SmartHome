@@ -7,11 +7,12 @@
     android:clipToPadding="false"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <ImageButton
+    <ImageView
         android:id="@+id/icon_room"
         android:layout_width="@dimen/sp_4xl"
         android:layout_height="@dimen/sp_4xl"
         android:layout_margin="@dimen/sp_md"
+        android:padding="@dimen/sp_sm"
         android:background="@drawable/shape_squircle_inactive"
         android:elevation="@dimen/sp_0"
         android:outlineSpotShadowColor="?attr/colorPrimary"

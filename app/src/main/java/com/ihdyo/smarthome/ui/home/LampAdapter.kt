@@ -16,6 +16,7 @@ class LampAdapter(private var listener: OnItemClickListener ) : RecyclerView.Ada
     }
 
     private val items = ArrayList<LampModel>()
+    private var selectedItemPosition: Int = RecyclerView.NO_POSITION
 
     @SuppressLint("NotifyDataSetChanged")
     fun setItems(items: ArrayList<LampModel>) {
@@ -31,28 +32,33 @@ class LampAdapter(private var listener: OnItemClickListener ) : RecyclerView.Ada
 
     override fun getItemCount(): Int = items.size
 
-    override fun onBindViewHolder(holder: ItemViewHolder, position: Int) = holder.bind(items[position])
+    override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
+        holder.bind(items[position], position == selectedItemPosition)
+    }
 
     inner class ItemViewHolder(private val itemBinding: ItemLampBinding, private val listener: OnItemClickListener) :
         RecyclerView.ViewHolder(itemBinding.root),
         View.OnClickListener {
 
         private lateinit var lamp: LampModel
-        private var isItemClicked: Boolean = false
         private val uiUpdater: UiUpdater = UiUpdater()
 
         init {
             itemBinding.root.setOnClickListener(this)
         }
 
-        fun bind(item: LampModel) {
+        fun bind(item: LampModel, isSelected: Boolean) {
             this.lamp = item
-            uiUpdater.updateIconLampState(itemView.context, itemBinding.iconLamp, isItemClicked)
+            uiUpdater.updateIconLampState(itemView.context, itemBinding.iconLamp, isSelected)
         }
 
         override fun onClick(v: View?) {
-            isItemClicked = !isItemClicked
-            bind(lamp)
+            val previousSelectedItemPosition = selectedItemPosition
+            selectedItemPosition = adapterPosition
+
+            notifyItemChanged(previousSelectedItemPosition)
+            notifyItemChanged(selectedItemPosition)
+
             listener.onLampItemClick(lamp.LID!!)
         }
     }
