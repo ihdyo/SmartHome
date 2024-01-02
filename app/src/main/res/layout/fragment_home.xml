@@ -24,7 +24,7 @@
             app:layout_constraintTop_toTopOf="parent"/>
 
         <View
-            android:id="@+id/rectangle"
+            android:id="@+id/side_view_wrapper"
             android:layout_width="@dimen/sp_7xl"
             android:layout_height="match_parent"
             android:background="?attr/colorSurface"
@@ -42,11 +42,12 @@
             android:layout_marginTop="@dimen/sp_7xl"
             android:clipChildren="false"
             android:clipToPadding="false"
-            app:layout_constraintEnd_toEndOf="@+id/rectangle"
-            app:layout_constraintStart_toStartOf="@id/rectangle"
+            app:layout_constraintEnd_toEndOf="@+id/side_view_wrapper"
+            app:layout_constraintStart_toStartOf="@id/side_view_wrapper"
             app:layout_constraintTop_toTopOf="parent"
             tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/item_room"
+            tools:itemCount="4"
             tools:orientation="vertical" />
 
         <com.google.android.material.chip.Chip
@@ -70,20 +71,20 @@
             android:textAlignment="textStart"
             android:textColor="?attr/colorOnPrimaryContainer"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@id/rectangle"
-            app:layout_constraintEnd_toEndOf="@+id/rectangle"
-            app:layout_constraintStart_toStartOf="@+id/rectangle"/>
+            app:layout_constraintBottom_toBottomOf="@id/side_view_wrapper"
+            app:layout_constraintEnd_toEndOf="@+id/side_view_wrapper"
+            app:layout_constraintStart_toStartOf="@+id/side_view_wrapper"/>
 
         <TextView
-            android:id="@+id/text_power_consumed"
+            android:id="@+id/text_value_power_consumption"
             style="@style/TextAppearance.Material3.LabelSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/placeholder_power_consumed"
+            android:text="@string/placeholder_power_consumption"
             android:textAlignment="center"
             app:layout_constraintBottom_toBottomOf="@+id/toggle_mode"
-            app:layout_constraintEnd_toEndOf="@+id/rectangle"
-            app:layout_constraintStart_toStartOf="@+id/rectangle"
+            app:layout_constraintEnd_toEndOf="@+id/side_view_wrapper"
+            app:layout_constraintStart_toStartOf="@+id/side_view_wrapper"
             app:layout_constraintTop_toTopOf="@+id/toggle_mode" />
 
         <ImageView
@@ -134,14 +135,13 @@
             app:layout_constraintStart_toStartOf="@+id/text_greeting"
             app:layout_constraintTop_toBottomOf="@+id/text_greeting" />
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardView"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/power_consumed_wrapper"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/sp_xl"
-            android:backgroundTint="?attr/colorPrimary"
-            android:elevation="@dimen/sp_0"
-            app:cardCornerRadius="@dimen/sp_7xl"
+            android:backgroundTint="?attr/colorPrimaryContainer"
+            app:strokeWidth="@dimen/sp_0"
             app:layout_constraintBottom_toBottomOf="@+id/text_city"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/text_greeting">
@@ -161,20 +161,22 @@
                     android:layout_height="@dimen/sp_md"
                     android:layout_marginEnd="@dimen/sp_2xs"
                     android:importantForAccessibility="no"
-                    android:src="@drawable/bxs_bolt" />
+                    android:src="@drawable/bxs_bolt"
+                    app:tint="?attr/colorPrimary" />
 
                 <TextView
-                    android:id="@+id/text_total_power_consumed"
+                    android:id="@+id/text_value_total_power_consumption"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/placeholder_power_consumed"
+                    android:text="@string/placeholder_power_consumption"
                     android:textAlignment="textEnd"
-                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-                    android:textColor="?attr/colorSurface" />
+                    android:textStyle="bold"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                    android:textColor="?attr/colorPrimary" />
 
             </LinearLayout>
 
-        </androidx.cardview.widget.CardView>
+        </com.google.android.material.card.MaterialCardView>
 
         <TextView
             android:id="@+id/text_room_decoration"
@@ -186,7 +188,7 @@
             android:textAppearance="@style/TextAppearance.Material3.DisplaySmall"
             android:textColor="?attr/colorPrimary"
             android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="@+id/cardView"
+            app:layout_constraintEnd_toEndOf="@+id/power_consumed_wrapper"
             app:layout_constraintTop_toTopOf="@+id/rv_icon_room" />
 
         <TextView
@@ -223,6 +225,7 @@
             app:layout_constraintStart_toStartOf="@+id/toggle_mode"
             tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/item_lamp"
+            tools:itemCount="2"
             tools:orientation="horizontal" />
 
         <com.google.android.material.slider.Slider
@@ -304,7 +307,7 @@
             android:layout_marginEnd="@dimen/sp_xl"
             android:layout_marginBottom="@dimen/sp_xl"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/rectangle"
+            app:layout_constraintStart_toEndOf="@+id/side_view_wrapper"
             app:singleSelection="true">
 
             <Button

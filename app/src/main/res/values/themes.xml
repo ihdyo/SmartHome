@@ -57,4 +57,14 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <!--ShapeableImageView-->
+
+    <style name="ImageViewRounded">
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="ImageViewSquircle">
+        <item name="cornerSize">@dimen/sp_lg</item>
+    </style>
+
 </resources>

@@ -12,6 +12,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -22,6 +23,7 @@ import coil.load
 import coil.request.CachePolicy
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.MaterialTimePicker.INPUT_MODE_CLOCK
 import com.google.android.material.timepicker.TimeFormat
@@ -39,6 +41,7 @@ import com.ihdyo.smarthome.utils.Const.LAMP_SELECTED_MODE_AUTOMATIC
 import com.ihdyo.smarthome.utils.Const.LAMP_SELECTED_MODE_MANUAL
 import com.ihdyo.smarthome.utils.Const.LAMP_SELECTED_MODE_SCHEDULE
 import com.ihdyo.smarthome.utils.UiUpdater
+import com.ihdyo.smarthome.utils.Vibration
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.IOException
@@ -94,13 +97,14 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
                 mainViewModel.fetchUser()
                 mainViewModel.fetchRooms()
                 mainViewModel.fetchEnvironments()
-                mainViewModel.fetchTotalPowerConsumed()
+                mainViewModel.fetchTotalPowerConsumption()
             }
         }
 
-        mainViewModel.userNameLiveData.observe(viewLifecycleOwner) { userName ->
-            if (userName != null) {
-                val firstName = userName.split(" ").firstOrNull()
+        mainViewModel.userLiveData.observe(viewLifecycleOwner) { user ->
+            if (user != null) {
+                val userName = user.userName
+                val firstName = userName?.split(" ")?.firstOrNull()
                 binding.textUsername.text = firstName
             }
         }
@@ -119,11 +123,11 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
             }
         }
 
-        // Total Power Consumed
-        mainViewModel.totalPowerConsumedLiveData.observe(viewLifecycleOwner) { totalPowerConsumed ->
-            if (totalPowerConsumed != null) {
-                val formattedText = "${totalPowerConsumed}kWh"
-                binding.textTotalPowerConsumed.text = formattedText
+        // Total Power Consumption
+        mainViewModel.totalPowerConsumptionLiveData.observe(viewLifecycleOwner) { totalPowerConsumption ->
+            if (totalPowerConsumption != null) {
+                val formattedText = "${totalPowerConsumption}kWh"
+                binding.textValueTotalPowerConsumption.text = formattedText
             }
         }
 
@@ -137,6 +141,7 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
 
     // Item Click
     override fun onRoomItemClick(roomId: String) {
+        Vibration.vibrate(requireContext())
         binding.progressLinear.visibility = View.VISIBLE
         binding.chipRoom.visibility = View.GONE
         binding.chipLamp.visibility = View.VISIBLE
@@ -158,6 +163,7 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
     }
 
     override fun onLampItemClick(lampId: String) {
+        Vibration.vibrate(requireContext())
         binding.progressLinear.visibility = View.VISIBLE
         mainViewModel.setCurrentLampId(lampId)
     }
@@ -210,6 +216,7 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
         binding.sliderLampBrightness.setOnTouchListener { _, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
+                    Vibration.vibrate(requireContext())
                     binding.swipeRefresh.isEnabled = false
                 }
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
@@ -230,7 +237,7 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
         )
 
         val lampViewsToToggle = listOf(
-            binding.textPowerConsumed,
+            binding.textValuePowerConsumption,
             binding.sliderLampBrightness,
             binding.switchPower,
             binding.textFrom,
@@ -286,7 +293,6 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
 
             // Room Image
             binding.imageRoom.load(selectedRoom.roomImage) {
-                placeholder(R.drawable.shape_placeholder)
                 error(R.drawable.bx_landscape)
                 crossfade(true)
                 memoryCachePolicy(CachePolicy.ENABLED)
@@ -304,12 +310,12 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
         // Show Views
         showViews(isRoomActive = true, isLampActive = true)
 
-        // Power Consumed
-        mainViewModel.powerConsumedLiveData.observe(viewLifecycleOwner) { powerConsumedMap ->
-            if (powerConsumedMap != null) {
-                val powerConsumed = powerConsumedMap[currentLampId]
-                val formattedText = "${powerConsumed}kWh"
-                binding.textPowerConsumed.text = formattedText
+        // Power Consumption
+        mainViewModel.powerConsumptionLiveData.observe(viewLifecycleOwner) { powerConsumptionMap ->
+            if (powerConsumptionMap != null) {
+                val powerConsumption = powerConsumptionMap[currentLampId]
+                val formattedText = "${powerConsumption}kWh"
+                binding.textValuePowerConsumption.text = formattedText
             }
         }
 
@@ -349,14 +355,17 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
             }
         }
         binding.buttonAutomatic.setOnClickListener {
+            Vibration.vibrate(requireContext())
             val setAutomatic = mutableMapOf(currentLampId to LAMP_SELECTED_MODE_AUTOMATIC)
             mainViewModel.updateLampSelectedMode(setAutomatic)
         }
         binding.buttonSchedule.setOnClickListener {
+            Vibration.vibrate(requireContext())
             val setSchedule = mutableMapOf(currentLampId to LAMP_SELECTED_MODE_SCHEDULE)
             mainViewModel.updateLampSelectedMode(setSchedule)
         }
         binding.buttonManual.setOnClickListener {
+            Vibration.vibrate(requireContext())
             val setManual = mutableMapOf(currentLampId to LAMP_SELECTED_MODE_MANUAL)
             mainViewModel.updateLampSelectedMode(setManual)
         }
@@ -474,6 +483,7 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
         picker.show(childFragmentManager, "TAG")
 
         picker.addOnPositiveButtonClickListener {
+            Vibration.vibrate(requireContext())
             val hour = picker.hour
             val minute = picker.minute
 

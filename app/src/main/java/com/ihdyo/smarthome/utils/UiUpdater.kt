@@ -10,6 +10,9 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.material.imageview.ShapeableImageView
+import com.google.android.material.shape.CornerFamily
+import com.google.android.material.shape.ShapeAppearanceModel
 import com.ihdyo.smarthome.R
 
 class UiUpdater {
@@ -68,7 +71,7 @@ class UiUpdater {
 
     // ========================= STYLE ITEM ========================= //
 
-    fun updateIconRoomState(context: Context, iconRoom: ImageView, isActive: Boolean) {
+    fun updateIconRoomState(context: Context, iconRoom: ShapeableImageView, isActive: Boolean) {
         val resources = context.resources
         val newHeight = if (isActive) resources.getDimensionPixelSize(R.dimen.sp_5xl) else resources.getDimensionPixelSize(R.dimen.sp_4xl)
         val newWidth = if (isActive) resources.getDimensionPixelSize(R.dimen.sp_5xl) else resources.getDimensionPixelSize(R.dimen.sp_4xl)
@@ -91,14 +94,15 @@ class UiUpdater {
             iconRoom.layoutParams = layoutParams
         }
 
-        if (isActive) {
-            iconRoom.setBackgroundResource(R.drawable.shape_squircle_md)
-        } else {
-            iconRoom.setBackgroundResource(R.drawable.shape_squircle_lg)
-        }
-
         val paddingAnimator = resources.getDimensionPixelSize(padding)
-        iconRoom.setPadding(paddingAnimator, paddingAnimator, paddingAnimator, paddingAnimator)
+        iconRoom.post { iconRoom.setContentPadding(paddingAnimator, paddingAnimator, paddingAnimator, paddingAnimator) }
+
+        val cornerRadius = if (isActive) resources.getDimension(R.dimen.sp_lg) else resources.getDimension(R.dimen.sp_md)
+        val shapeAppearanceModel = ShapeAppearanceModel.builder()
+            .setAllCorners(CornerFamily.ROUNDED, cornerRadius)
+            .build()
+
+        iconRoom.shapeAppearanceModel = shapeAppearanceModel
 
         val elevationAnimator = ObjectAnimator.ofFloat(iconRoom, "elevation", iconRoom.elevation, elevation)
 
@@ -116,7 +120,7 @@ class UiUpdater {
     }
 
 
-    fun updateIconLampState(context: Context, iconLamp: ImageView, isActive: Boolean) {
+    fun updateIconLampState(context: Context, iconLamp: ShapeableImageView, isActive: Boolean) {
         val resources = context.resources
         val newHeight = if (isActive) resources.getDimensionPixelSize(R.dimen.sp_2xl) else resources.getDimensionPixelSize(R.dimen.sp_lg)
         val newWidth = if (isActive) resources.getDimensionPixelSize(R.dimen.sp_2xl) else resources.getDimensionPixelSize(R.dimen.sp_lg)
@@ -143,8 +147,8 @@ class UiUpdater {
             iconLamp.setImageResource(0)
         }
 
-        val iconColor = if (isActive) getThemeColor(context, com.google.android.material.R.attr.colorSurface) else getThemeColor(context, com.google.android.material.R.attr.colorPrimary)
-        val backgroundColor = if (isActive) getThemeColor(context, com.google.android.material.R.attr.colorPrimary) else getThemeColor(context, com.google.android.material.R.attr.colorSurfaceVariant)
+        val iconColor = if (isActive) getThemeColor(context, com.google.android.material.R.attr.colorPrimary) else getThemeColor(context, com.google.android.material.R.attr.colorSurfaceVariant)
+        val backgroundColor = if (isActive) getThemeColor(context, com.google.android.material.R.attr.colorPrimaryContainer) else getThemeColor(context, com.google.android.material.R.attr.colorSurfaceVariant)
 
         iconLamp.imageTintList = ColorStateList.valueOf(iconColor)
         iconLamp.backgroundTintList = ColorStateList.valueOf(backgroundColor)

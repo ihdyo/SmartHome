@@ -61,7 +61,8 @@
         app:layout_constraintBottom_toBottomOf="@+id/text_username"
         app:layout_constraintStart_toEndOf="@+id/text_username"
         app:layout_constraintTop_toTopOf="@+id/text_username"
-        tools:ignore="ContentDescription" />
+        tools:ignore="ContentDescription"
+        app:tint="?attr/colorPrimary" />
 
     <TextView
         android:id="@+id/text_email"

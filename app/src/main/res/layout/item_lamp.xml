@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:clipChildren="false"
     android:clipToPadding="false"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/icon_lamp"
         android:layout_width="@dimen/sp_xl"
         android:layout_height="@dimen/sp_xl"
         android:layout_margin="@dimen/sp_2xs"
-        android:padding="@dimen/sp_2xs"
-        android:background="@drawable/shape_squircle_md"
-        android:src="@drawable/bx_bulb"
+        android:background="?attr/colorPrimaryContainer"
+        app:contentPadding="@dimen/sp_2xs"
+        app:srcCompat="@drawable/bx_bulb"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription" />
+        app:shapeAppearanceOverlay="@style/ImageViewRounded"
+        app:tint="?attr/colorPrimary" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

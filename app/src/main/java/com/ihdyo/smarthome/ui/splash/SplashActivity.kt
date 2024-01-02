@@ -108,6 +108,8 @@ class SplashActivity : AppCompatActivity() {
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             startDelay()
+        } else {
+            startDelay()
         }
     }
 

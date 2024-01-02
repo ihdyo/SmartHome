@@ -14,6 +14,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.TooltipCompat
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -40,6 +41,7 @@ import com.ihdyo.smarthome.utils.Const.RC_SIGN_IN
 import com.ihdyo.smarthome.utils.Const.WEB_CLIENT_ID
 import com.ihdyo.smarthome.utils.ModalBottomSheet
 import com.ihdyo.smarthome.utils.ProgressBar
+import com.ihdyo.smarthome.utils.Vibration
 import java.util.Base64
 
 
@@ -79,6 +81,7 @@ class LoginActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListener 
 
         // Google Sign In
         binding.buttonGoogle.setOnClickListener {
+            Vibration.vibrate(this)
             val googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(WEB_CLIENT_ID)
                 .requestEmail()
@@ -90,6 +93,7 @@ class LoginActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListener 
 
         // Email Sign In
         binding.buttonLogin.setOnClickListener {
+            Vibration.vibrate(this)
             val email = binding.inputEmail.text.toString().trim()
             val password = binding.inputPassword.text.toString().trim()
 
@@ -242,16 +246,19 @@ class LoginActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListener 
         // Register New Member
         binding.textRegister.setOnClickListener {
             registerNewMember()
+            Vibration.vibrate(this)
         }
 
         // Forgot Password
         binding.textForgotPassword.setOnClickListener {
             forgotPassword()
+            Vibration.vibrate(this)
         }
 
         // Scan Sign In
         binding.buttonScan.setOnClickListener {
             scanQRCode()
+            Vibration.vibrate(this)
         }
 
         // Input Field Validation

@@ -50,11 +50,11 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
     private val _userNameLiveData = MutableLiveData<String>()
     val userNameLiveData: LiveData<String> get() = _userNameLiveData
 
-    private val _powerConsumedLiveData = MutableLiveData<Map<String, Int>>()
-    val powerConsumedLiveData: LiveData<Map<String, Int>> get() = _powerConsumedLiveData
+    private val _powerConsumptionLiveData = MutableLiveData<Map<String, Int>>()
+    val powerConsumptionLiveData: LiveData<Map<String, Int>> get() = _powerConsumptionLiveData
 
-    private val _totalPowerConsumedLiveData = MutableLiveData<Int>()
-    val totalPowerConsumedLiveData: LiveData<Int> get() = _totalPowerConsumedLiveData
+    private val _totalPowerConsumptionLiveData = MutableLiveData<Int>()
+    val totalPowerConsumptionLiveData: LiveData<Int> get() = _totalPowerConsumptionLiveData
 
     private val _sensorValueLiveData = MutableLiveData<Boolean>()
     val sensorValueLiveData: LiveData<Boolean> get() = _sensorValueLiveData
@@ -189,8 +189,8 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
                 val lamps = mainRepository.getLamps(currentUserIdLiveData.value.orEmpty(), currentRoomIdLiveData.value.orEmpty())
                 _lampsLiveData.postValue(lamps)
 
-                val powerConsumedMap = fetchPowerConsumed(lamps)
-                _powerConsumedLiveData.postValue(powerConsumedMap)
+                val powerConsumptionMap = fetchPowerConsumption(lamps)
+                _powerConsumptionLiveData.postValue(powerConsumptionMap)
 
                 val lampBrightnessMap = fetchLampBrightness(lamps)
                 _lampBrightnessLiveData.postValue(lampBrightnessMap)
@@ -211,35 +211,35 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
         }
     }
 
-    fun fetchTotalPowerConsumed() {
+    fun fetchTotalPowerConsumption() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val lamps = mainRepository.getAllLamps(currentUserIdLiveData.value.orEmpty())
 
-                val totalPowerConsumed = lamps.sumOf { lamp ->
+                val totalPowerConsumption = lamps.sumOf { lamp ->
                     (lamp.lampRuntime.div(3600).div(1000)).times(lamp.lampWattPower)
                 }
-                _totalPowerConsumedLiveData.postValue(totalPowerConsumed)
-                Log.d(TAG, "Total Power Consumed: $totalPowerConsumed")
+                _totalPowerConsumptionLiveData.postValue(totalPowerConsumption)
+                Log.d(TAG, "Total Power Consumption: $totalPowerConsumption")
             } catch (e: Exception) {
                 Log.e(TAG, "Error fetching lamps and calculating power consumption: $e")
             }
         }
     }
 
-    private fun fetchPowerConsumed(lamps: List<LampModel>): Map<String, Int> {
-        val powerConsumedMap = mutableMapOf<String, Int>()
+    private fun fetchPowerConsumption(lamps: List<LampModel>): Map<String, Int> {
+        val powerConsumptionMap = mutableMapOf<String, Int>()
 
         try {
             for (lamp in lamps) {
-                powerConsumedMap[lamp.LID.orEmpty()] = (lamp.lampRuntime.div(3600).div(1000)).times(lamp.lampWattPower)
+                powerConsumptionMap[lamp.LID.orEmpty()] = (lamp.lampRuntime.div(3600).div(1000)).times(lamp.lampWattPower)
             }
-            Log.d(TAG, "Successfully calculating power consumed")
+            Log.d(TAG, "Successfully calculating power Consumption")
         } catch (e: Exception) {
-            Log.e(TAG, "Error calculating power consumed: $e")
+            Log.e(TAG, "Error calculating power Consumption: $e")
         }
 
-        return powerConsumedMap
+        return powerConsumptionMap
     }
 
     private fun fetchLampBrightness(lamps: List<LampModel>): Map<String, Int> {

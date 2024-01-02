@@ -72,12 +72,14 @@ class ModalBottomSheet : BottomSheetDialogFragment() {
         textTitle.text = title
         textLayout.hint = hint
         textLayout.endIconMode = endIconMode ?: TextInputLayout.END_ICON_NONE
-        // textLayout.startIconDrawable = startIconDrawable ?: 0
+//        textLayout.startIconDrawable = startIconDrawable ?: 0
         inputText.inputType = inputType ?: android.text.InputType.TYPE_CLASS_TEXT
         buttonProcess.text = buttonText
 
         // Proccess The Logic
         buttonProcess.setOnClickListener {
+            Vibration.vibrate(requireContext())
+
             val enteredText = inputText.text.toString()
             listener?.onTextEntered(title.toString(), enteredText)
             dismiss()

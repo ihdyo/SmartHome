@@ -1,11 +1,19 @@
 package com.ihdyo.smarthome.ui
 
+import android.app.ActivityOptions
+import android.content.Context
+import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -17,6 +25,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.ihdyo.smarthome.R
@@ -37,6 +46,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var authViewModel: AuthViewModel
     private lateinit var mainViewModel: MainViewModel
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -79,9 +89,12 @@ class MainActivity : AppCompatActivity() {
         val email = headerView.findViewById<TextView>(R.id.text_email)
         val verified = headerView.findViewById<ImageView>(R.id.icon_verification)
 
+        verified.visibility = View.GONE
+
         authViewModel.getCurrentUser()
         authViewModel.currentUser.observe(this) { currentUser ->
             if (currentUser != null) {
+                mainViewModel.setCurrentUserId(currentUser.uid)
 
                 mainViewModel.fetchUser()
                 mainViewModel.userLiveData.observe(this) {user ->
@@ -112,66 +125,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.action_profile -> {
-                findNavController(R.id.nav_host_fragment_content_main).navigate(R.id.nav_profile)
-                return true
+        return when (item.itemId) {
+            R.id.action_settings -> {
+                findNavController(R.id.nav_host_fragment_content_main).navigate(R.id.nav_settings)
+                true
             }
-            R.id.action_theme -> {
-                showThemeSubMenu(item)
-                return true
-            }
-            R.id.action_light_theme -> {
-                setThemeMode(AppPreferences.ThemeMode.LIGHT)
-                return true
-            }
-            R.id.action_dark_theme -> {
-                setThemeMode(AppPreferences.ThemeMode.DARK)
-                return true
-            }
-            R.id.action_default_theme -> {
-                setThemeMode(AppPreferences.ThemeMode.SYSTEM_DEFAULT)
-                return true
-            }
-            else -> return super.onOptionsItemSelected(item)
-        }
-    }
-
-
-    // ========================= SET THEME ========================= //
-
-    private fun showThemeSubMenu(item: MenuItem) {
-        val view = findViewById<View>(R.id.action_theme)
-        val popupMenu = PopupMenu(this, view)
-        popupMenu.menuInflater.inflate(R.menu.app_bar_menu, popupMenu.menu)
-
-        popupMenu.setOnMenuItemClickListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.action_light_theme, R.id.action_dark_theme, R.id.action_default_theme -> {
-                    onOptionsItemSelected(menuItem)
-                }
-            }
-            true
-        }
-    }
-
-    private fun setThemeMode(themeMode: AppPreferences.ThemeMode) {
-        val appPreferences = AppPreferences(this)
-        appPreferences.themeMode = themeMode
-        updateTheme(themeMode)
-    }
-
-    private fun updateTheme(themeMode: AppPreferences.ThemeMode) {
-        when (themeMode) {
-            AppPreferences.ThemeMode.LIGHT -> {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            }
-            AppPreferences.ThemeMode.DARK -> {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            }
-            AppPreferences.ThemeMode.SYSTEM_DEFAULT -> {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 

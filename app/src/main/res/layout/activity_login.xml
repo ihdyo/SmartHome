@@ -16,10 +16,10 @@
         android:layout_marginEnd="-96dp"
         android:elevation="-1dp"
         android:scaleType="fitStart"
-        android:src="@drawable/img_house_d"
+        app:srcCompat="@drawable/img_house_d"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription" />
+        android:importantForAccessibility="no" />
 
     <TextView
         android:id="@+id/text_room_decoration"
@@ -34,19 +34,18 @@
         app:layout_constraintStart_toStartOf="@+id/image_app_icon"
         app:layout_constraintTop_toTopOf="@+id/image_decoration" />
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/image_app_icon"
         android:layout_width="@dimen/sp_4xl"
         android:layout_height="@dimen/sp_4xl"
         android:layout_marginTop="@dimen/sp_xl"
         android:layout_marginStart="@dimen/sp_xl"
-        android:background="@drawable/shape_squircle_md"
-        android:backgroundTint="?attr/colorSurfaceContainer"
+        android:background="?attr/colorSurfaceContainerLow"
         android:scaleType="fitStart"
-        android:src="@drawable/app_icon"
+        app:srcCompat="@drawable/app_icon"
+        app:shapeAppearanceOverlay="@style/ImageViewSquircle"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/text_app_name"
@@ -99,7 +98,7 @@
         app:layout_constraintBottom_toTopOf="@+id/text_password"
         app:layout_constraintEnd_toEndOf="@+id/text_login_description"
         app:layout_constraintStart_toStartOf="@+id/text_login_description"
-        app:startIconDrawable="@drawable/bx_envelope">
+        app:startIconDrawable="@drawable/bx_at">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/input_email"
@@ -137,6 +136,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="-12dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
         android:text="@string/text_forgot_password"
         android:textAlignment="textEnd"
         android:textColor="?attr/colorPrimary"
@@ -166,19 +168,18 @@
         android:paddingEnd="@dimen/sp_lg"
         app:icon="@drawable/bx_qr_scan"
         app:iconGravity="textStart"
+        app:strokeColor="?attr/colorPrimary"
         app:layout_constraintBottom_toTopOf="@+id/text_unregistered"
         app:layout_constraintEnd_toEndOf="@+id/text_password"
         app:layout_constraintTop_toTopOf="@+id/button_login"
         app:layout_constraintVertical_bias="0.0"
         tools:ignore="RtlSymmetry" />
 
-    <View
-        android:id="@+id/view"
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/divider_left"
         android:layout_width="@dimen/sp_0"
-        android:layout_height="@dimen/sp_4xs"
+        android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/sp_sm"
-        android:alpha="0.5"
-        android:background="?attr/colorOnSurface"
         app:layout_constraintBottom_toBottomOf="@+id/text_or"
         app:layout_constraintEnd_toStartOf="@+id/text_or"
         app:layout_constraintStart_toStartOf="@+id/button_login"
@@ -197,12 +198,11 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <View
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/divider_right"
         android:layout_width="@dimen/sp_0"
-        android:layout_height="@dimen/sp_4xs"
+        android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/sp_sm"
-        android:alpha="0.5"
-        android:background="?attr/colorOnSurface"
         app:layout_constraintBottom_toBottomOf="@+id/text_or"
         app:layout_constraintEnd_toEndOf="@+id/button_scan"
         app:layout_constraintStart_toEndOf="@+id/text_or"
@@ -213,11 +213,13 @@
         style="@style/Widget.Material3.Button.TonalButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textColor="?attr/colorPrimary"
         android:layout_marginHorizontal="@dimen/sp_xl"
         android:layout_marginBottom="@dimen/sp_md"
         android:text="@string/prompt_login_with_google"
         android:textAlignment="textStart"
         app:icon="@drawable/bxl_google"
+        app:iconTint="?attr/colorPrimary"
         app:iconGravity="textStart"
         app:layout_constraintBottom_toTopOf="@+id/text_unregistered"
         app:layout_constraintEnd_toEndOf="@+id/button_scan"
@@ -242,6 +244,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/sp_3xs"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
         android:text="@string/text_order_here"
         android:textAlignment="center"
         android:textColor="?attr/colorPrimary"

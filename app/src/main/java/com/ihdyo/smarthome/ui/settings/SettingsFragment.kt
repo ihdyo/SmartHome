@@ -1,11 +1,17 @@
-package com.ihdyo.smarthome.ui.profile
+package com.ihdyo.smarthome.ui.settings
 
 import android.app.ActivityOptions
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -20,21 +26,33 @@ import com.ihdyo.smarthome.data.repository.AuthRepository
 import com.ihdyo.smarthome.data.repository.MainRepository
 import com.ihdyo.smarthome.data.viewmodel.AuthViewModel
 import com.ihdyo.smarthome.data.viewmodel.MainViewModel
-import com.ihdyo.smarthome.databinding.FragmentProfileBinding
+import com.ihdyo.smarthome.databinding.FragmentSettingsBinding
 import com.ihdyo.smarthome.ui.splash.SplashActivity
 import com.ihdyo.smarthome.utils.ModalBottomSheet
+import com.ihdyo.smarthome.utils.Vibration
 
-class ProfileFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
+@Suppress("DEPRECATION")
+@RequiresApi(Build.VERSION_CODES.O)
+class SettingsFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
 
-    private var _binding: FragmentProfileBinding? = null
+    private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding!!
 
+    private lateinit var drawerLayout: DrawerLayout
     private lateinit var authViewModel: AuthViewModel
     private lateinit var mainViewModel: MainViewModel
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = FragmentProfileBinding.inflate(inflater, container, false)
+        _binding = FragmentSettingsBinding.inflate(inflater, container, false)
         val root: View = binding.root
+
+        drawerLayout = requireActivity().findViewById(R.id.drawer_layout)
+        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
 
         mainViewModel = ViewModelProvider(
             this,
@@ -46,36 +64,103 @@ class ProfileFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
             AuthViewModelFactory(AuthRepository(FirebaseAuth.getInstance()))
         )[AuthViewModel::class.java]
 
+        authViewModel.getCurrentUser()
+        authViewModel.currentUser.observe(viewLifecycleOwner) { currentUser ->
+            if (currentUser != null) {
+                if (currentUser.isEmailVerified) {
+                    binding.buttonVerification.visibility = View.GONE
+                } else {
+                    binding.buttonVerification.visibility = View.VISIBLE
+                }
+            }
+        }
+
+
+        // ========================= NOTIFICATION ========================= //
+
+        // Push Notification
+        binding.switchPushNotification.setOnCheckedChangeListener { compoundButton, b ->
+
+        }
+
+        // Email Notification
+        binding.switchEmailNotification.setOnCheckedChangeListener { compoundButton, b ->
+
+        }
+
+
+        // ========================= APPLICATION ========================= //
+
+        // Dynamic Color
+        binding.switchDynamicColor.setOnCheckedChangeListener { compoundButton, b ->
+
+        }
+
+        // Themes
+        binding.wrapperThemes.setOnClickListener {
+            Vibration.vibrate(requireContext())
+        }
+
+        // Languages
+        binding.wrapperLanguages.setOnClickListener {
+            Vibration.vibrate(requireContext())
+
+            val intent = Intent(Settings.ACTION_LOCALE_SETTINGS)
+            startActivity(intent)
+        }
+
+
+        // ========================= PROFILE ========================= //
+
         // Verification
         binding.buttonVerification.setOnClickListener {
+            Vibration.vibrate(requireContext())
             emailVerification()
         }
 
         // Change Username
-        binding.buttonChangeUsername.setOnClickListener {
+        binding.wrapperChangeUsername.setOnClickListener {
+            Vibration.vibrate(requireContext())
             changeUsername()
         }
 
         // Change Email
-        binding.buttonChangeEmail.setOnClickListener {
+        binding.wrapperChangeEmail.setOnClickListener {
+            Vibration.vibrate(requireContext())
             changeEmail()
         }
 
         // Change Password
-        binding.buttonChangePassword.setOnClickListener {
+        binding.wrapperChangePassword.setOnClickListener {
+            Vibration.vibrate(requireContext())
             changePassword()
         }
 
         // Log Out
         binding.buttonLogout.setOnClickListener {
+            Vibration.vibrate(requireContext())
             showLogOutDialog()
+        }
+
+
+        // ========================= CALL CENTER ========================= //
+
+        binding.textCallCustomerService.setOnClickListener {
+            Vibration.vibrate(requireContext())
         }
 
         return root
     }
 
+    @Deprecated("Deprecated in Java")
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        menu.clear()
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
+        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
         _binding = null
     }
 
@@ -83,9 +168,9 @@ class ProfileFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
     // ========================= GET DIALOG ========================= //
 
     override fun onTextEntered(title: String, text: String) {
-        authViewModel.getCurrentUser()
         authViewModel.currentUser.observe(viewLifecycleOwner) { currentUser ->
             if (currentUser != null) {
+                mainViewModel.setCurrentUserId(currentUser.uid)
 
                 // Change Username
                 if (title == getString(R.string.text_change_username)) {
@@ -116,25 +201,12 @@ class ProfileFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
     // ========================= EMAIL VERIFICATION ========================= //
 
     private fun emailVerification() {
+        authViewModel.getCurrentUser()
         authViewModel.requestEmailVerification()
-        authViewModel.currentUser.observe(viewLifecycleOwner) { updatedUser ->
 
-            if (updatedUser?.isEmailVerified == true) {
-
-                Snackbar.make(binding.root, R.string.prompt_email_verification_success, Snackbar.LENGTH_SHORT)
-                    .setAction(getString(R.string.prompt_ok)) { }
-                    .show()
-                binding.buttonVerification.visibility = View.GONE
-
-            } else {
-
-                Snackbar.make(binding.root, R.string.prompt_email_verification_failed, Snackbar.LENGTH_SHORT)
-                    .setAction(getString(R.string.prompt_close)) { }
-                    .show()
-                binding.buttonVerification.visibility = View.VISIBLE
-
-            }
-        }
+        Snackbar.make(binding.root, R.string.prompt_email_verification_sending, Snackbar.LENGTH_SHORT)
+            .setAction(getString(R.string.prompt_ok)) { }
+            .show()
     }
 
 
