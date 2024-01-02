@@ -1,7 +1,11 @@
 package com.ihdyo.smarthome.ui.settings
 
+import android.annotation.SuppressLint
 import android.app.ActivityOptions
 import android.content.Intent
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -28,6 +32,7 @@ import com.ihdyo.smarthome.data.viewmodel.AuthViewModel
 import com.ihdyo.smarthome.data.viewmodel.MainViewModel
 import com.ihdyo.smarthome.databinding.FragmentSettingsBinding
 import com.ihdyo.smarthome.ui.splash.SplashActivity
+import com.ihdyo.smarthome.utils.AppInfo
 import com.ihdyo.smarthome.utils.ModalBottomSheet
 import com.ihdyo.smarthome.utils.Vibration
 
@@ -41,12 +46,14 @@ class SettingsFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var authViewModel: AuthViewModel
     private lateinit var mainViewModel: MainViewModel
+//    private val appInfo: AppInfo = AppInfo(requireContext())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentSettingsBinding.inflate(inflater, container, false)
         val root: View = binding.root
@@ -64,16 +71,54 @@ class SettingsFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
             AuthViewModelFactory(AuthRepository(FirebaseAuth.getInstance()))
         )[AuthViewModel::class.java]
 
+
+        // App Info
+//        binding.textAppName.text = appInfo.getAppName()
+//        binding.textAppVersion.text = "${getString(R.string.app_version)} ${appInfo.getAppVersion()}"
+
+
         authViewModel.getCurrentUser()
         authViewModel.currentUser.observe(viewLifecycleOwner) { currentUser ->
             if (currentUser != null) {
+                mainViewModel.setCurrentUserId(currentUser.uid)
+
+                // Button Verification View
                 if (currentUser.isEmailVerified) {
                     binding.buttonVerification.visibility = View.GONE
                 } else {
                     binding.buttonVerification.visibility = View.VISIBLE
                 }
+
+                // Lamp Power Consumption & Average
+                mainViewModel.fetchTotalPowerConsumption()
+                mainViewModel.totalPowerConsumptionLiveData.observe(viewLifecycleOwner) { totalPowerConsumption ->
+                    if (totalPowerConsumption != null) {
+                        binding.textValueMonthlyPowerConsumption.text = "${totalPowerConsumption}${getString(R.string.text_power_unit)}"
+                    }
+                }
+                mainViewModel.averageLampConsumptionLiveData.observe(viewLifecycleOwner) { averagePowerConsumption ->
+                    if (averagePowerConsumption != null) {
+                        binding.textValueAveragePowerConsumption.text = "${averagePowerConsumption}${getString(R.string.text_power_unit)}"
+
+                        val category = when {
+                            averagePowerConsumption < 50 -> getString(R.string.text_average_power_consumption_very_low)
+                            averagePowerConsumption in 50..100 -> getString(R.string.text_average_power_consumption_low)
+                            averagePowerConsumption in 100..200 -> getString(R.string.text_average_power_consumption_moderate)
+                            averagePowerConsumption in 200..300 -> getString(R.string.text_average_power_consumption_high)
+                            else -> getString(R.string.text_average_power_consumption_very_high)
+                        }
+
+                        binding.textCategory.text = category
+                    }
+                }
             }
         }
+
+        return root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
 
         // ========================= NOTIFICATION ========================= //
@@ -99,6 +144,8 @@ class SettingsFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
         // Themes
         binding.wrapperThemes.setOnClickListener {
             Vibration.vibrate(requireContext())
+
+
         }
 
         // Languages
@@ -149,7 +196,6 @@ class SettingsFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
             Vibration.vibrate(requireContext())
         }
 
-        return root
     }
 
     @Deprecated("Deprecated in Java")

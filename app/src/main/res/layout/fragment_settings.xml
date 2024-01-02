@@ -115,35 +115,17 @@
                     app:layout_constraintTop_toBottomOf="@+id/divider_power_consumption"
                     app:strokeWidth="@dimen/sp_0">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                    <TextView
+                        android:id="@+id/text_category"
+                        style="@style/TextAppearance.Material3.BodyMedium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_marginHorizontal="@dimen/sp_sm"
                         android:layout_marginVertical="@dimen/sp_xs"
-                        android:gravity="center"
-                        android:orientation="horizontal"
-                        tools:ignore="UseCompoundDrawables">
-
-                        <ImageView
-                            android:id="@+id/icon_wh"
-                            android:layout_width="@dimen/sp_md"
-                            android:layout_height="@dimen/sp_md"
-                            android:layout_marginEnd="@dimen/sp_2xs"
-                            android:importantForAccessibility="no"
-                            android:src="@drawable/bxs_bolt"
-                            app:tint="?attr/colorPrimary" />
-
-                        <TextView
-                            android:id="@+id/text_value_total_power_consumption"
-                            style="@style/TextAppearance.Material3.BodyMedium"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/placeholder_power_consumption"
-                            android:textAlignment="textEnd"
-                            android:textColor="?attr/colorPrimary"
-                            android:textStyle="bold" />
-
-                    </LinearLayout>
+                        android:text="Category"
+                        android:textAlignment="textEnd"
+                        android:textColor="?attr/colorPrimary"
+                        android:textStyle="bold" />
 
                 </com.google.android.material.card.MaterialCardView>
 
@@ -369,6 +351,20 @@
                 app:layout_constraintStart_toEndOf="@+id/icon_themes"
                 app:layout_constraintTop_toTopOf="@+id/icon_themes" />
 
+            <TextView
+                android:id="@+id/text_current_themes"
+                style="@style/TextAppearance.Material3.BodyLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha="0.5"
+                android:layout_marginEnd="@dimen/sp_sm"
+                android:layout_marginStart="@dimen/sp_sm"
+                android:text="Default"
+                android:textAlignment="textStart"
+                app:layout_constraintBottom_toBottomOf="@+id/chevron_themes"
+                app:layout_constraintEnd_toStartOf="@+id/chevron_themes"
+                app:layout_constraintTop_toTopOf="@+id/chevron_themes" />
+
             <ImageView
                 android:id="@+id/chevron_themes"
                 android:layout_width="wrap_content"
@@ -416,6 +412,19 @@
                 app:layout_constraintBottom_toBottomOf="@+id/icon_languages"
                 app:layout_constraintStart_toEndOf="@+id/icon_languages"
                 app:layout_constraintTop_toTopOf="@+id/icon_languages" />
+
+            <TextView
+                android:id="@+id/text_current_languages"
+                style="@style/TextAppearance.Material3.BodyLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/sp_sm"
+                android:alpha="0.5"
+                android:text="EN"
+                android:textAlignment="textStart"
+                app:layout_constraintBottom_toBottomOf="@+id/chevron_languages"
+                app:layout_constraintEnd_toStartOf="@+id/chevron_languages"
+                app:layout_constraintTop_toTopOf="@+id/chevron_languages" />
 
             <ImageView
                 android:id="@+id/chevron_languages"

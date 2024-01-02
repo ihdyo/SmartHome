@@ -5,11 +5,13 @@ object Const {
     const val RC_SIGN_IN = 1
 
     const val SHARED_PREFERENCES = "AppPreferences"
+    const val PUSH_NOTIFICATION = "pushNotification"
+    const val EMAIL_NOTIFICATION = "emailNotification"
+    const val DYNAMIC_COLOR = "dynamicColor"
     const val USED_THEME = "usedTheme"
     const val LIGHT_THEME = "lightTheme"
     const val DARK_THEME = "darkTheme"
     const val SYSTEM_DEFAULT_THEME = "systemDefaultTheme"
-    const val SELECTED_LANGUAGE = "selectedLanguage"
 
     const val COLLECTION_USERS = "users"
     const val COLLECTION_ROOMS = "rooms"
@@ -19,6 +21,7 @@ object Const {
     const val FIELD_LAMP_IS_AUTOMATIC_ON = "lampIsAutomaticOn"
     const val FIELD_LAMP_IS_POWER_ON = "lampIsPowerOn"
     const val FIELD_LAMP_BRIGHTNESS = "lampBrightness"
+    const val FIELD_LAMP_RUNTIME = "lampRuntime"
     const val FIELD_LAMP_SELECTED_MODE = "lampSelectedMode"
     const val FIELD_LAMP_SCHEDULE = "lampSchedule"
     const val MAP_FIELD_SCHEDULE_FROM = "scheduleFrom"

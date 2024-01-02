@@ -5,8 +5,6 @@ import android.annotation.SuppressLint
 import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
-import android.content.pm.ApplicationInfo
-import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
@@ -21,15 +19,21 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.ihdyo.smarthome.R
 import com.ihdyo.smarthome.data.factory.AuthViewModelFactory
+import com.ihdyo.smarthome.data.factory.MainViewModelFactory
 import com.ihdyo.smarthome.data.repository.AuthRepository
+import com.ihdyo.smarthome.data.repository.MainRepository
 import com.ihdyo.smarthome.data.viewmodel.AuthViewModel
+import com.ihdyo.smarthome.data.viewmodel.MainViewModel
 import com.ihdyo.smarthome.databinding.ActivitySplashBinding
 import com.ihdyo.smarthome.ui.MainActivity
 import com.ihdyo.smarthome.ui.login.LoginActivity
+import com.ihdyo.smarthome.utils.AppInfo
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 @RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("CustomSplashScreen")
@@ -37,6 +41,8 @@ class SplashActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySplashBinding
     private lateinit var authViewModel: AuthViewModel
+    private lateinit var mainViewModel: MainViewModel
+    private val appInfo: AppInfo = AppInfo(this)
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,15 +50,22 @@ class SplashActivity : AppCompatActivity() {
         binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.textAppName.text = getAppName()
-        binding.textAppVersion.text = "${getString(R.string.app_version)} ${getAppVersion()}"
+        // App Info
+        binding.textAppName.text = appInfo.getAppName()
+        binding.textAppVersion.text = "${getString(R.string.app_version)} ${appInfo.getAppVersion()}"
 
         authViewModel = ViewModelProvider(
             this,
             AuthViewModelFactory(AuthRepository(FirebaseAuth.getInstance()))
         )[AuthViewModel::class.java]
 
+        mainViewModel = ViewModelProvider(
+            this,
+            MainViewModelFactory(MainRepository(FirebaseFirestore.getInstance()))
+        )[MainViewModel::class.java]
+
         askPermission()
+        checkResetRuntime()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -63,30 +76,6 @@ class SplashActivity : AppCompatActivity() {
             } else {
                 checkPermissionAndStartDelay()
             }
-        }
-    }
-
-
-
-    // ========================= APP INFO ========================= //
-
-    private fun getAppName(): String {
-        val packageManager: PackageManager = packageManager
-        val applicationInfo: ApplicationInfo = applicationInfo
-
-        return packageManager.getApplicationLabel(applicationInfo).toString()
-    }
-
-    private fun getAppVersion(): String {
-        val packageManager: PackageManager = packageManager
-        val packageName: String = packageName
-
-        return try {
-            val packageInfo: PackageInfo = packageManager.getPackageInfo(packageName, 0)
-            packageInfo.versionName
-        } catch (e: PackageManager.NameNotFoundException) {
-            e.printStackTrace()
-            "N/A"
         }
     }
 
@@ -174,6 +163,33 @@ class SplashActivity : AppCompatActivity() {
                 }
                 .show()
         }
+    }
+
+
+    // ========================= CHECK RESET RUNTIME ========================= //
+
+    private fun checkResetRuntime() {
+        authViewModel.getCurrentUser()
+        authViewModel.currentUser.observe(this) { currentUser ->
+            if (currentUser != null) {
+                mainViewModel.setCurrentUserId(currentUser.uid)
+                mainViewModel.currentUserIdLiveData.observe(this) { user ->
+                    if (user != null) {
+
+                        // Reset Lamp Runtime
+                        if (isLastDateOfMonth()) {
+                            mainViewModel.updateAllLampRuntimes(0)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun isLastDateOfMonth(): Boolean {
+        val currentDate = LocalDate.now()
+        val lastDayOfMonth = currentDate.month.length(currentDate.isLeapYear)
+        return currentDate.dayOfMonth == lastDayOfMonth
     }
 
     companion object {

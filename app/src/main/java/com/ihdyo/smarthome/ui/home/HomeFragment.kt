@@ -12,7 +12,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -23,7 +22,6 @@ import coil.load
 import coil.request.CachePolicy
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.MaterialTimePicker.INPUT_MODE_CLOCK
 import com.google.android.material.timepicker.TimeFormat
@@ -62,7 +60,7 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
     private lateinit var roomAdapter: RoomAdapter
     private lateinit var lampAdapter: LampAdapter
 
-    private var uiUpdater: UiUpdater = UiUpdater()
+    private val uiUpdater: UiUpdater = UiUpdater()
     private var fusedLocationProviderClient: FusedLocationProviderClient? = null
     private var isRefreshTriggeredManually: Boolean? = false
 
@@ -82,6 +80,7 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
         return binding.root
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -126,8 +125,7 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
         // Total Power Consumption
         mainViewModel.totalPowerConsumptionLiveData.observe(viewLifecycleOwner) { totalPowerConsumption ->
             if (totalPowerConsumption != null) {
-                val formattedText = "${totalPowerConsumption}kWh"
-                binding.textValueTotalPowerConsumption.text = formattedText
+                binding.textValueTotalPowerConsumption.text = "${totalPowerConsumption}${getString(R.string.text_power_unit)}"
             }
         }
 
@@ -303,6 +301,7 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
 
     // ========================= SHOW LAMP PROPERTIES ========================= //
 
+    @SuppressLint("SetTextI18n")
     private fun showLampProperties(currentLampId: String) {
         binding.progressLinear.visibility = View.GONE
         binding.chipLamp.visibility = View.GONE
@@ -314,8 +313,7 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
         mainViewModel.powerConsumptionLiveData.observe(viewLifecycleOwner) { powerConsumptionMap ->
             if (powerConsumptionMap != null) {
                 val powerConsumption = powerConsumptionMap[currentLampId]
-                val formattedText = "${powerConsumption}kWh"
-                binding.textValuePowerConsumption.text = formattedText
+                binding.textValuePowerConsumption.text = "${powerConsumption}${getString(R.string.text_power_unit)}"
             }
         }
 

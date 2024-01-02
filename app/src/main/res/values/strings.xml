@@ -43,6 +43,7 @@
     <string name="text_to">To</string>
     <string name="text_automatic">A</string>
     <string name="text_manual">M</string>
+    <string name="text_power_unit">kWh</string>
     <string name="text_schedule_title_start">Select start time</string>
     <string name="text_schedule_title_finish">Select finish time</string>
     <string name="text_change_email">Change Email</string>
@@ -50,6 +51,11 @@
     <string name="text_change_username">Change Username</string>
     <string name="text_select_room">select room</string>
     <string name="text_select_lamp">select lamp</string>
+    <string name="text_average_power_consumption_very_low">Very Low</string>
+    <string name="text_average_power_consumption_low">Low</string>
+    <string name="text_average_power_consumption_moderate">Moderate</string>
+    <string name="text_average_power_consumption_high">High</string>
+    <string name="text_average_power_consumption_very_high">Very High</string>
 
     <string name="prompt_ok">OK</string>
     <string name="prompt_cancel">Cancel</string>

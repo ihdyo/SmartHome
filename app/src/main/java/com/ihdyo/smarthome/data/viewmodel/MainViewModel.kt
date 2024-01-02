@@ -46,6 +46,10 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
     private val _currentLampIdLiveData = MutableLiveData<String>()
     val currentLampIdLiveData: LiveData<String> get() = _currentLampIdLiveData
 
+    private val _averageLampConsumptionLiveData = MutableLiveData<Int>()
+    val averageLampConsumptionLiveData: LiveData<Int> get() = _averageLampConsumptionLiveData
+
+
 
     private val _userNameLiveData = MutableLiveData<String>()
     val userNameLiveData: LiveData<String> get() = _userNameLiveData
@@ -215,12 +219,19 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val lamps = mainRepository.getAllLamps(currentUserIdLiveData.value.orEmpty())
+                val lampCount = lamps.size
 
                 val totalPowerConsumption = lamps.sumOf { lamp ->
                     (lamp.lampRuntime.div(3600).div(1000)).times(lamp.lampWattPower)
                 }
+
+                val averagePowerConsumption = totalPowerConsumption.div(lampCount)
+
                 _totalPowerConsumptionLiveData.postValue(totalPowerConsumption)
+                _averageLampConsumptionLiveData.postValue(averagePowerConsumption)
+
                 Log.d(TAG, "Total Power Consumption: $totalPowerConsumption")
+                Log.d(TAG, "Lamp Count: $lampCount")
             } catch (e: Exception) {
                 Log.e(TAG, "Error fetching lamps and calculating power consumption: $e")
             }
@@ -413,6 +424,11 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
         }
     }
 
+    fun updateAllLampRuntimes(lampRuntime: Int) {
+        val userId = currentUserIdLiveData.value.orEmpty()
+        Log.d(TAG, "Updating all lamp runtimes for user: $userId")
+        mainRepository.updateAllLampRuntimes(userId, lampRuntime)
+    }
 
     fun updateScheduleFrom(lampId: String, newScheduleFrom: String) {
         val updatedSchedule = _lampScheduleLiveData.value?.get(lampId)?.copy(scheduleFrom = newScheduleFrom)

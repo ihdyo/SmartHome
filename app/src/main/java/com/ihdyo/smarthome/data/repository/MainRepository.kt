@@ -16,6 +16,7 @@ import com.ihdyo.smarthome.utils.Const.COLLECTION_USERS
 import com.ihdyo.smarthome.utils.Const.FIELD_LAMP_BRIGHTNESS
 import com.ihdyo.smarthome.utils.Const.FIELD_LAMP_IS_AUTOMATIC_ON
 import com.ihdyo.smarthome.utils.Const.FIELD_LAMP_IS_POWER_ON
+import com.ihdyo.smarthome.utils.Const.FIELD_LAMP_RUNTIME
 import com.ihdyo.smarthome.utils.Const.FIELD_LAMP_SCHEDULE
 import com.ihdyo.smarthome.utils.Const.FIELD_LAMP_SELECTED_MODE
 import com.ihdyo.smarthome.utils.Const.FIELD_USER_NAME
@@ -157,6 +158,10 @@ class MainRepository(private val firestore: FirebaseFirestore) {
         putLampField(userId, roomId, lampId, FIELD_LAMP_IS_POWER_ON, lampIsPowerOn)
     }
 
+    fun putLampRuntime(userId: String, roomId: String, lampId: String, lampRuntime: Int) {
+        putLampField(userId, roomId, lampId, FIELD_LAMP_RUNTIME, lampRuntime)
+    }
+
     fun putLampSchedule(userId: String, roomId: String, lampId: String, lampSchedule: LampSchedule) {
         val scheduleMap = mapOf(
             MAP_FIELD_SCHEDULE_FROM to lampSchedule.scheduleFrom.orEmpty(),
@@ -194,6 +199,48 @@ class MainRepository(private val firestore: FirebaseFirestore) {
             }
             .addOnFailureListener { exception ->
                 Log.e(TAG, "Error updating $FIELD_USER_NAME for $value", exception)
+            }
+    }
+
+    fun updateAllLampRuntimes(userId: String, lampRuntime: Int) {
+        val userRef = firestore.collection(COLLECTION_USERS)
+            .document(userId)
+
+        Log.d(TAG, "Fetching rooms for user: $userId")
+
+        userRef.collection(COLLECTION_ROOMS)
+            .get()
+            .addOnSuccessListener { roomsSnapshot ->
+                for (roomDocument in roomsSnapshot.documents) {
+                    val roomId = roomDocument.id
+                    val lampsRef = userRef
+                        .collection(COLLECTION_ROOMS)
+                        .document(roomId)
+                        .collection(COLLECTION_LAMPS)
+
+                    Log.d(TAG, "Fetching lamps for room: $roomId")
+
+                    lampsRef.get()
+                        .addOnSuccessListener { lampsSnapshot ->
+                            for (lampDocument in lampsSnapshot.documents) {
+                                val lampId = lampDocument.id
+                                val lampRef = lampsRef.document(lampId)
+
+                                Log.d(TAG, "Updating lamp runtime for lamp: $lampId")
+
+                                lampRef.update(FIELD_LAMP_RUNTIME, lampRuntime)
+                                    .addOnFailureListener { exception ->
+                                        Log.e(TAG, "Error updating lamp runtime", exception)
+                                    }
+                            }
+                        }
+                        .addOnFailureListener { exception ->
+                            Log.e(TAG, "Error fetching lamps for room: $roomId", exception)
+                        }
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.e(TAG, "Error fetching rooms for user: $userId", exception)
             }
     }
 

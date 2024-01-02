@@ -27,4 +27,6 @@ class SmartHome : Application() {
         // Dynamic Color
         DynamicColors.applyToActivitiesIfAvailable(this)
     }
+
+
 }

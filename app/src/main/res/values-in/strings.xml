@@ -43,6 +43,7 @@
     <string name="text_to">Hingga</string>
     <string name="text_automatic">A</string>
     <string name="text_manual">M</string>
+    <string name="text_power_unit">kWh</string>
     <string name="text_schedule_title_start">Pilih waktu mulai</string>
     <string name="text_schedule_title_finish">Pilih waktu selesai</string>
     <string name="text_change_email">Ubah Email</string>
@@ -50,6 +51,11 @@
     <string name="text_change_username">Ubah Nama Pengguna</string>
     <string name="text_select_room">pilih ruangan</string>
     <string name="text_select_lamp">pilih lampu</string>
+    <string name="text_average_power_consumption_very_low">Sangat Rendah</string>
+    <string name="text_average_power_consumption_low">Rendah</string>
+    <string name="text_average_power_consumption_moderate">Sedang</string>
+    <string name="text_average_power_consumption_high">Tinggi</string>
+    <string name="text_average_power_consumption_very_high">Sangat Tinggi</string>
 
     <string name="prompt_ok">OK</string>
     <string name="prompt_cancel">Batal</string>
