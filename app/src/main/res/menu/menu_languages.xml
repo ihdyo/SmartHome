@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/language_english"
+        android:orderInCategory="1"
+        android:title="@string/item_language_english" />
+
+    <item
+        android:id="@+id/language_bahasa"
+        android:orderInCategory="2"
+        android:title="@string/item_language_indonesia" />
+
+    <item
+        android:id="@+id/language_javanese"
+        android:orderInCategory="3"
+        android:title="@string/item_language_javanese" />
+
+    <item
+        android:id="@+id/language_default"
+        android:orderInCategory="4"
+        android:title="@string/item_default" />
+
+</menu>

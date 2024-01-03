@@ -14,7 +14,6 @@ import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.TooltipCompat
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -116,7 +115,7 @@ class LoginActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListener 
     override fun onTextEntered(title: String, text: String) {
         if (title == getString(R.string.text_forgot_password)) {
             authViewModel.requestPasswordReset(text)
-            Snackbar.make(binding.root, "Reset password code sent to $text", Snackbar.LENGTH_SHORT)
+            Snackbar.make(binding.root, "${getString(R.string.prompt_reset_password_check)} $text", Snackbar.LENGTH_SHORT)
                 .setAction(getString(R.string.prompt_ok)) { }
                 .show()
         }

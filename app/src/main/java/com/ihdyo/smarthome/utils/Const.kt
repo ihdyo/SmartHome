@@ -5,13 +5,22 @@ object Const {
     const val RC_SIGN_IN = 1
 
     const val SHARED_PREFERENCES = "AppPreferences"
+    const val DEFAULT = "default"
     const val PUSH_NOTIFICATION = "pushNotification"
-    const val EMAIL_NOTIFICATION = "emailNotification"
+    const val SUBSCRIBE_NEWSLETTER = "subscribeNewsletter"
     const val DYNAMIC_COLOR = "dynamicColor"
-    const val USED_THEME = "usedTheme"
-    const val LIGHT_THEME = "lightTheme"
-    const val DARK_THEME = "darkTheme"
-    const val SYSTEM_DEFAULT_THEME = "systemDefaultTheme"
+    const val THEME_SELECTED = "themeUsed"
+    const val THEME_LIGHT = "themeLight"
+    const val THEME_DARK = "themeDark"
+    const val LANGUAGE_SELECTED = "languageSelected"
+    const val LANGUAGE_ENGLISH = "languageEnglish"
+    const val LANGUAGE_INDONESIA = "languageIndonesia"
+    const val LANGUAGE_JAVANESE = "languageJavanese"
+    const val LANGUAGE_DEFAULT = "languageDefault"
+
+    const val LOCALE_ENGLISH = "en"
+    const val LOCALE_INDONESIA = "in"
+    const val LOCALE_JAVANESE = "jv"
 
     const val COLLECTION_USERS = "users"
     const val COLLECTION_ROOMS = "rooms"

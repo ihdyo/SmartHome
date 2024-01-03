@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <string name="dev">- dikembangkan oleh ihd.yo -</string>
+
     <string name="app_name">Lumos</string>
     <string name="app_version">Versi</string>
     <string name="app_tagline">Lux ex te, pro orbis</string>
     <string name="app_tagline_translated">cahaya darimu, untuk dunia</string>
 
-    <string name="action_theme">Tema</string>
-    <string name="action_theme_dark">Gelap</string>
-    <string name="action_theme_light">Terang</string>
-    <string name="action_theme_default">Bawaan</string>
-    <string name="action_language">Bahasa</string>
-    <string name="action_settings">Pengaturan</string>
+    <string name="item_default">Bawaan</string>
+    <string name="item_theme">Tema</string>
+    <string name="item_theme_dark">Gelap</string>
+    <string name="item_theme_light">Terang</string>
+    <string name="item_language">Bahasa</string>
+    <string name="item_language_english">Inggris</string>
+    <string name="item_language_indonesia">Bahasa Indonesia</string>
+    <string name="item_language_javanese">Bahasa Jawa</string>
 
     <string name="menu">Menu</string>
     <string name="menu_home">Beranda</string>
@@ -18,7 +23,6 @@
     <string name="menu_campaign">Greenify</string>
     <string name="menu_about">Tentang</string>
     <string name="menu_settings">Pengaturan</string>
-    <string name="menu_login">Masuk</string>
 
     <string name="hint_email">Email</string>
     <string name="hint_old_email">Email sekarang</string>
@@ -29,6 +33,7 @@
     <string name="hint_retype_password">Ketik ulang kata sandi baru</string>
     <string name="hint_new_username">Nama pengguna baru</string>
 
+    <string name="text_placeholder">-</string>
     <string name="text_welcome">Selamat Datang!</string>
     <string name="text_welcome_description">Mohon masuk ke akun yang telah terdaftar untuk terhubung dengan sistem lampu pintarmu</string>
     <string name="text_forgot_password">Lupa Kata Sandi?</string>
@@ -46,16 +51,31 @@
     <string name="text_power_unit">kWh</string>
     <string name="text_schedule_title_start">Pilih waktu mulai</string>
     <string name="text_schedule_title_finish">Pilih waktu selesai</string>
+    <string name="text_email_verification">Kirim Verifikasi Email</string>
     <string name="text_change_email">Ubah Email</string>
     <string name="text_change_password">Ubah Kata Sandi</string>
     <string name="text_change_username">Ubah Nama Pengguna</string>
     <string name="text_select_room">pilih ruangan</string>
     <string name="text_select_lamp">pilih lampu</string>
-    <string name="text_average_power_consumption_very_low">Sangat Rendah</string>
-    <string name="text_average_power_consumption_low">Rendah</string>
-    <string name="text_average_power_consumption_moderate">Sedang</string>
-    <string name="text_average_power_consumption_high">Tinggi</string>
-    <string name="text_average_power_consumption_very_high">Sangat Tinggi</string>
+    <string name="text_power_consumption">Konsumsi Daya</string>
+    <string name="text_power_consumption_month">Bulan Ini</string>
+    <string name="text_power_consumption_average">Rata-Rata</string>
+    <string name="text_power_consumption_average_very_low">Sangat Rendah</string>
+    <string name="text_power_consumption_average_low">Rendah</string>
+    <string name="text_power_consumption_average_moderate">Sedang</string>
+    <string name="text_power_consumption_average_high">Tinggi</string>
+    <string name="text_power_consumption_average_very_high">Sangat Tinggi</string>
+    <string name="text_power_consumption_category">Kategori</string>
+    <string name="text_settings_notification">Notifikasi</string>
+    <string name="text_settings_application">Aplikasi</string>
+    <string name="text_settings_profile">Profil</string>
+    <string name="text_settings_push_notification">Push Notifikasi</string>
+    <string name="text_settings_subscribe_newsletter">Langganan Buletin</string>
+    <string name="text_settings_dynamic_color">Warna Dinamis</string>
+    <string name="text_settings_themes">Tema</string>
+    <string name="text_settings_languages">Bahasa</string>
+    <string name="text_problem">Menemui masalah?</string>
+    <string name="text_customer_service">Hubungi customer service kami</string>
 
     <string name="prompt_ok">OK</string>
     <string name="prompt_cancel">Batal</string>
@@ -76,6 +96,7 @@
     <string name="prompt_login_with_google">Masuk dengan Google</string>
     <string name="prompt_logout">Keluar</string>
     <string name="prompt_logout_check">Apakah kamu yakin ingin keluar?</string>
+    <string name="prompt_reset_password_check">Kode reset kata sandi telah dikirim ke</string>
     <string name="prompt_change_username_success">Nama pengguna telah diperbarui</string>
     <string name="prompt_change_username_failed">Gagal mengganti nama pengguna</string>
     <string name="prompt_change_email">Ubah Email</string>
@@ -101,6 +122,8 @@
     <string name="prompt_qr_scanner_error">Kesalahan Pemindai QR</string>
     <string name="prompt_qr_scanner_error_check">Hapus data dan cache Layanan Google Play, kemudian buka kembali aplikasi</string>
     <string name="prompt_order_new_device">-- Mohon tuliskan kebutuhanmu secara detail --</string>
+    <string name="prompt_dynamic_color_success">Perubahan akan diterapkan setelah mulai ulang</string>
+    <string name="prompt_dynamic_color_failed">Perangkatmu tidak mendukung warna dinamis</string>
 
     <string name="placeholder_email">Email</string>
     <string name="placeholder_username">Pengguna</string>
@@ -108,6 +131,5 @@
     <string name="placeholder_city">Kota</string>
     <string name="placeholder_room">Ruangan</string>
     <string name="placeholder_room_floor">-F</string>
-    <string name="placeholder_power_consumption">0kWh</string>
     <string name="placeholder_schedule">-:-</string>
 </resources>

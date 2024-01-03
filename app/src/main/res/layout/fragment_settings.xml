@@ -31,7 +31,7 @@
                     style="@style/TextAppearance.Material3.TitleMedium"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Power Consumption"
+                    android:text="@string/text_power_consumption"
                     android:textAlignment="center"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -44,7 +44,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/sp_lg"
-                    android:text="This Month"
+                    android:text="@string/text_power_consumption_month"
                     android:textAlignment="textStart"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/text_title_power_consumption" />
@@ -54,7 +54,7 @@
                     style="@style/TextAppearance.Material3.BodyMedium"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/placeholder_power_consumption"
+                    android:text="@string/text_power_unit"
                     android:textAlignment="textStart"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@+id/text_monthly_power_consumption"
@@ -67,7 +67,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/sp_xs"
-                    android:text="Average"
+                    android:text="@string/text_power_consumption_average"
                     android:textAlignment="textStart"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/text_monthly_power_consumption" />
@@ -77,7 +77,7 @@
                     style="@style/TextAppearance.Material3.BodyMedium"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/placeholder_power_consumption"
+                    android:text="@string/text_power_unit"
                     android:textAlignment="textStart"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@+id/text_average_power_consumption"
@@ -98,7 +98,7 @@
                     style="@style/TextAppearance.Material3.BodyMedium"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Category"
+                    android:text="@string/text_power_consumption_category"
                     android:textAlignment="textStart"
                     app:layout_constraintBottom_toBottomOf="@+id/category_wrapper"
                     app:layout_constraintStart_toStartOf="parent"
@@ -122,7 +122,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="@dimen/sp_sm"
                         android:layout_marginVertical="@dimen/sp_xs"
-                        android:text="Category"
+                        android:text="@string/text_placeholder"
                         android:textAlignment="textEnd"
                         android:textColor="?attr/colorPrimary"
                         android:textStyle="bold" />
@@ -140,7 +140,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/sp_xl"
             android:layout_marginTop="@dimen/sp_xl"
-            android:text="Send Email Verification"
+            android:text="@string/text_email_verification"
             android:textAlignment="center"
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
@@ -155,7 +155,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/sp_2xl"
             android:layout_marginStart="@dimen/sp_xl"
-            android:text="Notification"
+            android:text="@string/text_settings_notification"
             android:textAlignment="textStart"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/button_verification" />
@@ -188,7 +188,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/sp_sm"
-                android:text="Push Notification"
+                android:text="@string/text_settings_push_notification"
                 android:textAlignment="textStart"
                 app:layout_constraintBottom_toBottomOf="@+id/icon_push_notification"
                 app:layout_constraintStart_toEndOf="@+id/icon_push_notification"
@@ -207,7 +207,7 @@
 
         <!--Email Notification-->
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/wrapper_email_notification"
+            android:id="@+id/wrapper_subscribe_newsletter"
             android:layout_width="match_parent"
             android:layout_height="@dimen/sp_4xl"
             android:paddingHorizontal="@dimen/sp_xl"
@@ -216,7 +216,7 @@
             app:layout_constraintTop_toBottomOf="@+id/wrapper_push_notification">
 
             <ImageView
-                android:id="@+id/icon_email_notification"
+                android:id="@+id/icon_subscribe_newsletter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/sp_xs"
@@ -227,19 +227,19 @@
                 tools:ignore="ContentDescription" />
 
             <TextView
-                android:id="@+id/text_email_notification"
+                android:id="@+id/text_subscribe_newsletter"
                 style="@style/TextAppearance.Material3.TitleMedium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/sp_sm"
-                android:text="Email Notification"
+                android:text="@string/text_settings_subscribe_newsletter"
                 android:textAlignment="textStart"
-                app:layout_constraintBottom_toBottomOf="@+id/icon_email_notification"
-                app:layout_constraintStart_toEndOf="@+id/icon_email_notification"
-                app:layout_constraintTop_toTopOf="@+id/icon_email_notification" />
+                app:layout_constraintBottom_toBottomOf="@+id/icon_subscribe_newsletter"
+                app:layout_constraintStart_toEndOf="@+id/icon_subscribe_newsletter"
+                app:layout_constraintTop_toTopOf="@+id/icon_subscribe_newsletter" />
 
             <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/switch_email_notification"
+                android:id="@+id/switch_subscribe_newsletter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="false"
@@ -256,7 +256,7 @@
             android:layout_marginTop="@dimen/sp_xl"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/wrapper_email_notification" />
+            app:layout_constraintTop_toBottomOf="@+id/wrapper_subscribe_newsletter" />
 
         <TextView
             android:id="@+id/text_application"
@@ -265,7 +265,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/sp_xl"
             android:layout_marginTop="@dimen/sp_xl"
-            android:text="Application"
+            android:text="@string/text_settings_application"
             android:textAlignment="textStart"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/divider_application" />
@@ -298,7 +298,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/sp_sm"
-                android:text="Dynamic Color"
+                android:text="@string/text_settings_dynamic_color"
                 android:textAlignment="textStart"
                 app:layout_constraintBottom_toBottomOf="@+id/icon_dynamic_color"
                 app:layout_constraintStart_toEndOf="@+id/icon_dynamic_color"
@@ -345,7 +345,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/sp_sm"
-                android:text="Themes"
+                android:text="@string/text_settings_themes"
                 android:textAlignment="textStart"
                 app:layout_constraintBottom_toBottomOf="@+id/icon_themes"
                 app:layout_constraintStart_toEndOf="@+id/icon_themes"
@@ -359,7 +359,8 @@
                 android:alpha="0.5"
                 android:layout_marginEnd="@dimen/sp_sm"
                 android:layout_marginStart="@dimen/sp_sm"
-                android:text="Default"
+                android:text="@string/item_default"
+                android:textAllCaps="true"
                 android:textAlignment="textStart"
                 app:layout_constraintBottom_toBottomOf="@+id/chevron_themes"
                 app:layout_constraintEnd_toStartOf="@+id/chevron_themes"
@@ -407,7 +408,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/sp_sm"
-                android:text="Languages"
+                android:text="@string/text_settings_languages"
                 android:textAlignment="textStart"
                 app:layout_constraintBottom_toBottomOf="@+id/icon_languages"
                 app:layout_constraintStart_toEndOf="@+id/icon_languages"
@@ -420,7 +421,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/sp_sm"
                 android:alpha="0.5"
-                android:text="EN"
+                android:text="@string/item_default"
+                android:textAllCaps="true"
                 android:textAlignment="textStart"
                 app:layout_constraintBottom_toBottomOf="@+id/chevron_languages"
                 app:layout_constraintEnd_toStartOf="@+id/chevron_languages"
@@ -454,7 +456,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/sp_xl"
             android:layout_marginTop="@dimen/sp_xl"
-            android:text="Profile"
+            android:text="@string/text_settings_profile"
             android:textAlignment="textStart"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/divider_profile" />
@@ -642,7 +644,7 @@
             android:layout_marginTop="@dimen/sp_xl"
             android:layout_marginStart="@dimen/sp_sm"
             android:alpha="0.7"
-            android:text="Catch a problem?"
+            android:text="@string/text_problem"
             android:textAlignment="textStart"
             android:textStyle="normal"
             app:layout_constraintBottom_toTopOf="@+id/text_call_customer_service"
@@ -659,7 +661,7 @@
             android:focusable="true"
             android:foreground="?attr/selectableItemBackground"
             android:layout_marginBottom="@dimen/sp_xl"
-            android:text="Call Our Customer Service"
+            android:text="@string/text_customer_service"
             android:textAlignment="textStart"
             android:textColor="?attr/colorPrimary"
             android:textStyle="bold"
@@ -712,7 +714,7 @@
             android:textStyle="italic"
             android:layout_marginBottom="@dimen/sp_xl"
             android:alpha="0.5"
-            android:text="- developed by ihd.yo -"
+            android:text="@string/dev"
             android:textAlignment="center"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
