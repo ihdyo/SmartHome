@@ -8,5 +8,5 @@
   <path
       android:pathData="M0,0h540v540h-540z"
       android:strokeWidth="0"
-      android:fillColor="#000000"/>
+      android:fillColor="@color/md_theme_dark_surface"/>
 </vector>

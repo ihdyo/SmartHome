@@ -7,6 +7,7 @@ import android.content.res.Configuration
 import android.graphics.drawable.InsetDrawable
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -14,6 +15,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.view.menu.MenuBuilder
@@ -21,11 +23,14 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.firestore.FirebaseFirestore
 import com.ihdyo.smarthome.R
 import com.ihdyo.smarthome.data.AppPreferences
@@ -39,12 +44,18 @@ import com.ihdyo.smarthome.databinding.FragmentSettingsBinding
 import com.ihdyo.smarthome.ui.MainActivity
 import com.ihdyo.smarthome.ui.splash.SplashActivity
 import com.ihdyo.smarthome.utils.AppInfo
+import com.ihdyo.smarthome.utils.Const.ARG_CHANGE_EMAIL
+import com.ihdyo.smarthome.utils.Const.ARG_CHANGE_USERNAME
+import com.ihdyo.smarthome.utils.Const.ARG_CHECK_EMAIL
+import com.ihdyo.smarthome.utils.Const.ARG_CHECK_PASSWORD
+import com.ihdyo.smarthome.utils.Const.ARG_RECHECK_EMAIL
 import com.ihdyo.smarthome.utils.Const.DEFAULT
 import com.ihdyo.smarthome.utils.Const.LOCALE_ENGLISH
 import com.ihdyo.smarthome.utils.Const.LOCALE_INDONESIA
 import com.ihdyo.smarthome.utils.Const.LOCALE_JAVANESE
 import com.ihdyo.smarthome.utils.ModalBottomSheet
 import com.ihdyo.smarthome.utils.Vibration
+import kotlinx.coroutines.launch
 import java.util.Locale
 
 @Suppress("DEPRECATION")
@@ -209,7 +220,7 @@ class SettingsFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
         // Change Email
         binding.wrapperChangeEmail.setOnClickListener {
             Vibration.vibrate(requireContext())
-            changeEmail()
+            checkEmail()
         }
 
         // Change Password
@@ -248,28 +259,77 @@ class SettingsFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
 
     // ========================= GET DIALOG ========================= //
 
-    override fun onTextEntered(title: String, text: String) {
+    override fun onTextEntered(arg: String, text: String) {
         authViewModel.currentUser.observe(viewLifecycleOwner) { currentUser ->
             if (currentUser != null) {
                 mainViewModel.setCurrentUserId(currentUser.uid)
 
                 // Change Username
-                if (title == getString(R.string.text_change_username)) {
+                if (arg == ARG_CHANGE_USERNAME) {
                     mainViewModel.updateUserName(text)
                     Snackbar.make(binding.root, R.string.prompt_change_username_success, Snackbar.LENGTH_SHORT)
                         .setAction(getString(R.string.prompt_ok)) { }
                         .show()
                 }
 
-                // Change Email
-                if (title == getString(R.string.text_change_email)) {
-                    Snackbar.make(binding.root, "Belom implementasi, malas", Snackbar.LENGTH_SHORT)
-                        .setAction(getString(R.string.prompt_ok)) { }
-                        .show()
+                // Check Email
+                when (arg) {
+                    ARG_CHECK_EMAIL -> {
+                        FirebaseAuth.getInstance().currentUser.let {
+                            val userCredential = EmailAuthProvider.getCredential(it?.email!!, text)
+                            it.reauthenticate(userCredential).addOnCompleteListener { task ->
+                                when {
+                                    task.isSuccessful -> {
+                                        changeEmail()
+                                    }
+
+                                    task.exception is FirebaseAuthInvalidCredentialsException -> {
+                                    }
+
+                                    else -> {
+                                        Toast.makeText(
+                                            requireContext(),
+                                            "${task.exception?.message}",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+
+                    // Change Email
+                    ARG_CHANGE_EMAIL -> {
+                        FirebaseAuth.getInstance().currentUser?.let {
+                            FirebaseAuth.getInstance().currentUser?.verifyBeforeUpdateEmail(text)?.addOnCompleteListener {
+                                if (it.isSuccessful) {
+                                    recheckEmail()
+                                } else {
+                                    Toast.makeText(requireContext(), "${it.exception?.message}", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }
+                    }
+
+                    // Recheck Email
+                    ARG_RECHECK_EMAIL -> {
+                        FirebaseAuth.getInstance().currentUser?.let {
+                            FirebaseAuth.getInstance().currentUser?.updateEmail(text)?.addOnCompleteListener {
+                                if (it.isSuccessful) {
+                                    startActivity(Intent(requireContext(), MainActivity::class.java))
+                                    requireActivity().finishAffinity()
+                                } else {
+                                    Toast.makeText(requireContext(), "${it.exception?.message}", Toast.LENGTH_SHORT).show()
+                                    Log.d(TAG, "${it.exception?.message}")
+                                }
+                            }
+                        }
+                    }
                 }
 
                 // Change Password
-                if (title == getString(R.string.text_change_password)) {
+                if (arg == ARG_CHECK_PASSWORD) {
                     Snackbar.make(binding.root, "Belom implementasi, malas", Snackbar.LENGTH_SHORT)
                         .setAction(getString(R.string.prompt_ok)) { }
                         .show()
@@ -295,6 +355,7 @@ class SettingsFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
 
     private fun changeUsername() {
         val bottomSheetFragment = ModalBottomSheet.newInstance(
+            ARG_CHANGE_USERNAME,
             getString(R.string.text_change_username),
             getString(R.string.hint_new_username),
             TextInputLayout.END_ICON_NONE,
@@ -310,13 +371,14 @@ class SettingsFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
 
     // ========================= CHANGE EMAIL ========================= //
 
-    private fun changeEmail() {
+    private fun checkEmail() {
         val bottomSheetFragment = ModalBottomSheet.newInstance(
+            ARG_CHECK_EMAIL,
             getString(R.string.text_change_email),
-            getString(R.string.hint_old_email),
-            TextInputLayout.END_ICON_NONE,
-            R.drawable.bx_envelope,
-            android.text.InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS,
+            getString(R.string.hint_old_password),
+            TextInputLayout.END_ICON_PASSWORD_TOGGLE,
+            R.drawable.bx_lock_alt,
+            android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD,
             getString(R.string.prompt_next)
         )
 
@@ -324,11 +386,41 @@ class SettingsFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
         bottomSheetFragment.show(childFragmentManager, bottomSheetFragment.tag)
     }
 
+    private fun changeEmail() {
+        val bottomSheetFragment = ModalBottomSheet.newInstance(
+            ARG_CHANGE_EMAIL,
+            getString(R.string.text_change_email),
+            getString(R.string.hint_new_email),
+            TextInputLayout.END_ICON_NONE,
+            R.drawable.bx_envelope,
+            android.text.InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS,
+            getString(R.string.text_change_email)
+        )
+
+        bottomSheetFragment.setListener(this)
+        bottomSheetFragment.show(childFragmentManager, bottomSheetFragment.tag)
+    }
+
+    private fun recheckEmail() {
+        val bottomSheetFragment = ModalBottomSheet.newInstance(
+            ARG_RECHECK_EMAIL,
+            getString(R.string.text_change_email),
+            getString(R.string.hint_retype_email),
+            TextInputLayout.END_ICON_NONE,
+            R.drawable.bx_envelope,
+            android.text.InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS,
+            getString(R.string.text_change_email)
+        )
+
+        bottomSheetFragment.setListener(this)
+        bottomSheetFragment.show(childFragmentManager, bottomSheetFragment.tag)
+    }
 
     // ========================= CHANGE PASSWORD ========================= //
 
     private fun changePassword() {
         val bottomSheetFragment = ModalBottomSheet.newInstance(
+            ARG_CHECK_PASSWORD,
             getString(R.string.text_change_password),
             getString(R.string.hint_old_password),
             TextInputLayout.END_ICON_PASSWORD_TOGGLE,
@@ -513,6 +605,10 @@ class SettingsFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
 
         startActivity(Intent(requireContext(), MainActivity::class.java), animationBundle)
         requireActivity().finishAffinity()
+    }
+
+    companion object {
+        const val TAG = "SettingsFragment"
     }
 
 }

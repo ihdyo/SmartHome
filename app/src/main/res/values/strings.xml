@@ -27,6 +27,7 @@
     <string name="hint_email">Email</string>
     <string name="hint_old_email">Current email</string>
     <string name="hint_new_email">New email</string>
+    <string name="hint_retype_email">Retype new email</string>
     <string name="hint_password">Password</string>
     <string name="hint_old_password">Current password</string>
     <string name="hint_new_password">New password</string>

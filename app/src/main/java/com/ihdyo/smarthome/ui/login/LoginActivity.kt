@@ -36,6 +36,7 @@ import com.ihdyo.smarthome.data.viewmodel.AuthViewModel
 import com.ihdyo.smarthome.data.viewmodel.MainViewModel
 import com.ihdyo.smarthome.databinding.ActivityLoginBinding
 import com.ihdyo.smarthome.ui.MainActivity
+import com.ihdyo.smarthome.utils.Const.ARG_FORGOT_PASSWORD
 import com.ihdyo.smarthome.utils.Const.RC_SIGN_IN
 import com.ihdyo.smarthome.utils.Const.WEB_CLIENT_ID
 import com.ihdyo.smarthome.utils.ModalBottomSheet
@@ -112,8 +113,8 @@ class LoginActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListener 
 
     // ========================= GET DIALOG ========================= //
 
-    override fun onTextEntered(title: String, text: String) {
-        if (title == getString(R.string.text_forgot_password)) {
+    override fun onTextEntered(arg: String, text: String) {
+        if (arg == ARG_FORGOT_PASSWORD) {
             authViewModel.requestPasswordReset(text)
             Snackbar.make(binding.root, "${getString(R.string.prompt_reset_password_check)} $text", Snackbar.LENGTH_SHORT)
                 .setAction(getString(R.string.prompt_ok)) { }
@@ -297,6 +298,7 @@ class LoginActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListener 
 
     private fun forgotPassword() {
         val bottomSheetFragment = ModalBottomSheet.newInstance(
+            ARG_FORGOT_PASSWORD,
             getString(R.string.text_forgot_password),
             getString(R.string.hint_email),
             TextInputLayout.END_ICON_NONE,
@@ -353,7 +355,7 @@ class LoginActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListener 
                 val decodedBytes = Base64.getDecoder().decode(scanned)
                 val decodedString = String(decodedBytes, Charsets.UTF_8)
 
-                val (email, password) = decodedString.split(",")
+                val (email, password) = decodedString.split(" ")
 
                 emailSignIn(email, password)
             }

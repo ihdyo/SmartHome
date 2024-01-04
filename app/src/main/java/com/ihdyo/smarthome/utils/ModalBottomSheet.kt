@@ -20,6 +20,7 @@ class ModalBottomSheet : BottomSheetDialogFragment() {
     }
 
     companion object {
+        private const val ARGUMENTS = "argument"
         private const val ARG_TITLE = "argTitle"
         private const val ARG_HINT = "argHint"
         private const val ARG_END_ICON_MODE = "argEndIconMode"
@@ -27,10 +28,11 @@ class ModalBottomSheet : BottomSheetDialogFragment() {
         private const val ARG_INPUT_TYPE = "argInputType"
         private const val ARG_BUTTON_TEXT = "argButtonText"
 
-        fun newInstance(title: String, hint: String, endIconMode: Int, startIconDrawable: Int, inputType: Int, buttonText: String): ModalBottomSheet {
+        fun newInstance(arguments: String, title: String, hint: String, endIconMode: Int, startIconDrawable: Int, inputType: Int, buttonText: String): ModalBottomSheet {
             val fragment = ModalBottomSheet()
             val args = Bundle()
 
+            args.putString(ARGUMENTS, arguments)
             args.putString(ARG_TITLE, title)
             args.putString(ARG_HINT, hint)
             args.putInt(ARG_END_ICON_MODE, endIconMode)
@@ -47,7 +49,6 @@ class ModalBottomSheet : BottomSheetDialogFragment() {
         this.listener = listener
     }
 
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.bottom_sheet, container, false)
     }
@@ -56,6 +57,7 @@ class ModalBottomSheet : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Retrieve arguments
+        val arg = arguments?.getString(ARGUMENTS)
         val title = arguments?.getString(ARG_TITLE)
         val hint = arguments?.getString(ARG_HINT)
         val endIconMode = arguments?.getInt(ARG_END_ICON_MODE)
@@ -81,7 +83,7 @@ class ModalBottomSheet : BottomSheetDialogFragment() {
             Vibration.vibrate(requireContext())
 
             val enteredText = inputText.text.toString()
-            listener?.onTextEntered(title.toString(), enteredText)
+            listener?.onTextEntered(arg.toString(), enteredText)
             dismiss()
         }
     }

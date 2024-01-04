@@ -27,6 +27,7 @@
     <string name="hint_email">Email</string>
     <string name="hint_old_email">Email sekarang</string>
     <string name="hint_new_email">Email baru</string>
+    <string name="hint_retype_email">Ketik ulang email baru</string>
     <string name="hint_password">Kata sandi</string>
     <string name="hint_old_password">Kata sandi sekarang</string>
     <string name="hint_new_password">Kata sandi baru</string>

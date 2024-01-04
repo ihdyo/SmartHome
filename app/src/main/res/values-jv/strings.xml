@@ -27,6 +27,7 @@
     <string name="hint_email">Email</string>
     <string name="hint_old_email">Email saiki</string>
     <string name="hint_new_email">Email anyar</string>
+    <string name="hint_retype_email">Ketik maneh email anyar</string>
     <string name="hint_password">Sandhi</string>
     <string name="hint_old_password">Sandhi saiki</string>
     <string name="hint_new_password">Sandhi anyar</string>

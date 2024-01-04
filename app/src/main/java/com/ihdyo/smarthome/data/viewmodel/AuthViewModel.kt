@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseUser
 import com.ihdyo.smarthome.data.repository.AuthRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
@@ -15,7 +16,72 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
     val currentUser: LiveData<FirebaseUser?> get() = _currentUser
 
 
-    // ========================= EMAIL AUTH ========================= //
+    private val _reAuthResult = MutableLiveData<Boolean>()
+    val reAuthResult: LiveData<Boolean> get() = _reAuthResult
+
+
+    private val _currentEmail = MutableLiveData<String>()
+    val currentEmail: LiveData<String> get() = _currentEmail
+
+    private val _currentPassword = MutableLiveData<String>()
+    val currentPassword: LiveData<String> get() = _currentPassword
+
+
+
+    private val _changeEmailResult = MutableLiveData<Boolean>()
+    val changeEmailResult: LiveData<Boolean> get() = _changeEmailResult
+
+    private val _changePasswordResult = MutableLiveData<Boolean>()
+    val changePasswordResult: LiveData<Boolean> get() = _changePasswordResult
+
+
+
+    // ========================= GET METHOD ========================= //
+
+    fun getCurrentUser() {
+        _currentUser.value = authRepository.getCurrentUser()
+    }
+
+    fun reAuth(currentEmail: String, currentPassword: String) {
+        viewModelScope.launch {
+
+            val result = authRepository.reAuth(currentEmail, currentPassword)
+            _reAuthResult.postValue(result)
+
+            if (result) {
+                _currentEmail.postValue(currentEmail)
+                _currentPassword.postValue(currentPassword)
+
+                Log.d(TAG, "Re-Authentication Successful")
+            } else {
+                Log.d(TAG, "Re-Authentication Failed")
+            }
+        }
+    }
+
+    suspend fun changeEmail(newEmail: String): Boolean {
+        if (reAuthResult.value == true) {
+            val result = authRepository.changeEmail(
+                currentEmail.value.orEmpty(),
+                currentPassword.value.orEmpty(),
+                newEmail
+            )
+
+            if (result) {
+                _currentEmail.postValue(newEmail)
+                Log.d(TAG, "Email changed successfully to $newEmail")
+            } else {
+                Log.e(TAG, "Failed to change email")
+            }
+            return result
+        } else {
+            Log.e(TAG, "Re-Authentication failed, cannot change email")
+            return false
+        }
+    }
+
+
+    // ========================= EMAIL SIGN IN ========================= //
 
     fun signInWithEmail(email: String, password: String, onSuccess: (FirebaseUser) -> Unit, onFailed: (String) -> Unit) {
         viewModelScope.launch {
@@ -57,6 +123,23 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
     }
 
 
+    // ========================= UPDATE CREDENTIALS ========================= //
+
+
+    fun changePassword(newPassword: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val result = authRepository.changePassword(newPassword)
+            _changePasswordResult.postValue(result)
+
+            if (result) {
+                Log.d(TAG, "Password change successful")
+            } else {
+                Log.e(TAG, "Failed to change password")
+            }
+        }
+    }
+
+
     // ========================= OTHER METHOD ========================= //
 
     fun requestPasswordReset(email: String) {
@@ -92,10 +175,6 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
     fun signOut() {
         authRepository.signOut()
         _currentUser.value = null
-    }
-
-    fun getCurrentUser() {
-        _currentUser.value = authRepository.getCurrentUser()
     }
 
     companion object {

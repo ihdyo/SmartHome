@@ -182,6 +182,7 @@
             android:id="@+id/text_room_decoration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:clipToOutline="false"
             android:elevation="-1dp"
             android:fontFamily="@font/juliette_regular"
             android:text="@string/placeholder_room"
@@ -196,12 +197,12 @@
             style="@style/TextAppearance.Material3.LabelLarge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/sp_3xl"
+            android:layout_marginBottom="@dimen/sp_2xl"
             android:text="@string/placeholder_room_floor"
             android:textAlignment="textEnd"
             android:textColor="?attr/colorPrimary"
-            app:layout_constraintEnd_toEndOf="@+id/text_room_decoration"
-            app:layout_constraintTop_toTopOf="@+id/text_room_decoration" />
+            app:layout_constraintBottom_toBottomOf="@+id/text_room_decoration"
+            app:layout_constraintEnd_toEndOf="@+id/text_room_decoration" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chip_lamp"

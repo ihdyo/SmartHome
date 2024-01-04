@@ -8,13 +8,12 @@ fun main() {
     val email = "yodhi.himatika@gmail.com"
     val password = "inikatasandi@123"
 
-    val concatenate = "$email,$password"
+    val concatenate = "$email $password"
 
     // Encode to Base64
     val encodedBytes = Base64.getEncoder().encode(concatenate.toByteArray())
     val encodedString = String(encodedBytes, Charsets.UTF_8)
 
-    // Print
     println("Encoded String: $encodedString")
 
 }

@@ -4,6 +4,15 @@ object Const {
     const val WEB_CLIENT_ID = "113846780678-po05116d6nmrhmajp36njisbgd51qnm0.apps.googleusercontent.com"
     const val RC_SIGN_IN = 1
 
+    const val ARG_FORGOT_PASSWORD = "forgotPassword"
+    const val ARG_CHANGE_USERNAME = "changeUsername"
+    const val ARG_CHECK_EMAIL = "checkEmail"
+    const val ARG_CHANGE_EMAIL = "changeEmail"
+    const val ARG_RECHECK_EMAIL = "recheckEmail"
+    const val ARG_CHECK_PASSWORD = "checkPassword"
+    const val ARG_CHANGE_PASSWORD = "changePassword"
+    const val ARG_RECHECK_PASSWORD = "recheckPassword"
+
     const val SHARED_PREFERENCES = "AppPreferences"
     const val DEFAULT = "default"
     const val PUSH_NOTIFICATION = "pushNotification"

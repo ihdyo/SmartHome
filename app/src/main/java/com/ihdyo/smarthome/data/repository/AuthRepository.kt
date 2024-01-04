@@ -1,13 +1,26 @@
 package com.ihdyo.smarthome.data.repository
 import android.util.Log
-import com.google.android.gms.auth.api.Auth
 import com.google.firebase.auth.AuthCredential
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.tasks.await
 
 class AuthRepository(private val auth: FirebaseAuth) {
+
+
+    // ========================= GET USER ========================= //
+
+    fun getCurrentUser(): FirebaseUser? {
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            Log.d(TAG, "Successfully retrieved current user: ${currentUser.uid}")
+        } else {
+            Log.e(TAG, "Error retrieving current user. User is null.")
+        }
+        return currentUser
+    }
 
 
     // ========================= EMAIL AUTH ========================= //
@@ -41,6 +54,54 @@ class AuthRepository(private val auth: FirebaseAuth) {
     }
 
 
+    // ========================= UPDATE CREDENTIALS ========================= //
+
+    suspend fun reAuth(email: String, password: String): Boolean {
+        val userCredential = EmailAuthProvider.getCredential(email, password)
+        val user = auth.currentUser
+
+        return try {
+            user?.reauthenticate(userCredential)?.await()
+            Log.d(TAG, "Reauthentication successful")
+            true
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to reauthenticate", e)
+            false
+        }
+    }
+
+    suspend fun changeEmail(currentEmail: String, password: String, newEmail: String): Boolean {
+        return try {
+            if (reAuth(currentEmail, password)) {
+                auth.currentUser?.updateEmail(newEmail)?.await()
+
+                Log.d(TAG, "Email changed successfully to $newEmail")
+                true
+            } else {
+                Log.e(TAG, "Failed to reauthenticate before changing email")
+                false
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to change email", e)
+            false
+        }
+    }
+
+
+    suspend fun changePassword(newPassword: String): Boolean {
+        val user = auth.currentUser
+
+        return try {
+            user?.updatePassword(newPassword)?.await()
+            Log.d(TAG, "Password changed successfully")
+            true
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to change password", e)
+            false
+        }
+    }
+
+
     // ========================= OTHER METHOD ========================= //
 
     suspend fun forgotPassword(email: String): Boolean {
@@ -68,16 +129,6 @@ class AuthRepository(private val auth: FirebaseAuth) {
 
     fun signOut() {
         auth.signOut()
-    }
-
-    fun getCurrentUser(): FirebaseUser? {
-        val currentUser = auth.currentUser
-        if (currentUser != null) {
-            Log.d(TAG, "Successfully retrieved current user: ${currentUser.uid}")
-        } else {
-            Log.e(TAG, "Error retrieving current user. User is null.")
-        }
-        return currentUser
     }
 
     companion object {
