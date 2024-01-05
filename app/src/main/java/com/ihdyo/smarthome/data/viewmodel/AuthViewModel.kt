@@ -7,13 +7,21 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseUser
 import com.ihdyo.smarthome.data.repository.AuthRepository
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
 
     private val _currentUser = MutableLiveData<FirebaseUser?>()
     val currentUser: LiveData<FirebaseUser?> get() = _currentUser
+
+    private val _isCurrentUserVerified = MutableLiveData<Boolean?>()
+    val isCurrentUserVerified: LiveData<Boolean?> get() = _isCurrentUserVerified
+
+    private val _currentIdToken = MutableLiveData<String>()
+    val currentIdToken: LiveData<String> get() = _currentIdToken
 
 
     private val _reAuthResult = MutableLiveData<Boolean>()
@@ -80,6 +88,13 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
         }
     }
 
+    fun isVerified() {
+        viewModelScope.launch {
+            val user = currentUser.value?.isEmailVerified
+            _isCurrentUserVerified.value = user
+        }
+    }
+
 
     // ========================= EMAIL SIGN IN ========================= //
 
@@ -108,6 +123,9 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
         viewModelScope.launch {
             try {
                 val user = authRepository.authWithGoogle(idToken)
+                _currentIdToken.value = idToken
+                Log.e(TAG, "ID TOKEN = $idToken\n${currentIdToken.value}")
+
                 if (user != null) {
                     _currentUser.value = user
                     onSuccess(user)
@@ -173,7 +191,8 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
     }
 
     fun signOut() {
-        authRepository.signOut()
+        authRepository.signOut(currentIdToken.value.orEmpty())
+        Log.e(TAG, "ID TOKEN = ${currentIdToken.value}")
         _currentUser.value = null
     }
 

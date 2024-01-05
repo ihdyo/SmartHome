@@ -5,6 +5,7 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.drawable.InsetDrawable
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -23,7 +24,8 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -34,10 +36,13 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.firestore.FirebaseFirestore
 import com.ihdyo.smarthome.R
 import com.ihdyo.smarthome.data.AppPreferences
+import com.ihdyo.smarthome.data.factory.AdminViewModelFactory
 import com.ihdyo.smarthome.data.factory.AuthViewModelFactory
 import com.ihdyo.smarthome.data.factory.MainViewModelFactory
+import com.ihdyo.smarthome.data.repository.AdminRepository
 import com.ihdyo.smarthome.data.repository.AuthRepository
 import com.ihdyo.smarthome.data.repository.MainRepository
+import com.ihdyo.smarthome.data.viewmodel.AdminViewModel
 import com.ihdyo.smarthome.data.viewmodel.AuthViewModel
 import com.ihdyo.smarthome.data.viewmodel.MainViewModel
 import com.ihdyo.smarthome.databinding.FragmentSettingsBinding
@@ -53,9 +58,9 @@ import com.ihdyo.smarthome.utils.Const.DEFAULT
 import com.ihdyo.smarthome.utils.Const.LOCALE_ENGLISH
 import com.ihdyo.smarthome.utils.Const.LOCALE_INDONESIA
 import com.ihdyo.smarthome.utils.Const.LOCALE_JAVANESE
+import com.ihdyo.smarthome.utils.Const.WEB_CLIENT_ID
 import com.ihdyo.smarthome.utils.ModalBottomSheet
 import com.ihdyo.smarthome.utils.Vibration
-import kotlinx.coroutines.launch
 import java.util.Locale
 
 @Suppress("DEPRECATION")
@@ -68,6 +73,7 @@ class SettingsFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var authViewModel: AuthViewModel
     private lateinit var mainViewModel: MainViewModel
+    private lateinit var adminViewModel: AdminViewModel
     private lateinit var appPreferences: AppPreferences
     private lateinit var appInfo: AppInfo
 
@@ -76,7 +82,6 @@ class SettingsFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
         setHasOptionsMenu(true)
     }
 
-    @SuppressLint("SetTextI18n")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentSettingsBinding.inflate(inflater, container, false)
         val root: View = binding.root
@@ -97,11 +102,26 @@ class SettingsFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
             AuthViewModelFactory(AuthRepository(FirebaseAuth.getInstance()))
         )[AuthViewModel::class.java]
 
+        adminViewModel = ViewModelProvider(
+            this,
+            AdminViewModelFactory(AdminRepository(FirebaseFirestore.getInstance()))
+        )[AdminViewModel::class.java]
+
+        return root
+    }
+
+    @SuppressLint("SetTextI18n")
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.progressLinear.visibility = View.VISIBLE
 
         // App Info
         binding.textAppName.text = appInfo.getAppName()
         binding.textAppVersion.text = "${getString(R.string.app_version)} ${appInfo.getAppVersion()}"
 
+
+        // ========================= LIVE DATA ========================= //
 
         authViewModel.getCurrentUser()
         authViewModel.currentUser.observe(viewLifecycleOwner) { currentUser ->
@@ -109,10 +129,13 @@ class SettingsFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
                 mainViewModel.setCurrentUserId(currentUser.uid)
 
                 // Button Verification View
-                if (currentUser.isEmailVerified) {
-                    binding.buttonVerification.visibility = View.GONE
-                } else {
-                    binding.buttonVerification.visibility = View.VISIBLE
+                authViewModel.isVerified()
+                authViewModel.isCurrentUserVerified.observe(viewLifecycleOwner) { isVerified ->
+                    if (isVerified == true) {
+                        binding.buttonVerification.visibility = View.GONE
+                    } else {
+                        binding.buttonVerification.visibility = View.VISIBLE
+                    }
                 }
 
                 // Lamp Power Consumption & Average
@@ -124,6 +147,7 @@ class SettingsFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
                 }
                 mainViewModel.averageLampConsumptionLiveData.observe(viewLifecycleOwner) { averagePowerConsumption ->
                     if (averagePowerConsumption != null) {
+                        binding.progressLinear.visibility = View.GONE
                         binding.textValueAveragePowerConsumption.text = "${averagePowerConsumption}${getString(R.string.text_power_unit)}"
 
                         val category = when {
@@ -139,12 +163,6 @@ class SettingsFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
                 }
             }
         }
-
-        return root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
 
 
         // ========================= NOTIFICATION ========================= //
@@ -206,6 +224,7 @@ class SettingsFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
         // ========================= PROFILE ========================= //
 
         // Verification
+        binding.buttonVerification.visibility = View.VISIBLE
         binding.buttonVerification.setOnClickListener {
             Vibration.vibrate(requireContext())
             emailVerification()
@@ -240,6 +259,14 @@ class SettingsFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
 
         binding.textCallCustomerService.setOnClickListener {
             Vibration.vibrate(requireContext())
+
+            adminViewModel.fetchAdmin()
+            adminViewModel.adminLiveData.observe(viewLifecycleOwner) { admin ->
+                if (admin != null) {
+                    val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:${admin.adminNumber}"))
+                    startActivity(intent)
+                }
+            }
         }
 
     }
@@ -444,6 +471,12 @@ class SettingsFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
             .setNeutralButton(resources.getString(R.string.prompt_cancel)) { _, _ -> }
             .setPositiveButton(resources.getString(R.string.prompt_logout)) { _, _ ->
 
+                val googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(WEB_CLIENT_ID)
+                    .requestEmail()
+                    .build()
+                val googleSignInClient = GoogleSignIn.getClient(requireActivity(), googleSignInOptions)
+                googleSignInClient.signOut()
                 authViewModel.signOut()
 
                 val animationBundle = ActivityOptions.makeCustomAnimation(

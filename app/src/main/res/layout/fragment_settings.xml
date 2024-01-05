@@ -26,6 +26,17 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/sp_md">
 
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:id="@+id/progress_linear"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:elevation="@dimen/sp_xl"
+                    android:indeterminate="true"
+                    app:layout_constraintBottom_toBottomOf="@+id/divider_power_consumption"
+                    app:layout_constraintEnd_toEndOf="@+id/divider_power_consumption"
+                    app:layout_constraintStart_toStartOf="@+id/divider_power_consumption"
+                    app:layout_constraintTop_toTopOf="@+id/divider_power_consumption" />
+
                 <TextView
                     android:id="@+id/text_title_power_consumption"
                     style="@style/TextAppearance.Material3.TitleMedium"

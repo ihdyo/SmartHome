@@ -1,22 +1,456 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/scroll_view"
     tools:context=".ui.settings.SettingsFragment">
 
-    <TextView
-        android:id="@+id/text_tutorial"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/text_how_to_start"
+            style="@style/TextAppearance.Material3.TitleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/sp_xl"
+            android:layout_marginTop="@dimen/sp_xl"
+            android:text="How To Start?"
+            android:textAlignment="textStart"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <GridLayout
+            android:id="@+id/grid_how_to_start"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/sp_xl"
+            android:layout_marginHorizontal="@dimen/sp_xl"
+            android:columnCount="2"
+            android:rowCount="2"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_how_to_start">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="@dimen/sp_0"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/sp_xl"
+                android:layout_columnWeight="1"
+                android:layout_rowWeight="1">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/sp_9xl"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/img_tutorial_room"
+                        app:shapeAppearanceOverlay="@style/ImageViewSquircle" />
+
+                    <TextView
+                        style="@style/TextAppearance.Material3.BodyMedium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="@dimen/sp_sm"
+                        android:layout_marginTop="@dimen/sp_sm"
+                        android:text="1. Select Room"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        style="@style/TextAppearance.Material3.BodySmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/sp_2xs"
+                        android:layout_marginHorizontal="@dimen/sp_sm"
+                        android:layout_marginBottom="@dimen/sp_sm"
+                        android:text="On the given list of room icon, select your desired rooms" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="@dimen/sp_0"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_rowWeight="1">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/sp_9xl"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/img_tutorial_lamp"
+                        app:shapeAppearanceOverlay="@style/ImageViewSquircle" />
+
+                    <TextView
+                        style="@style/TextAppearance.Material3.BodyMedium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="@dimen/sp_sm"
+                        android:layout_marginTop="@dimen/sp_sm"
+                        android:text="2. Select Lamp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        style="@style/TextAppearance.Material3.BodySmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/sp_2xs"
+                        android:layout_marginHorizontal="@dimen/sp_sm"
+                        android:layout_marginBottom="@dimen/sp_sm"
+                        android:text="On the given list of lamp icon, select your desired lamp" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </GridLayout>
+
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/divider_how_to_start"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/sp_xl"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/grid_how_to_start" />
+
+        <TextView
+            android:id="@+id/text_home"
+            style="@style/TextAppearance.Material3.TitleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/sp_xl"
+            android:layout_marginStart="@dimen/sp_xl"
+            android:text="Properties"
+            android:textAlignment="textStart"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/divider_how_to_start" />
+
+        <GridLayout
+            android:id="@+id/grid_properties"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/sp_xl"
+            android:columnCount="2"
+            android:orientation="horizontal"
+            android:rowCount="2"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_home">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="@dimen/sp_0"
+                android:layout_height="wrap_content"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:layout_marginEnd="@dimen/sp_xl"
+                android:layout_marginBottom="@dimen/sp_xl">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.card.MaterialCardView
+                        style="@style/Widget.Material3.CardView.Filled"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/sp_9xl">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center_horizontal|center_vertical">
+
+                            <com.google.android.material.button.MaterialButtonToggleGroup
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintStart_toEndOf="@+id/side_view_wrapper"
+                                app:singleSelection="true">
+
+                                <Button
+                                    style="@style/Widget.App.Button.OutlinedButton.Custom"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:paddingHorizontal="@dimen/sp_md"
+                                    android:text="@string/text_automatic"
+                                    android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
+
+                                <Button
+                                    style="@style/Widget.App.Button.OutlinedButton.Custom"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    app:icon="@drawable/bx_alarm"
+                                    tools:ignore="RtlSymmetry" />
+
+                                <Button
+                                    style="@style/Widget.App.Button.OutlinedButton.Custom"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:paddingHorizontal="@dimen/sp_md"
+                                    android:text="@string/text_manual"
+                                    android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
+
+                            </com.google.android.material.button.MaterialButtonToggleGroup>
+
+                        </LinearLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <TextView
+                        style="@style/TextAppearance.Material3.BodyMedium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="@dimen/sp_sm"
+                        android:layout_marginTop="@dimen/sp_sm"
+                        android:text="Lamp Mode"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        style="@style/TextAppearance.Material3.BodySmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="@dimen/sp_sm"
+                        android:layout_marginTop="@dimen/sp_2xs"
+                        android:layout_marginBottom="@dimen/sp_sm"
+                        android:text="There are 3 lamp mode: Automatic, Scheduled, and Manual" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="@dimen/sp_0"
+                android:layout_height="wrap_content"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:layout_marginBottom="@dimen/sp_xl">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.card.MaterialCardView
+                        style="@style/Widget.Material3.CardView.Filled"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/sp_9xl">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center_horizontal|center_vertical">
+
+                            <com.google.android.material.materialswitch.MaterialSwitch
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:checked="false"
+                                app:layout_constraintBottom_toTopOf="@+id/text_from"
+                                app:layout_constraintEnd_toEndOf="@+id/text_from"
+                                app:thumbIcon="@drawable/bx_power_off" />
+
+                        </LinearLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <TextView
+                        style="@style/TextAppearance.Material3.BodyMedium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="@dimen/sp_sm"
+                        android:layout_marginTop="@dimen/sp_sm"
+                        android:text="Switch Power"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        style="@style/TextAppearance.Material3.BodySmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="@dimen/sp_sm"
+                        android:layout_marginTop="@dimen/sp_2xs"
+                        android:layout_marginBottom="@dimen/sp_sm"
+                        android:text="Lamps let you to control its state manually" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="@dimen/sp_0"
+                android:layout_height="wrap_content"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:layout_marginEnd="@dimen/sp_xl">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.card.MaterialCardView
+                        style="@style/Widget.Material3.CardView.Filled"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/sp_9xl">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <TextView
+                                android:id="@+id/text_from"
+                                style="@style/TextAppearance.Material3.LabelSmall"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/text_from"
+                                android:textAlignment="textEnd"
+                                android:textColor="?attr/colorOnSurfaceVariant"
+                                app:layout_constraintBottom_toTopOf="@+id/text_schedule_from"
+                                app:layout_constraintEnd_toEndOf="@+id/text_schedule_from"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintVertical_chainStyle="packed" />
+
+                            <TextView
+                                android:id="@+id/text_schedule_from"
+                                style="@style/TextAppearance.Material3.TitleMedium"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="@dimen/sp_xl"
+                                android:layout_marginBottom="@dimen/sp_xs"
+                                android:text="@string/placeholder_schedule"
+                                android:textAlignment="textEnd"
+                                app:layout_constraintBottom_toTopOf="@+id/text_to"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/text_from" />
+
+                            <TextView
+                                android:id="@+id/text_to"
+                                style="@style/TextAppearance.Material3.LabelSmall"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/text_to"
+                                android:textAlignment="textEnd"
+                                android:textColor="?attr/colorOnSurfaceVariant"
+                                app:layout_constraintBottom_toTopOf="@+id/text_schedule_to"
+                                app:layout_constraintEnd_toEndOf="@+id/text_schedule_to"
+                                app:layout_constraintTop_toBottomOf="@+id/text_schedule_from" />
+
+                            <TextView
+                                android:id="@+id/text_schedule_to"
+                                style="@style/TextAppearance.Material3.TitleMedium"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="@dimen/sp_xl"
+                                android:text="@string/placeholder_schedule"
+                                android:textAlignment="textEnd"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/text_to" />
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <TextView
+                        style="@style/TextAppearance.Material3.BodyMedium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="@dimen/sp_sm"
+                        android:layout_marginTop="@dimen/sp_sm"
+                        android:text="Schedule Input"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        style="@style/TextAppearance.Material3.BodySmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="@dimen/sp_sm"
+                        android:layout_marginTop="@dimen/sp_2xs"
+                        android:layout_marginBottom="@dimen/sp_sm"
+                        android:text="An access to control when lamp power on and off" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="@dimen/sp_0"
+                android:layout_height="wrap_content"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.card.MaterialCardView
+                        style="@style/Widget.Material3.CardView.Filled"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/sp_9xl">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center_horizontal|center_vertical">
+
+                            <com.google.android.material.slider.Slider
+                                android:id="@+id/brightness_slider"
+                                android:layout_width="@dimen/sp_8xl"
+                                android:layout_height="wrap_content"
+                                android:rotation="-90"
+                                android:stepSize="1.0"
+                                android:value="10.0"
+                                android:valueFrom="0.0"
+                                android:valueTo="10.0"
+                                app:layout_constraintBottom_toTopOf="@+id/switch_power"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/text_room_decoration"
+                                app:thumbElevation="@dimen/sp_0"
+                                app:tickVisible="false" />
+
+                        </LinearLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <TextView
+                        style="@style/TextAppearance.Material3.BodyMedium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="@dimen/sp_sm"
+                        android:layout_marginTop="@dimen/sp_sm"
+                        android:text="Brightness Slider"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        style="@style/TextAppearance.Material3.BodySmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="@dimen/sp_sm"
+                        android:layout_marginTop="@dimen/sp_2xs"
+                        android:layout_marginBottom="@dimen/sp_sm"
+                        android:text="For your comfort, lamps allow you to set their brightness" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </GridLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

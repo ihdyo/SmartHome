@@ -31,10 +31,13 @@ object Const {
     const val LOCALE_INDONESIA = "in"
     const val LOCALE_JAVANESE = "jv"
 
+    const val COLLECTION_ADMIN = "admin"
+    const val COLLECTION_CAMPAIGN = "campaign"
     const val COLLECTION_USERS = "users"
     const val COLLECTION_ROOMS = "rooms"
     const val COLLECTION_ENVIRONMENTS = "environments"
     const val COLLECTION_LAMPS = "lamps"
+    const val DOCUMENT_ADMIN = "admin_001"
     const val FIELD_USER_NAME = "userName"
     const val FIELD_LAMP_IS_AUTOMATIC_ON = "lampIsAutomaticOn"
     const val FIELD_LAMP_IS_POWER_ON = "lampIsPowerOn"

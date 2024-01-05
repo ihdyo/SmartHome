@@ -16,7 +16,7 @@ class ModalBottomSheet : BottomSheetDialogFragment() {
     private var listener: BottomSheetListener? = null
 
     interface BottomSheetListener {
-        fun onTextEntered(title: String, text: String)
+        fun onTextEntered(arg: String, text: String)
     }
 
     companion object {

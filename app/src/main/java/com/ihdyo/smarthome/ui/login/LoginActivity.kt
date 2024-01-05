@@ -28,10 +28,13 @@ import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.ihdyo.smarthome.R
+import com.ihdyo.smarthome.data.factory.AdminViewModelFactory
 import com.ihdyo.smarthome.data.factory.AuthViewModelFactory
 import com.ihdyo.smarthome.data.factory.MainViewModelFactory
+import com.ihdyo.smarthome.data.repository.AdminRepository
 import com.ihdyo.smarthome.data.repository.AuthRepository
 import com.ihdyo.smarthome.data.repository.MainRepository
+import com.ihdyo.smarthome.data.viewmodel.AdminViewModel
 import com.ihdyo.smarthome.data.viewmodel.AuthViewModel
 import com.ihdyo.smarthome.data.viewmodel.MainViewModel
 import com.ihdyo.smarthome.databinding.ActivityLoginBinding
@@ -54,6 +57,7 @@ class LoginActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListener 
     private lateinit var auth: FirebaseAuth
     private lateinit var authViewModel: AuthViewModel
     private lateinit var mainViewModel: MainViewModel
+    private lateinit var adminViewModel: AdminViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,6 +74,11 @@ class LoginActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListener 
             this,
             AuthViewModelFactory(AuthRepository(FirebaseAuth.getInstance()))
         )[AuthViewModel::class.java]
+
+        adminViewModel = ViewModelProvider(
+            this,
+            AdminViewModelFactory(AdminRepository(FirebaseFirestore.getInstance()))
+        )[AdminViewModel::class.java]
 
         firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
@@ -316,18 +325,26 @@ class LoginActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListener 
 
     @SuppressLint("QueryPermissionsNeeded")
     private fun registerNewMember() {
-        val recipient = "yodhi.himatika@gmail.com"
-        val subject = "Lumos: Order New Devices"
-        val body = getString(R.string.prompt_order_new_device)
-        val emailIntent = Intent(Intent.ACTION_SENDTO)
+        ProgressBar.showLoading(this)
 
-        val uriText = "mailto:$recipient?subject=${Uri.encode(subject)}&body=${Uri.encode(body)}"
-        emailIntent.data = Uri.parse(uriText)
+        adminViewModel.fetchAdmin()
+        adminViewModel.adminLiveData.observe(this) { admin ->
+            if (admin != null) {
+                val recipient = admin.adminEmail
+                val subject = "${getString(R.string.app_name)}: ${admin.adminEmailSubject} (${admin.adminName})"
+                val body = admin.adminEmailBody
+                val emailIntent = Intent(Intent.ACTION_SENDTO)
 
-        try {
-            startActivity(emailIntent)
-        } catch (e: ActivityNotFoundException) {
-            Log.e(TAG, "No email client found on the device")
+                val uriText = "mailto:$recipient?subject=${Uri.encode(subject)}&body=${Uri.encode(body)}"
+                emailIntent.data = Uri.parse(uriText)
+
+                try {
+                    ProgressBar.hideLoading()
+                    startActivity(emailIntent)
+                } catch (e: ActivityNotFoundException) {
+                    Log.e(TAG, "No email client found on the device")
+                }
+            }
         }
     }
 

@@ -127,8 +127,31 @@ class AuthRepository(private val auth: FirebaseAuth) {
         }
     }
 
-    fun signOut() {
+    fun signOut(idToken: String) {
         auth.signOut()
+        revokeGoogleSignInToken(idToken)
+    }
+
+    private fun revokeGoogleSignInToken(idToken: String) {
+        try {
+            val credential: AuthCredential = GoogleAuthProvider.getCredential(null, idToken)
+            auth.currentUser?.reauthenticate(credential)?.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    auth.currentUser?.getIdToken(true)?.addOnCompleteListener { idTokenTask ->
+                        if (idTokenTask.isSuccessful) {
+
+                            Log.d(TAG, "Google sign-in token revoked successfully")
+                        } else {
+                            Log.e(TAG, "Error forcing Google sign-in token expiration", idTokenTask.exception)
+                        }
+                    }
+                } else {
+                    Log.e(TAG, "Error reauthenticating user", task.exception)
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error revoking Google sign-in token", e)
+        }
     }
 
     companion object {

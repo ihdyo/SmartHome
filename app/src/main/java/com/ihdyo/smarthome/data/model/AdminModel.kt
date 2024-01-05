@@ -7,6 +7,8 @@ import kotlinx.parcelize.Parcelize
 data class AdminModel (
     val AID: String? = "",
     val adminEmail: String? = null,
+    val adminEmailSubject: String? = null,
+    val adminEmailBody: String? = null,
     val adminName: String? = null,
     val adminNumber: String? = null
 ) : Parcelable

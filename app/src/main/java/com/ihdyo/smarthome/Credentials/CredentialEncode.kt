@@ -5,8 +5,8 @@ import java.util.Base64
 @RequiresApi(Build.VERSION_CODES.O)
 fun main() {
 
-    val email = "yodhi.himatika@gmail.com"
-    val password = "inikatasandi@123"
+    val email = "smarthome.rumahpintar@gmail.com"
+    val password = "inikatasandi"
 
     val concatenate = "$email $password"
 

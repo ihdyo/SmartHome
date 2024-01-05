@@ -41,7 +41,6 @@
         android:layout_marginTop="@dimen/sp_xl"
         android:layout_marginStart="@dimen/sp_xl"
         android:background="?attr/colorSurfaceContainerLow"
-        android:scaleType="fitStart"
         app:srcCompat="@drawable/app_icon"
         app:shapeAppearanceOverlay="@style/ImageViewSquircle"
         app:layout_constraintStart_toStartOf="parent"

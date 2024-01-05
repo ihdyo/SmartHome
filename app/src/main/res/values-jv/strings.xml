@@ -122,7 +122,6 @@
     <string name="prompt_email_verification_sending" >Kirim kode verifikasi</string>
     <string name="prompt_qr_scanner_error">Kesalahan Pemindai QR</string>
     <string name="prompt_qr_scanner_error_check">Busak data lan cache Layanan Google Play, banjur bukak maneh aplikasi</string>
-    <string name="prompt_order_new_device">-- Tulis syarat sampeyan kanthi rinci --</string>
     <string name="prompt_dynamic_color_success">Owah-owahan bakal ditrapake sawise diwiwiti maneh</string>
     <string name="prompt_dynamic_color_failed">Piranti sampeyan ora ndhukung werna dinamis</string>
 
@@ -131,6 +130,6 @@
     <string name="placeholder_greeting">Halo,</string>
     <string name="placeholder_city">Kutha</string>
     <string name="placeholder_room">Ruang</string>
-    <string name="placeholder_room_floor">-F</string>
-    <string name="placeholder_schedule">-:-</string>
+    <string name="placeholder_room_floor">0F</string>
+    <string name="placeholder_schedule">00:00</string>
 </resources>
