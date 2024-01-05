@@ -24,15 +24,14 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
-import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.firestore.FirebaseFirestore
 import com.ihdyo.smarthome.R
 import com.ihdyo.smarthome.data.AppPreferences
@@ -50,17 +49,20 @@ import com.ihdyo.smarthome.ui.MainActivity
 import com.ihdyo.smarthome.ui.splash.SplashActivity
 import com.ihdyo.smarthome.utils.AppInfo
 import com.ihdyo.smarthome.utils.Const.ARG_CHANGE_EMAIL
+import com.ihdyo.smarthome.utils.Const.ARG_CHANGE_PASSWORD
 import com.ihdyo.smarthome.utils.Const.ARG_CHANGE_USERNAME
 import com.ihdyo.smarthome.utils.Const.ARG_CHECK_EMAIL
 import com.ihdyo.smarthome.utils.Const.ARG_CHECK_PASSWORD
-import com.ihdyo.smarthome.utils.Const.ARG_RECHECK_EMAIL
+import com.ihdyo.smarthome.utils.Const.ARG_RECHECK_PASSWORD
 import com.ihdyo.smarthome.utils.Const.DEFAULT
 import com.ihdyo.smarthome.utils.Const.LOCALE_ENGLISH
 import com.ihdyo.smarthome.utils.Const.LOCALE_INDONESIA
 import com.ihdyo.smarthome.utils.Const.LOCALE_JAVANESE
 import com.ihdyo.smarthome.utils.Const.WEB_CLIENT_ID
 import com.ihdyo.smarthome.utils.ModalBottomSheet
+import com.ihdyo.smarthome.utils.ProgressBarLayout
 import com.ihdyo.smarthome.utils.Vibration
+import kotlinx.coroutines.launch
 import java.util.Locale
 
 @Suppress("DEPRECATION")
@@ -245,7 +247,7 @@ class SettingsFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
         // Change Password
         binding.wrapperChangePassword.setOnClickListener {
             Vibration.vibrate(requireContext())
-            changePassword()
+            checkPassword()
         }
 
         // Log Out
@@ -291,75 +293,96 @@ class SettingsFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
             if (currentUser != null) {
                 mainViewModel.setCurrentUserId(currentUser.uid)
 
-                // Change Username
-                if (arg == ARG_CHANGE_USERNAME) {
-                    mainViewModel.updateUserName(text)
-                    Snackbar.make(binding.root, R.string.prompt_change_username_success, Snackbar.LENGTH_SHORT)
-                        .setAction(getString(R.string.prompt_ok)) { }
-                        .show()
-                }
-
-                // Check Email
                 when (arg) {
+
+                    // Change Username
+                    ARG_CHANGE_USERNAME -> {
+                        mainViewModel.updateUserName(text)
+                        Snackbar.make(binding.root, R.string.prompt_change_username_success, Snackbar.LENGTH_SHORT)
+                            .setAction(getString(R.string.prompt_ok)) { }
+                            .show()
+                    }
+
+                    // Check Email
                     ARG_CHECK_EMAIL -> {
-                        FirebaseAuth.getInstance().currentUser.let {
-                            val userCredential = EmailAuthProvider.getCredential(it?.email!!, text)
-                            it.reauthenticate(userCredential).addOnCompleteListener { task ->
-                                when {
-                                    task.isSuccessful -> {
-                                        changeEmail()
-                                    }
-
-                                    task.exception is FirebaseAuthInvalidCredentialsException -> {
-                                    }
-
-                                    else -> {
-                                        Toast.makeText(
-                                            requireContext(),
-                                            "${task.exception?.message}",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
-                                }
+                        authViewModel.reAuth(currentUser.email.orEmpty(), text)
+                        authViewModel.reAuthResult.observe(viewLifecycleOwner) { result ->
+                            if (result) {
+                                changeEmail()
+                            } else {
+                                Snackbar.make(binding.root, "Your password is incorrect", Snackbar.LENGTH_SHORT)
+                                    .setAction(getString(R.string.prompt_ok)) { }
+                                    .show()
                             }
+                            ProgressBarLayout.hideLoading()
                         }
-
                     }
 
                     // Change Email
                     ARG_CHANGE_EMAIL -> {
-                        FirebaseAuth.getInstance().currentUser?.let {
-                            FirebaseAuth.getInstance().currentUser?.verifyBeforeUpdateEmail(text)?.addOnCompleteListener {
-                                if (it.isSuccessful) {
-                                    recheckEmail()
+                        lifecycleScope.launch {
+                            try {
+                                val success = authViewModel.changeEmail(text)
+
+                                if (success) {
+                                    Snackbar.make(binding.root, "Please verify your new email", Snackbar.LENGTH_SHORT)
+                                        .setAction(getString(R.string.prompt_ok)) { }
+                                        .show()
                                 } else {
-                                    Toast.makeText(requireContext(), "${it.exception?.message}", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(requireContext(), "Failed to change email", Toast.LENGTH_SHORT).show()
                                 }
+                                ProgressBarLayout.hideLoading()
+                            } catch (e: Exception) {
+                                Log.e(TAG, "Error changing email: ${e.message}")
                             }
                         }
                     }
 
-                    // Recheck Email
-                    ARG_RECHECK_EMAIL -> {
-                        FirebaseAuth.getInstance().currentUser?.let {
-                            FirebaseAuth.getInstance().currentUser?.updateEmail(text)?.addOnCompleteListener {
-                                if (it.isSuccessful) {
-                                    startActivity(Intent(requireContext(), MainActivity::class.java))
-                                    requireActivity().finishAffinity()
-                                } else {
-                                    Toast.makeText(requireContext(), "${it.exception?.message}", Toast.LENGTH_SHORT).show()
-                                    Log.d(TAG, "${it.exception?.message}")
-                                }
+                    // Check Password
+                    ARG_CHECK_PASSWORD -> {
+                        authViewModel.reAuth(currentUser.email.orEmpty(), text)
+                        authViewModel.reAuthResult.observe(viewLifecycleOwner) { result ->
+                            if (result) {
+                                recheckPassword()
+                            } else {
+                                Snackbar.make(binding.root, "Your password is incorrect", Snackbar.LENGTH_SHORT)
+                                    .setAction(getString(R.string.prompt_ok)) { }
+                                    .show()
                             }
+                            ProgressBarLayout.hideLoading()
                         }
                     }
-                }
 
-                // Change Password
-                if (arg == ARG_CHECK_PASSWORD) {
-                    Snackbar.make(binding.root, "Belom implementasi, malas", Snackbar.LENGTH_SHORT)
-                        .setAction(getString(R.string.prompt_ok)) { }
-                        .show()
+                    // Recheck Password
+                    ARG_RECHECK_PASSWORD -> {
+                        authViewModel.checkPassword(text)
+                        changePassword()
+                        ProgressBarLayout.hideLoading()
+                    }
+
+                    // Change Password
+                    ARG_CHANGE_PASSWORD -> {
+                        if (authViewModel.changePassword.value == text) {
+                            MaterialAlertDialogBuilder(requireContext())
+                                .setIcon(R.drawable.bx_lock_alt)
+                                .setTitle(resources.getString(R.string.prompt_change_password))
+                                .setMessage(resources.getString(R.string.prompt_change_password_check))
+                                .setNegativeButton(resources.getString(R.string.prompt_cancel)) { _, _ -> }
+                                .setPositiveButton(resources.getString(R.string.text_change_password)) { _, _ ->
+                                    authViewModel.changePassword(text)
+                                }
+                                .show()
+                        }
+                        else {
+                            Snackbar.make(binding.root, "The password given doesn't match!", Snackbar.LENGTH_INDEFINITE)
+                                .setAction(getString(R.string.prompt_retry)) {
+                                    changePassword()
+                                }
+                                .show()
+                        }
+                        ProgressBarLayout.hideLoading()
+                    }
+
                 }
             }
         }
@@ -428,24 +451,10 @@ class SettingsFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
         bottomSheetFragment.show(childFragmentManager, bottomSheetFragment.tag)
     }
 
-    private fun recheckEmail() {
-        val bottomSheetFragment = ModalBottomSheet.newInstance(
-            ARG_RECHECK_EMAIL,
-            getString(R.string.text_change_email),
-            getString(R.string.hint_retype_email),
-            TextInputLayout.END_ICON_NONE,
-            R.drawable.bx_envelope,
-            android.text.InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS,
-            getString(R.string.text_change_email)
-        )
-
-        bottomSheetFragment.setListener(this)
-        bottomSheetFragment.show(childFragmentManager, bottomSheetFragment.tag)
-    }
 
     // ========================= CHANGE PASSWORD ========================= //
 
-    private fun changePassword() {
+    private fun checkPassword() {
         val bottomSheetFragment = ModalBottomSheet.newInstance(
             ARG_CHECK_PASSWORD,
             getString(R.string.text_change_password),
@@ -454,6 +463,36 @@ class SettingsFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
             R.drawable.bx_lock_alt,
             android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD,
             getString(R.string.prompt_next)
+        )
+
+        bottomSheetFragment.setListener(this)
+        bottomSheetFragment.show(childFragmentManager, bottomSheetFragment.tag)
+    }
+
+    private fun recheckPassword() {
+        val bottomSheetFragment = ModalBottomSheet.newInstance(
+            ARG_RECHECK_PASSWORD,
+            getString(R.string.text_change_password),
+            getString(R.string.hint_new_password),
+            TextInputLayout.END_ICON_PASSWORD_TOGGLE,
+            R.drawable.bx_lock_alt,
+            android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD,
+            getString(R.string.prompt_next)
+        )
+
+        bottomSheetFragment.setListener(this)
+        bottomSheetFragment.show(childFragmentManager, bottomSheetFragment.tag)
+    }
+
+    private fun changePassword() {
+        val bottomSheetFragment = ModalBottomSheet.newInstance(
+            ARG_CHANGE_PASSWORD,
+            getString(R.string.text_change_password),
+            "Retype your new password",
+            TextInputLayout.END_ICON_PASSWORD_TOGGLE,
+            R.drawable.bx_lock_alt,
+            android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD,
+            getString(R.string.text_change_password)
         )
 
         bottomSheetFragment.setListener(this)

@@ -73,7 +73,7 @@ class AuthRepository(private val auth: FirebaseAuth) {
     suspend fun changeEmail(currentEmail: String, password: String, newEmail: String): Boolean {
         return try {
             if (reAuth(currentEmail, password)) {
-                auth.currentUser?.updateEmail(newEmail)?.await()
+                auth.currentUser?.verifyBeforeUpdateEmail(newEmail)?.await()
 
                 Log.d(TAG, "Email changed successfully to $newEmail")
                 true
@@ -127,31 +127,8 @@ class AuthRepository(private val auth: FirebaseAuth) {
         }
     }
 
-    fun signOut(idToken: String) {
+    fun signOut() {
         auth.signOut()
-        revokeGoogleSignInToken(idToken)
-    }
-
-    private fun revokeGoogleSignInToken(idToken: String) {
-        try {
-            val credential: AuthCredential = GoogleAuthProvider.getCredential(null, idToken)
-            auth.currentUser?.reauthenticate(credential)?.addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    auth.currentUser?.getIdToken(true)?.addOnCompleteListener { idTokenTask ->
-                        if (idTokenTask.isSuccessful) {
-
-                            Log.d(TAG, "Google sign-in token revoked successfully")
-                        } else {
-                            Log.e(TAG, "Error forcing Google sign-in token expiration", idTokenTask.exception)
-                        }
-                    }
-                } else {
-                    Log.e(TAG, "Error reauthenticating user", task.exception)
-                }
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error revoking Google sign-in token", e)
-        }
     }
 
     companion object {

@@ -99,6 +99,20 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="ContentDescription" />
 
+        <ImageView
+            android:id="@+id/image_loading"
+            android:layout_width="560dp"
+            android:layout_height="560dp"
+            android:layout_marginBottom="-240dp"
+            android:visibility="visible"
+            android:elevation="@dimen/sp_xl"
+            android:scaleType="centerCrop"
+            android:src="@drawable/img_house_c"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:ignore="ContentDescription" />
+
         <TextView
             android:id="@+id/text_greeting"
             style="@style/TextAppearance.Material3.TitleMedium"
@@ -182,7 +196,6 @@
             android:id="@+id/text_room_decoration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:clipToOutline="false"
             android:elevation="-1dp"
             android:fontFamily="@font/juliette_regular"
             android:text="@string/placeholder_room"

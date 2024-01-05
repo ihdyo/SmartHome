@@ -49,7 +49,7 @@
                 style="@style/TextAppearance.Material3.TitleLarge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/sp_md"
+                android:layout_marginTop="@dimen/sp_xl"
                 android:text="@string/app_name"
                 app:layout_constraintStart_toStartOf="@+id/text_campaign_summary"
                 app:layout_constraintTop_toBottomOf="@+id/youtube_wrapper" />
@@ -59,19 +59,28 @@
                 style="@style/TextAppearance.Material3.BodyMedium"
                 android:layout_width="@dimen/sp_0"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/sp_md"
+                android:layout_marginHorizontal="@dimen/sp_xl"
                 android:layout_marginTop="@dimen/sp_sm"
                 android:text="@string/app_tagline"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_campaign_title" />
 
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/divider_greenify"
+                android:layout_width="@dimen/sp_0"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/sp_xl"
+                app:layout_constraintEnd_toEndOf="@+id/text_campaign_summary"
+                app:layout_constraintStart_toStartOf="@+id/text_campaign_summary"
+                app:layout_constraintTop_toBottomOf="@+id/text_campaign_summary" />
+
             <Button
                 android:id="@+id/button_more"
                 style="@style/Widget.Material3.Button.TonalButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="@dimen/sp_md"
+                android:layout_marginVertical="@dimen/sp_xl"
                 android:text="Read More"
                 android:textAlignment="textStart"
                 android:textColor="?attr/colorPrimary"
@@ -80,7 +89,7 @@
                 app:iconTint="?attr/colorPrimary"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/text_campaign_summary"
-                app:layout_constraintTop_toBottomOf="@+id/text_campaign_summary" />
+                app:layout_constraintTop_toBottomOf="@+id/divider_greenify" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

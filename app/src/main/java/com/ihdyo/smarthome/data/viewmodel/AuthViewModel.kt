@@ -20,13 +20,8 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
     private val _isCurrentUserVerified = MutableLiveData<Boolean?>()
     val isCurrentUserVerified: LiveData<Boolean?> get() = _isCurrentUserVerified
 
-    private val _currentIdToken = MutableLiveData<String>()
-    val currentIdToken: LiveData<String> get() = _currentIdToken
-
-
     private val _reAuthResult = MutableLiveData<Boolean>()
     val reAuthResult: LiveData<Boolean> get() = _reAuthResult
-
 
     private val _currentEmail = MutableLiveData<String>()
     val currentEmail: LiveData<String> get() = _currentEmail
@@ -39,6 +34,9 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
     private val _changeEmailResult = MutableLiveData<Boolean>()
     val changeEmailResult: LiveData<Boolean> get() = _changeEmailResult
 
+    private val _changePassword = MutableLiveData<String>()
+    val changePassword: LiveData<String> get() = _changePassword
+
     private val _changePasswordResult = MutableLiveData<Boolean>()
     val changePasswordResult: LiveData<Boolean> get() = _changePasswordResult
 
@@ -49,6 +47,58 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
     fun getCurrentUser() {
         _currentUser.value = authRepository.getCurrentUser()
     }
+
+    fun isVerified() {
+        viewModelScope.launch {
+            val user = currentUser.value?.isEmailVerified
+            _isCurrentUserVerified.value = user
+        }
+    }
+
+
+    // ========================= EMAIL SIGN IN ========================= //
+
+    fun signInWithEmail(email: String, password: String, onSuccess: (FirebaseUser) -> Unit, onFailed: (String) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val user = authRepository.authWithEmail(email, password)
+                if (user != null) {
+                    _currentUser.value = user
+                    onSuccess(user)
+                    Log.d(TAG, "Sign in with email successful")
+                } else {
+                    onFailed("Authentication failed")
+                }
+            } catch (e: Exception) {
+                onFailed("Error signing in with email: ${e.message}")
+                Log.e(TAG, "Error signing in with email", e)
+            }
+        }
+    }
+
+
+    // ========================= GOOGLE SIGN IN ========================= //
+
+    fun signInWithGoogle(idToken: String, onSuccess: (FirebaseUser) -> Unit, onFailed: (String) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val user = authRepository.authWithGoogle(idToken)
+                if (user != null) {
+                    _currentUser.value = user
+                    onSuccess(user)
+                    Log.d(TAG, "Sign in with Google successful")
+                } else {
+                    onFailed("Authentication failed")
+                }
+            } catch (e: Exception) {
+                onFailed("Error signing in with Google: ${e.message}")
+                Log.e(TAG, "Error signing in with Google", e)
+            }
+        }
+    }
+
+
+    // ========================= UPDATE CREDENTIALS ========================= //
 
     fun reAuth(currentEmail: String, currentPassword: String) {
         viewModelScope.launch {
@@ -88,65 +138,15 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
         }
     }
 
-    fun isVerified() {
+    fun checkPassword(newPassword: String) {
         viewModelScope.launch {
-            val user = currentUser.value?.isEmailVerified
-            _isCurrentUserVerified.value = user
+            _changePassword.postValue(newPassword)
         }
     }
 
-
-    // ========================= EMAIL SIGN IN ========================= //
-
-    fun signInWithEmail(email: String, password: String, onSuccess: (FirebaseUser) -> Unit, onFailed: (String) -> Unit) {
-        viewModelScope.launch {
-            try {
-                val user = authRepository.authWithEmail(email, password)
-                if (user != null) {
-                    _currentUser.value = user
-                    onSuccess(user)
-                    Log.d(TAG, "Sign in with email successful")
-                } else {
-                    onFailed("Authentication failed")
-                }
-            } catch (e: Exception) {
-                onFailed("Error signing in with email: ${e.message}")
-                Log.e(TAG, "Error signing in with email", e)
-            }
-        }
-    }
-
-
-    // ========================= GOOGLE SIGN IN ========================= //
-
-    fun signInWithGoogle(idToken: String, onSuccess: (FirebaseUser) -> Unit, onFailed: (String) -> Unit) {
-        viewModelScope.launch {
-            try {
-                val user = authRepository.authWithGoogle(idToken)
-                _currentIdToken.value = idToken
-                Log.e(TAG, "ID TOKEN = $idToken\n${currentIdToken.value}")
-
-                if (user != null) {
-                    _currentUser.value = user
-                    onSuccess(user)
-                    Log.d(TAG, "Sign in with Google successful")
-                } else {
-                    onFailed("Authentication failed")
-                }
-            } catch (e: Exception) {
-                onFailed("Error signing in with Google: ${e.message}")
-                Log.e(TAG, "Error signing in with Google", e)
-            }
-        }
-    }
-
-
-    // ========================= UPDATE CREDENTIALS ========================= //
-
-
-    fun changePassword(newPassword: String) {
+    fun changePassword(reNewPassword: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            val result = authRepository.changePassword(newPassword)
+            val result = authRepository.changePassword(reNewPassword)
             _changePasswordResult.postValue(result)
 
             if (result) {
@@ -191,8 +191,7 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
     }
 
     fun signOut() {
-        authRepository.signOut(currentIdToken.value.orEmpty())
-        Log.e(TAG, "ID TOKEN = ${currentIdToken.value}")
+        authRepository.signOut()
         _currentUser.value = null
     }
 

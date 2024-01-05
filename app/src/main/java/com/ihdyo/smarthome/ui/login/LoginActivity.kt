@@ -43,7 +43,7 @@ import com.ihdyo.smarthome.utils.Const.ARG_FORGOT_PASSWORD
 import com.ihdyo.smarthome.utils.Const.RC_SIGN_IN
 import com.ihdyo.smarthome.utils.Const.WEB_CLIENT_ID
 import com.ihdyo.smarthome.utils.ModalBottomSheet
-import com.ihdyo.smarthome.utils.ProgressBar
+import com.ihdyo.smarthome.utils.ProgressBarLayout
 import com.ihdyo.smarthome.utils.Vibration
 import java.util.Base64
 
@@ -140,7 +140,7 @@ class LoginActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListener 
 
         if (requestCode == RC_SIGN_IN) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-            ProgressBar.showLoading(this)
+            ProgressBarLayout.showLoading(this)
 
             try {
                 val account = task.getResult(ApiException::class.java)
@@ -160,11 +160,11 @@ class LoginActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListener 
         authViewModel.signInWithGoogle(
             idToken,
             onSuccess = { user ->
-                ProgressBar.hideLoading()
+                ProgressBarLayout.hideLoading()
                 checkRegistered(user)
             },
             onFailed = { errorMessage ->
-                ProgressBar.hideLoading()
+                ProgressBarLayout.hideLoading()
                 Snackbar.make(binding.root, errorMessage, Snackbar.LENGTH_SHORT)
                     .setAction(getString(R.string.prompt_ok)) { }
                     .show()
@@ -176,14 +176,14 @@ class LoginActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListener 
     // ========================= EMAIL SIGN IN ========================= //
 
     private fun emailSignIn(email: String, password: String) {
-        ProgressBar.showLoading(this)
+        ProgressBarLayout.showLoading(this)
 
         authViewModel.signInWithEmail(email.trim(), password.trim(),
             onSuccess = { user ->
                 checkRegistered(user)
             },
             onFailed = { errorMessage ->
-                ProgressBar.hideLoading()
+                ProgressBarLayout.hideLoading()
                 Snackbar.make(binding.root, errorMessage, Snackbar.LENGTH_SHORT)
                     .setAction(getString(R.string.prompt_ok)) { }
                     .show()
@@ -214,23 +214,31 @@ class LoginActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListener 
                         R.anim.slide_out_bottom
                     ).toBundle()
 
-                    ProgressBar.hideLoading()
+                    ProgressBarLayout.hideLoading()
 
                     startActivity(Intent(this, MainActivity::class.java), animationBundle)
                     finish()
                 } else {
 
+                    val googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                        .requestIdToken(WEB_CLIENT_ID)
+                        .requestEmail()
+                        .build()
+                    val googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions)
+
                     // User is not registered
-                    ProgressBar.hideLoading()
+                    ProgressBarLayout.hideLoading()
                     MaterialAlertDialogBuilder(this)
                         .setIcon(R.drawable.bx_error)
                         .setTitle(resources.getString(R.string.prompt_auth_failed))
                         .setMessage(resources.getString(R.string.prompt_auth_failed_check))
                         .setNeutralButton(resources.getString(R.string.prompt_close)) { _, _ ->
+                            googleSignInClient.signOut()
                             authViewModel.signOut()
                             closeContextMenu()
                         }
                         .setPositiveButton(resources.getString(R.string.prompt_register)) { _, _ ->
+                            googleSignInClient.signOut()
                             authViewModel.signOut()
                             registerNewMember()
                         }
@@ -325,7 +333,7 @@ class LoginActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListener 
 
     @SuppressLint("QueryPermissionsNeeded")
     private fun registerNewMember() {
-        ProgressBar.showLoading(this)
+        ProgressBarLayout.showLoading(this)
 
         adminViewModel.fetchAdmin()
         adminViewModel.adminLiveData.observe(this) { admin ->
@@ -339,7 +347,7 @@ class LoginActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListener 
                 emailIntent.data = Uri.parse(uriText)
 
                 try {
-                    ProgressBar.hideLoading()
+                    ProgressBarLayout.hideLoading()
                     startActivity(emailIntent)
                 } catch (e: ActivityNotFoundException) {
                     Log.e(TAG, "No email client found on the device")

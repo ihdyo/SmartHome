@@ -143,6 +143,7 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
         binding.progressLinear.visibility = View.VISIBLE
         binding.chipRoom.visibility = View.GONE
         binding.chipLamp.visibility = View.VISIBLE
+        binding.imageLoading.visibility = View.GONE
         mainViewModel.setCurrentRoomId(roomId)
 
         // Lamps Data
@@ -182,6 +183,7 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
         binding.progressLinear.visibility = View.VISIBLE
         binding.chipRoom.visibility = View.GONE
         binding.chipLamp.visibility = View.GONE
+        binding.imageLoading.visibility = View.VISIBLE
 
         // Get Current Time
         getCurrentTime { formattedTime ->

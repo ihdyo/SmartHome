@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -61,7 +62,7 @@ class ModalBottomSheet : BottomSheetDialogFragment() {
         val title = arguments?.getString(ARG_TITLE)
         val hint = arguments?.getString(ARG_HINT)
         val endIconMode = arguments?.getInt(ARG_END_ICON_MODE)
-        val startIconDrawable = arguments?.getInt(ARG_START_ICON_DRAWABLE)
+        val startIconDrawableRes = arguments?.getInt(ARG_START_ICON_DRAWABLE) ?: 0
         val inputType = arguments?.getInt(ARG_INPUT_TYPE)
         val buttonText = arguments?.getString(ARG_BUTTON_TEXT)
 
@@ -74,13 +75,19 @@ class ModalBottomSheet : BottomSheetDialogFragment() {
         textTitle.text = title
         textLayout.hint = hint
         textLayout.endIconMode = endIconMode ?: TextInputLayout.END_ICON_NONE
-//        textLayout.startIconDrawable = startIconDrawable ?: 0
         inputText.inputType = inputType ?: android.text.InputType.TYPE_CLASS_TEXT
         buttonProcess.text = buttonText
+
+        if (startIconDrawableRes != 0) {
+            val startIconDrawable = ContextCompat.getDrawable(requireContext(), startIconDrawableRes)
+            textLayout.startIconDrawable = startIconDrawable
+        }
+
 
         // Proccess The Logic
         buttonProcess.setOnClickListener {
             Vibration.vibrate(requireContext())
+            ProgressBarLayout.showLoading(requireActivity())
 
             val enteredText = inputText.text.toString()
             listener?.onTextEntered(arg.toString(), enteredText)

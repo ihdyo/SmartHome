@@ -7,7 +7,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import com.ihdyo.smarthome.R
 
-object ProgressBar {
+object ProgressBarLayout {
 
     private var dialog: Dialog? = null
 
