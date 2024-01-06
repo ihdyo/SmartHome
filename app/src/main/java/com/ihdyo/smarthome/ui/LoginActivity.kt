@@ -151,6 +151,7 @@ class LoginActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListener 
                 Snackbar.make(binding.root, R.string.prompt_auth_google_failed, Snackbar.LENGTH_SHORT)
                     .setAction(getString(R.string.prompt_ok)) { }
                     .show()
+                ProgressBarLayout.hideLoading()
             }
         }
     }
