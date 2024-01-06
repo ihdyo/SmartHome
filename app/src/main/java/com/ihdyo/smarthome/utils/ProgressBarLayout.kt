@@ -11,8 +11,6 @@ object ProgressBarLayout {
 
     private var dialog: Dialog? = null
 
-    // ========================= PROGRESS BAR ========================= //
-
     @SuppressLint("InflateParams")
     fun showLoading(activity: Activity){
         val dialogView = activity.layoutInflater.inflate(R.layout.helper_progress_bar, null, false)

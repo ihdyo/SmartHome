@@ -40,7 +40,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/sp_xl"
             android:layout_marginTop="@dimen/sp_lg"
-            android:text="Greenify reflects our unwavering commitment to green living and active advocacy for environmental sustainability through ongoing participation in green campaigns, showcasing our dedication to the planet's well-being."
+            android:text="@string/text_greenify_description"
             android:textAlignment="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

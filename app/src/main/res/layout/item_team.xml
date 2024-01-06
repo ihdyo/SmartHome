@@ -78,7 +78,7 @@
             android:textColor="?attr/colorSurface"
             android:layout_marginBottom="@dimen/sp_lg"
             android:layout_marginStart="@dimen/sp_lg"
-            android:text="5200411168"
+            android:text="@string/app_tagline"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 

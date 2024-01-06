@@ -186,14 +186,14 @@ class SettingsFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
         binding.textPushNotification.alpha = 0.5F
         binding.switchPushNotification.isEnabled = false
         binding.wrapperPushNotification.setOnClickListener {
-            Toast.makeText(requireContext(), "This feature is under construction!", Toast.LENGTH_SHORT)
+            Toast.makeText(requireContext(), getString(R.string.text_upcoming_feature), Toast.LENGTH_SHORT)
                 .show()
         }
         binding.iconSubscribeNewsletter.alpha = 0.5F
         binding.textSubscribeNewsletter.alpha = 0.5F
         binding.switchSubscribeNewsletter.isEnabled = false
         binding.wrapperSubscribeNewsletter.setOnClickListener {
-            Toast.makeText(requireContext(), "This feature is under construction!", Toast.LENGTH_SHORT)
+            Toast.makeText(requireContext(), getString(R.string.text_upcoming_feature), Toast.LENGTH_SHORT)
                 .show()
         }
 
@@ -330,7 +330,7 @@ class SettingsFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
                             if (result) {
                                 changeEmail()
                             } else {
-                                Snackbar.make(binding.root, "Your password is incorrect", Snackbar.LENGTH_SHORT)
+                                Snackbar.make(binding.root, getString(R.string.prompt_password_incorrect), Snackbar.LENGTH_SHORT)
                                     .setAction(getString(R.string.prompt_ok)) { }
                                     .show()
                             }
@@ -345,11 +345,11 @@ class SettingsFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
                                 val success = authViewModel.changeEmail(text)
 
                                 if (success) {
-                                    Snackbar.make(binding.root, "Please verify your new email", Snackbar.LENGTH_SHORT)
+                                    Snackbar.make(binding.root, getString(R.string.prompt_change_email_verify), Snackbar.LENGTH_SHORT)
                                         .setAction(getString(R.string.prompt_ok)) { }
                                         .show()
                                 } else {
-                                    Toast.makeText(requireContext(), "Failed to change email", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(requireContext(), getString(R.string.prompt_change_email_failed), Toast.LENGTH_SHORT).show()
                                 }
                                 ProgressBarLayout.hideLoading()
                             } catch (e: Exception) {
@@ -365,7 +365,7 @@ class SettingsFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
                             if (result) {
                                 recheckPassword()
                             } else {
-                                Snackbar.make(binding.root, "Your password is incorrect", Snackbar.LENGTH_SHORT)
+                                Snackbar.make(binding.root, getString(R.string.prompt_password_incorrect), Snackbar.LENGTH_SHORT)
                                     .setAction(getString(R.string.prompt_ok)) { }
                                     .show()
                             }
@@ -394,7 +394,7 @@ class SettingsFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
                                 .show()
                         }
                         else {
-                            Snackbar.make(binding.root, "The password given doesn't match!", Snackbar.LENGTH_INDEFINITE)
+                            Snackbar.make(binding.root, getString(R.string.prompt_change_password_new_not_match), Snackbar.LENGTH_INDEFINITE)
                                 .setAction(getString(R.string.prompt_retry)) {
                                     changePassword()
                                 }
@@ -508,7 +508,7 @@ class SettingsFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
         val bottomSheetFragment = ModalBottomSheet.newInstance(
             ARG_CHANGE_PASSWORD,
             getString(R.string.text_change_password),
-            "Retype your new password",
+            getString(R.string.hint_retype_password),
             TextInputLayout.END_ICON_PASSWORD_TOGGLE,
             R.drawable.bx_lock_alt,
             android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD,

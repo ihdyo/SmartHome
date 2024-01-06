@@ -3,10 +3,8 @@
 
     <string name="dev">- dikembangaké déning ihd.yo -</string>
 
-    <string name="app_name">Lumos</string>
     <string name="app_version">Versi</string>
-    <string name="app_tagline">Lux ex te, pro orbis</string>
-    <string name="app_tagline_translated">padhang saka sampeyan, kanggo donya</string>
+    <string name="app_tagline_translated">Cahya saka sampeyan, kanggo donya</string>
 
     <string name="item_default">Gawan</string>
     <string name="item_theme">Tema</string>
@@ -15,16 +13,14 @@
     <string name="item_language">Basa</string>
     <string name="item_language_english">Basa Inggris</string>
     <string name="item_language_indonesia">Basa Indonésia</string>
-    <string name="item_language_javanese">Jawa</string>
+    <string name="item_language_javanese">Basa Jawa</string>
 
     <string name="menu">Menu</string>
     <string name="menu_home">Ngarep</string>
     <string name="menu_tutorial">Tutorial</string>
-    <string name="menu_campaign">Greenify</string>
     <string name="menu_about">Babagan</string>
     <string name="menu_settings">Setelan</string>
 
-    <string name="hint_email">Email</string>
     <string name="hint_old_email">Email saiki</string>
     <string name="hint_new_email">Email anyar</string>
     <string name="hint_retype_email">Ketik maneh email anyar</string>
@@ -78,7 +74,10 @@
     <string name="text_problem">Nemokake masalah?</string>
     <string name="text_customer_service">Hubungi layanan pelanggan</string>
 
-    <string name="prompt_ok">OK</string>
+    <string name="text_about_our_team">Tim Kita</string>
+    <string name="text_about_lumos">Babagan Lumos</string>
+    <string name="text_about_lumos_description">Lumos, aplikasi konsep prototipe sing dikembangake dening Grup 6 lan ihd.yo minangka pangembang, nyampur teknologi lan kreatifitas, ngatasi macem-macem kabutuhan kanggo nanggepi tugas kuliah. Ora mung aplikasi, Lumos minangka solusi siji-mandeg sing nampilake inovasi nalika ngutamakake perawatan lingkungan liwat desain lampu cerdas.</string>
+    <string name="text_about_class">"Kelas D  "</string>
     <string name="prompt_cancel">Batal</string>
     <string name="prompt_no">Ora</string>
     <string name="prompt_yes">Ya</string>
@@ -101,8 +100,28 @@
     <string name="prompt_change_username_success">Jeneng panganggo wis dianyari</string>
     <string name="prompt_change_username_failed" >Gagal ngganti jeneng panganggo</string>
     <string name="prompt_change_email">Ganti Email</string>
-    <string name="prompt_change_email_check">Apa sampeyan yakin arep ngganti email sampeyan?</string>
-    <string name="prompt_change_email_current_failed" >Email panjenengan saiki salah!</string>
+    <string name="text_about_major">Informatika UTY</string>
+    <string name="text_greenify_description">Greenify nuduhake komitmen teguh kami marang lingkungan ramah lingkungan lan advokasi aktif kanggo kelestarian lingkungan liwat partisipasi berkelanjutan ing kampanye ramah lingkungan, sing nuduhake dedikasi kami marang kesejahteraan bumi.</string>
+    <string name="text_tutorial_how_to_start">Carane Miwiti?</string>
+    <string name="text_tutorial_select_room">1. Pilih Ruangan</string>
+    <string name="text_tutorial_select_room_description">Ing dhaptar lambang kamar, pilih kamar sing dikarepake.</string>
+    <string name="text_tutorial_select_lamp">2. Pilih Lampu</string>
+    <string name="text_tutorial_select_lamp_description">Ing dhaptar lambang lampu, pilih lampu sing dikarepake.</string>
+    <string name="text_tutorial_properties">Properti</string>
+    <string name="text_tutorial_properties_lamp_mode">Mode Lampu</string>
+    <string name="text_tutorial_properties_lamp_mode_description">Ana 3 mode lampu: Otomatis, Dijadwal, lan Manual.</string>
+    <string name="text_tutorial_properties_switch_power">Ngalih Daya</string>
+    <string name="text_tutorial_properties_switch_power_description">Lampu bakal ngidini sampeyan ngontrol negara kanthi manual.</string>
+    <string name="text_tutorial_properties_schedule_input">Jadwal</string>
+    <string name="text_tutorial_properties_schedule_input_description">Akses kanggo ngontrol status lampu nalika mode sing dipilih wis dijadwal.</string>
+    <string name="text_tutorial_properties_brightness_slider">Geseran Kapadhangan</string>
+    <string name="text_tutorial_properties_brightness_slider_description">Kanggo kepenak sampeyan, lampu ngidini sampeyan nyetel padhange.</string>
+    <string name="text_read_more">Waca Liyane</string>
+    <string name="prompt_social_link">Bukak Aplikasi Liyane</string>
+    <string name="prompt_social_link_check">Apa sampeyan pengin mbukak aplikasi liyane?</string>
+    <string name="prompt_password_incorrect">Sandhi sampeyan salah</string>
+    <string name="prompt_change_email_verify">Mangga verifikasi email anyar sampeyan</string>
+    <string name="text_upcoming_feature">Fitur iki lagi dibangun!</string>
     <string name="prompt_change_email_success">Email kasil dianyari</string>
     <string name="prompt_change_email_failed" >Gagal ngganti email</string>
     <string name="prompt_change_password">Ganti Sandi</string>
@@ -125,11 +144,8 @@
     <string name="prompt_dynamic_color_success">Owah-owahan bakal ditrapake sawise diwiwiti maneh</string>
     <string name="prompt_dynamic_color_failed">Piranti sampeyan ora ndhukung werna dinamis</string>
 
-    <string name="placeholder_email">Email</string>
     <string name="placeholder_username">Panganggo</string>
     <string name="placeholder_greeting">Halo,</string>
     <string name="placeholder_city">Kutha</string>
     <string name="placeholder_room">Ruang</string>
-    <string name="placeholder_room_floor">0F</string>
-    <string name="placeholder_schedule">00:00</string>
 </resources>

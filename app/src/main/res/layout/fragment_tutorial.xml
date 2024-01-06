@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/sp_xl"
             android:layout_marginTop="@dimen/sp_xl"
-            android:text="How To Start?"
+            android:text="@string/text_tutorial_how_to_start"
             android:textAlignment="textStart"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -61,7 +61,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="@dimen/sp_sm"
                         android:layout_marginTop="@dimen/sp_sm"
-                        android:text="1. Select Room"
+                        android:text="@string/text_tutorial_select_room"
                         android:textStyle="bold" />
 
                     <TextView
@@ -71,7 +71,7 @@
                         android:layout_marginTop="@dimen/sp_2xs"
                         android:layout_marginHorizontal="@dimen/sp_sm"
                         android:layout_marginBottom="@dimen/sp_sm"
-                        android:text="On the given list of room icon, select your desired rooms" />
+                        android:text="@string/text_tutorial_select_room_description" />
 
                 </LinearLayout>
 
@@ -101,7 +101,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="@dimen/sp_sm"
                         android:layout_marginTop="@dimen/sp_sm"
-                        android:text="2. Select Lamp"
+                        android:text="@string/text_tutorial_select_lamp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -111,7 +111,7 @@
                         android:layout_marginTop="@dimen/sp_2xs"
                         android:layout_marginHorizontal="@dimen/sp_sm"
                         android:layout_marginBottom="@dimen/sp_sm"
-                        android:text="On the given list of lamp icon, select your desired lamp" />
+                        android:text="@string/text_tutorial_select_lamp_description" />
 
                 </LinearLayout>
 
@@ -135,7 +135,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/sp_xl"
             android:layout_marginStart="@dimen/sp_xl"
-            android:text="Properties"
+            android:text="@string/text_tutorial_properties"
             android:textAlignment="textStart"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/divider_how_to_start" />
@@ -218,7 +218,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="@dimen/sp_sm"
                         android:layout_marginTop="@dimen/sp_sm"
-                        android:text="Lamp Mode"
+                        android:text="@string/text_tutorial_properties_lamp_mode"
                         android:textStyle="bold" />
 
                     <TextView
@@ -228,7 +228,7 @@
                         android:layout_marginHorizontal="@dimen/sp_sm"
                         android:layout_marginTop="@dimen/sp_2xs"
                         android:layout_marginBottom="@dimen/sp_sm"
-                        android:text="There are 3 lamp mode: Automatic, Scheduled, and Manual" />
+                        android:text="@string/text_tutorial_properties_lamp_mode_description" />
 
                 </LinearLayout>
 
@@ -274,7 +274,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="@dimen/sp_sm"
                         android:layout_marginTop="@dimen/sp_sm"
-                        android:text="Switch Power"
+                        android:text="@string/text_tutorial_properties_switch_power"
                         android:textStyle="bold" />
 
                     <TextView
@@ -284,7 +284,7 @@
                         android:layout_marginHorizontal="@dimen/sp_sm"
                         android:layout_marginTop="@dimen/sp_2xs"
                         android:layout_marginBottom="@dimen/sp_sm"
-                        android:text="Lamps let you to control its state manually" />
+                        android:text="@string/text_tutorial_properties_switch_power_description" />
 
                 </LinearLayout>
 
@@ -371,7 +371,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="@dimen/sp_sm"
                         android:layout_marginTop="@dimen/sp_sm"
-                        android:text="Schedule Input"
+                        android:text="@string/text_tutorial_properties_schedule_input"
                         android:textStyle="bold" />
 
                     <TextView
@@ -381,7 +381,7 @@
                         android:layout_marginHorizontal="@dimen/sp_sm"
                         android:layout_marginTop="@dimen/sp_2xs"
                         android:layout_marginBottom="@dimen/sp_sm"
-                        android:text="An access to control when lamp power on and off" />
+                        android:text="@string/text_tutorial_properties_schedule_input_description" />
 
                 </LinearLayout>
 
@@ -433,7 +433,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="@dimen/sp_sm"
                         android:layout_marginTop="@dimen/sp_sm"
-                        android:text="Brightness Slider"
+                        android:text="@string/text_tutorial_properties_brightness_slider"
                         android:textStyle="bold" />
 
                     <TextView
@@ -443,7 +443,7 @@
                         android:layout_marginHorizontal="@dimen/sp_sm"
                         android:layout_marginTop="@dimen/sp_2xs"
                         android:layout_marginBottom="@dimen/sp_sm"
-                        android:text="For your comfort, lamps allow you to set their brightness" />
+                        android:text="@string/text_tutorial_properties_brightness_slider_description" />
 
                 </LinearLayout>
 

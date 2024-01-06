@@ -3,9 +3,7 @@
 
     <string name="dev">- dikembangkan oleh ihd.yo -</string>
 
-    <string name="app_name">Lumos</string>
     <string name="app_version">Versi</string>
-    <string name="app_tagline">Lux ex te, pro orbis</string>
     <string name="app_tagline_translated">cahaya darimu, untuk dunia</string>
 
     <string name="item_default">Bawaan</string>
@@ -20,11 +18,9 @@
     <string name="menu">Menu</string>
     <string name="menu_home">Beranda</string>
     <string name="menu_tutorial">Tutorial</string>
-    <string name="menu_campaign">Greenify</string>
     <string name="menu_about">Tentang</string>
     <string name="menu_settings">Pengaturan</string>
 
-    <string name="hint_email">Email</string>
     <string name="hint_old_email">Email sekarang</string>
     <string name="hint_new_email">Email baru</string>
     <string name="hint_retype_email">Ketik ulang email baru</string>
@@ -50,6 +46,23 @@
     <string name="text_automatic">A</string>
     <string name="text_manual">M</string>
     <string name="text_power_unit">kWh</string>
+    <string name="text_about_major">Informatika UTY</string>
+    <string name="text_greenify_description">Greenify mencerminkan komitmen teguh kami terhadap kehidupan ramah lingkungan dan advokasi aktif untuk kelestarian lingkungan melalui partisipasi berkelanjutan dalam kampanye ramah lingkungan, yang menunjukkan dedikasi kami terhadap kesejahteraan bumi.</string>
+    <string name="text_tutorial_how_to_start">Bagaimana Untuk Memulai?</string>
+    <string name="text_tutorial_select_room">1. Pilih Ruangan</string>
+    <string name="text_tutorial_select_room_description">Pada daftar ikon ruangan yang diberikan, pilih ruangan yang kamu inginkan.</string>
+    <string name="text_tutorial_select_lamp">2. Pilih Lampu</string>
+    <string name="text_tutorial_select_lamp_description">Pada daftar ikon lampu yang diberikan, pilih lampu yang Anda inginkan.</string>
+    <string name="text_tutorial_properties">Properti</string>
+    <string name="text_tutorial_properties_lamp_mode">Mode Lampu</string>
+    <string name="text_tutorial_properties_lamp_mode_description">Ada 3 mode lampu: Otomatis, Terjadwal, dan Manual.</string>
+    <string name="text_tutorial_properties_switch_power">Saklar Daya</string>
+    <string name="text_tutorial_properties_switch_power_description">Lampu memungkinkan Anda mengontrol statusnya secara manual.</string>
+    <string name="text_tutorial_properties_schedule_input">Masukan Jadwal</string>
+    <string name="text_tutorial_properties_schedule_input_description">Akses ke status lampu kontrol ketika mode yang dipilih dijadwalkan.</string>
+    <string name="text_tutorial_properties_brightness_slider">Penggeser Kecerahan</string>
+    <string name="text_tutorial_properties_brightness_slider_description">Demi kenyamanan Anda, lampu memungkinkan Anda menyesuaikan kecerahannya.</string>
+    <string name="text_read_more">Baca Selengkapnya</string>
     <string name="text_schedule_title_start">Pilih waktu mulai</string>
     <string name="text_schedule_title_finish">Pilih waktu selesai</string>
     <string name="text_email_verification">Kirim Verifikasi Email</string>
@@ -78,7 +91,10 @@
     <string name="text_problem">Menemui masalah?</string>
     <string name="text_customer_service">Hubungi customer service kami</string>
 
-    <string name="prompt_ok">OK</string>
+    <string name="text_about_our_team">Tim Kami</string>
+    <string name="text_about_lumos">Tentang Lumos</string>
+    <string name="text_about_lumos_description">Lumos, sebuah prototipe aplikasi konsep yang dikembangkan oleh Grup 6 dan ihd.yo sebagai pengembangnya, memadukan teknologi dan kreativitas, menjawab beragam kebutuhan dalam menanggapi tugas kuliah. Bukan sekedar aplikasi, Lumos adalah solusi terpadu yang menampilkan inovasi dengan tetap mengutamakan kepedulian lingkungan melalui desain lampu pintar.</string>
+    <string name="text_about_class">"Kelas D  "</string>
     <string name="prompt_cancel">Batal</string>
     <string name="prompt_no">Tidak</string>
     <string name="prompt_yes">Ya</string>
@@ -101,8 +117,6 @@
     <string name="prompt_change_username_success">Nama pengguna telah diperbarui</string>
     <string name="prompt_change_username_failed">Gagal mengganti nama pengguna</string>
     <string name="prompt_change_email">Ubah Email</string>
-    <string name="prompt_change_email_check">Apakah kamu yakin ingin mengganti email?</string>
-    <string name="prompt_change_email_current_failed">Your current email was incorrect!</string>
     <string name="prompt_change_email_success">Email berhasil diperbarui</string>
     <string name="prompt_change_email_failed">Gagal mengganti email</string>
     <string name="prompt_change_password">Ubah Kata Sandi</string>
@@ -125,11 +139,13 @@
     <string name="prompt_dynamic_color_success">Perubahan akan diterapkan setelah mulai ulang</string>
     <string name="prompt_dynamic_color_failed">Perangkatmu tidak mendukung warna dinamis</string>
 
-    <string name="placeholder_email">Email</string>
     <string name="placeholder_username">Pengguna</string>
     <string name="placeholder_greeting">Halo,</string>
     <string name="placeholder_city">Kota</string>
     <string name="placeholder_room">Ruangan</string>
-    <string name="placeholder_room_floor">0F</string>
-    <string name="placeholder_schedule">00:00</string>
+    <string name="prompt_social_link">Buka Aplikasi Lain</string>
+    <string name="prompt_social_link_check">Apakah kamu yakin akan membuka aplikasi lain?</string>
+    <string name="prompt_password_incorrect">Kata sandimu salah</string>
+    <string name="prompt_change_email_verify">Mohon verifikasi email barumu</string>
+    <string name="text_upcoming_feature">Fitur ini sedang dalam pembuatan!</string>
 </resources>
