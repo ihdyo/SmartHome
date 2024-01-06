@@ -26,13 +26,21 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="ContentDescription" />
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/sp_9xl"
+            android:background="@drawable/shape_gradient"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/role_wrapper"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/sp_md"
             android:layout_marginEnd="@dimen/sp_lg"
-            android:backgroundTint="?attr/colorPrimaryContainer"
+            android:backgroundTint="?attr/colorSurface"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:strokeWidth="@dimen/sp_0">
@@ -46,7 +54,7 @@
                 android:layout_marginVertical="@dimen/sp_xs"
                 android:text="@string/text_placeholder"
                 android:textAlignment="textEnd"
-                android:textColor="?attr/colorPrimary"
+                android:textColor="?attr/colorOnSurface"
                 android:textStyle="bold" />
 
         </com.google.android.material.card.MaterialCardView>
@@ -56,6 +64,7 @@
             style="@style/TextAppearance.Material3.TitleMedium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="?attr/colorSurface"
             android:textStyle="bold"
             android:text="@string/app_name"
             app:layout_constraintBottom_toTopOf="@+id/text_team_number"
@@ -66,6 +75,7 @@
             style="@style/TextAppearance.Material3.LabelLarge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="?attr/colorSurface"
             android:layout_marginBottom="@dimen/sp_lg"
             android:layout_marginStart="@dimen/sp_lg"
             android:text="5200411168"

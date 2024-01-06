@@ -36,11 +36,11 @@ class TeamViewModel(private val teamRepository: TeamRepository) : ViewModel() {
 
     fun fetchTeamById(teamId: String): TeamModel? {
         return try {
-            val roomDetails = _teamLiveData.value?.find { it.TID == teamId }
-            if (roomDetails != null) {
+            val teamDetail = _teamLiveData.value?.find { it.TID == teamId }
+            if (teamDetail != null) {
                 Log.d(TAG, "Successfully fetched: $teamId")
             }
-            roomDetails
+            teamDetail
         } catch (e: Exception) {
             Log.e(TAG, "Error fetching: $teamId", e)
             null

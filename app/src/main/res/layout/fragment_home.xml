@@ -101,16 +101,15 @@
 
         <ImageView
             android:id="@+id/image_loading"
-            android:layout_width="560dp"
-            android:layout_height="560dp"
-            android:layout_marginBottom="-240dp"
-            android:visibility="visible"
-            android:elevation="@dimen/sp_xl"
+            android:layout_width="@dimen/sp_10xl"
+            android:layout_height="@dimen/sp_10xl"
+            android:elevation="-2dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/img_house_c"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            android:src="@drawable/img_lamp"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="@+id/power_consumed_wrapper"
+            app:layout_constraintStart_toStartOf="@+id/power_consumed_wrapper"
+            app:layout_constraintTop_toBottomOf="@+id/power_consumed_wrapper"
             tools:ignore="ContentDescription" />
 
         <TextView

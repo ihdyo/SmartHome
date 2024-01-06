@@ -167,17 +167,37 @@ class SettingsFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
         }
 
 
+        // TODO(" IMPLEMENT THIS NOTIFICATION")
         // ========================= NOTIFICATION ========================= //
 
         // Push Notification
-        binding.switchPushNotification.setOnCheckedChangeListener { _, isChecked ->
-            appPreferences.isPushNotificationOn = isChecked
-        }
+//        binding.switchPushNotification.setOnCheckedChangeListener { _, isChecked ->
+//            appPreferences.isPushNotificationOn = isChecked
+//        }
 
         // Email Notification
-        binding.switchSubscribeNewsletter.setOnCheckedChangeListener { _, isChecked ->
-            appPreferences.isSubscribeNewsletterOn = isChecked
+//        binding.switchSubscribeNewsletter.setOnCheckedChangeListener { _, isChecked ->
+//            appPreferences.isSubscribeNewsletterOn = isChecked
+//        }
+
+        // >>>>> DELETE THIS <<<<<
+
+        binding.iconPushNotification.alpha = 0.5F
+        binding.textPushNotification.alpha = 0.5F
+        binding.switchPushNotification.isEnabled = false
+        binding.wrapperPushNotification.setOnClickListener {
+            Toast.makeText(requireContext(), "This feature is under construction!", Toast.LENGTH_SHORT)
+                .show()
         }
+        binding.iconSubscribeNewsletter.alpha = 0.5F
+        binding.textSubscribeNewsletter.alpha = 0.5F
+        binding.switchSubscribeNewsletter.isEnabled = false
+        binding.wrapperSubscribeNewsletter.setOnClickListener {
+            Toast.makeText(requireContext(), "This feature is under construction!", Toast.LENGTH_SHORT)
+                .show()
+        }
+
+        // >>>>> DELETE THIS <<<<<
 
 
         // ========================= APPLICATION ========================= //

@@ -35,7 +35,7 @@
 
         <TextView
             android:id="@+id/text_campaign_summary"
-            style="@style/TextAppearance.Material3.BodySmall"
+            style="@style/TextAppearance.Material3.BodyMedium"
             android:layout_width="@dimen/sp_0"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/sp_xl"
