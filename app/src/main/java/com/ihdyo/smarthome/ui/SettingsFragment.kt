@@ -684,7 +684,7 @@ class SettingsFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
         val locale = Locale(languageCode)
         Locale.setDefault(locale)
 
-        val resources = requireActivity().application.resources
+        val resources = requireActivity().resources
         val configuration = Configuration(resources.configuration)
         configuration.setLocale(locale)
         configuration.setLayoutDirection(locale)
