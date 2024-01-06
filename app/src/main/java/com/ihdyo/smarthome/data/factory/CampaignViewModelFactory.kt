@@ -3,7 +3,7 @@ package com.ihdyo.smarthome.data.factory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.ihdyo.smarthome.data.repository.CampaignRepository
-import com.ihdyo.smarthome.data.viewmodel.CampaignViewModel
+import com.ihdyo.smarthome.ui.viewmodel.CampaignViewModel
 
 @Suppress("UNCHECKED_CAST")
 class CampaignViewModelFactory(private val campaignRepository: CampaignRepository) : ViewModelProvider.Factory {

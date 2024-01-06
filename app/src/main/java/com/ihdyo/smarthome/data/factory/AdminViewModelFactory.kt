@@ -3,7 +3,7 @@ package com.ihdyo.smarthome.data.factory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.ihdyo.smarthome.data.repository.AdminRepository
-import com.ihdyo.smarthome.data.viewmodel.AdminViewModel
+import com.ihdyo.smarthome.ui.viewmodel.AdminViewModel
 
 @Suppress("UNCHECKED_CAST")
 class AdminViewModelFactory(private val adminRepository: AdminRepository) : ViewModelProvider.Factory {

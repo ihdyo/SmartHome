@@ -49,4 +49,6 @@ object Const {
     const val LAMP_SELECTED_MODE_AUTOMATIC = "automatic"
     const val LAMP_SELECTED_MODE_MANUAL = "manual"
     const val LAMP_SELECTED_MODE_SCHEDULE = "schedule"
+
+    const val SMART_HOME_GITHUB_LINK = "https://github.com/ihdyo/SmartHome.git"
 }

@@ -1,4 +1,4 @@
-package com.ihdyo.smarthome.ui.about
+package com.ihdyo.smarthome.ui.adapter
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater

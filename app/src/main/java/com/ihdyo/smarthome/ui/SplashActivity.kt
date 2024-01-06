@@ -1,4 +1,4 @@
-package com.ihdyo.smarthome.ui.splash
+package com.ihdyo.smarthome.ui
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -25,11 +25,9 @@ import com.ihdyo.smarthome.data.factory.AuthViewModelFactory
 import com.ihdyo.smarthome.data.factory.MainViewModelFactory
 import com.ihdyo.smarthome.data.repository.AuthRepository
 import com.ihdyo.smarthome.data.repository.MainRepository
-import com.ihdyo.smarthome.data.viewmodel.AuthViewModel
-import com.ihdyo.smarthome.data.viewmodel.MainViewModel
+import com.ihdyo.smarthome.ui.viewmodel.AuthViewModel
+import com.ihdyo.smarthome.ui.viewmodel.MainViewModel
 import com.ihdyo.smarthome.databinding.ActivitySplashBinding
-import com.ihdyo.smarthome.ui.MainActivity
-import com.ihdyo.smarthome.ui.login.LoginActivity
 import com.ihdyo.smarthome.utils.AppInfo
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

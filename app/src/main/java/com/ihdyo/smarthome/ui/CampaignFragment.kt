@@ -1,4 +1,4 @@
-package com.ihdyo.smarthome.ui.campaign
+package com.ihdyo.smarthome.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,8 +10,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.FirebaseFirestore
 import com.ihdyo.smarthome.data.factory.CampaignViewModelFactory
 import com.ihdyo.smarthome.data.repository.CampaignRepository
-import com.ihdyo.smarthome.data.viewmodel.CampaignViewModel
+import com.ihdyo.smarthome.ui.viewmodel.CampaignViewModel
 import com.ihdyo.smarthome.databinding.FragmentCampaignBinding
+import com.ihdyo.smarthome.ui.adapter.CampaignAdapter
 
 class CampaignFragment : Fragment() {
 

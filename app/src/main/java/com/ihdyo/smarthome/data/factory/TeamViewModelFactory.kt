@@ -3,7 +3,7 @@ package com.ihdyo.smarthome.data.factory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.ihdyo.smarthome.data.repository.TeamRepository
-import com.ihdyo.smarthome.data.viewmodel.TeamViewModel
+import com.ihdyo.smarthome.ui.viewmodel.TeamViewModel
 
 @Suppress("UNCHECKED_CAST")
 class TeamViewModelFactory(private val teamRepository: TeamRepository) : ViewModelProvider.Factory {

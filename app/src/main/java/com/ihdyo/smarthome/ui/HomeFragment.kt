@@ -1,4 +1,4 @@
-package com.ihdyo.smarthome.ui.home
+package com.ihdyo.smarthome.ui
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -32,9 +32,11 @@ import com.ihdyo.smarthome.data.factory.AuthViewModelFactory
 import com.ihdyo.smarthome.data.factory.MainViewModelFactory
 import com.ihdyo.smarthome.data.repository.AuthRepository
 import com.ihdyo.smarthome.data.repository.MainRepository
-import com.ihdyo.smarthome.data.viewmodel.AuthViewModel
-import com.ihdyo.smarthome.data.viewmodel.MainViewModel
+import com.ihdyo.smarthome.ui.viewmodel.AuthViewModel
+import com.ihdyo.smarthome.ui.viewmodel.MainViewModel
 import com.ihdyo.smarthome.databinding.FragmentHomeBinding
+import com.ihdyo.smarthome.ui.adapter.LampAdapter
+import com.ihdyo.smarthome.ui.adapter.RoomAdapter
 import com.ihdyo.smarthome.utils.Const.LAMP_SELECTED_MODE_AUTOMATIC
 import com.ihdyo.smarthome.utils.Const.LAMP_SELECTED_MODE_MANUAL
 import com.ihdyo.smarthome.utils.Const.LAMP_SELECTED_MODE_SCHEDULE

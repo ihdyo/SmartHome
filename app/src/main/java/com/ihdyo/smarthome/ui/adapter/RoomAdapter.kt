@@ -1,32 +1,36 @@
-package com.ihdyo.smarthome.ui.home
+package com.ihdyo.smarthome.ui.adapter
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.ihdyo.smarthome.data.model.LampModel
-import com.ihdyo.smarthome.databinding.ItemLampBinding
+import coil.decode.SvgDecoder
+import coil.load
+import coil.request.CachePolicy
+import com.ihdyo.smarthome.R
+import com.ihdyo.smarthome.data.model.RoomModel
+import com.ihdyo.smarthome.databinding.ItemRoomBinding
 import com.ihdyo.smarthome.utils.UiUpdater
 
-class LampAdapter(private var listener: OnItemClickListener ) : RecyclerView.Adapter<LampAdapter.ItemViewHolder>() {
+class RoomAdapter(private var listener: OnItemClickListener) : RecyclerView.Adapter<RoomAdapter.ItemViewHolder>() {
 
     interface OnItemClickListener {
-        fun onLampItemClick(lampId: String)
+        fun onRoomItemClick(roomId: String)
     }
 
-    private val items = ArrayList<LampModel>()
+    private val items = ArrayList<RoomModel>()
     private var selectedItemPosition: Int = RecyclerView.NO_POSITION
 
     @SuppressLint("NotifyDataSetChanged")
-    fun setItems(items: ArrayList<LampModel>) {
+    fun setItems(items: ArrayList<RoomModel>) {
         this.items.clear()
         this.items.addAll(items)
         notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-        val binding: ItemLampBinding = ItemLampBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding: ItemRoomBinding = ItemRoomBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ItemViewHolder(binding, listener)
     }
 
@@ -36,20 +40,29 @@ class LampAdapter(private var listener: OnItemClickListener ) : RecyclerView.Ada
         holder.bind(items[position], position == selectedItemPosition)
     }
 
-    inner class ItemViewHolder(private val itemBinding: ItemLampBinding, private val listener: OnItemClickListener) :
+    inner class ItemViewHolder(private val itemBinding: ItemRoomBinding, private val listener: OnItemClickListener) :
         RecyclerView.ViewHolder(itemBinding.root),
         View.OnClickListener {
 
-        private lateinit var lamp: LampModel
+        private lateinit var room: RoomModel
         private val uiUpdater: UiUpdater = UiUpdater()
 
         init {
             itemBinding.root.setOnClickListener(this)
         }
 
-        fun bind(item: LampModel, isSelected: Boolean) {
-            this.lamp = item
-            uiUpdater.updateIconLampState(itemView.context, itemBinding.iconLamp, isSelected)
+        fun bind(item: RoomModel, isSelected: Boolean) {
+            this.room = item
+
+            itemBinding.iconRoom.load(item.roomIcon) {
+                placeholder(R.drawable.bx_landscape)
+                error(R.drawable.bx_error)
+                crossfade(true)
+                decoder(SvgDecoder(itemView.context))
+                memoryCachePolicy(CachePolicy.ENABLED)
+            }
+
+            uiUpdater.updateIconRoomState(itemView.context, itemBinding.iconRoom, isSelected)
         }
 
         override fun onClick(v: View?) {
@@ -59,7 +72,7 @@ class LampAdapter(private var listener: OnItemClickListener ) : RecyclerView.Ada
             notifyItemChanged(previousSelectedItemPosition)
             notifyItemChanged(selectedItemPosition)
 
-            listener.onLampItemClick(lamp.LID!!)
+            listener.onRoomItemClick(room.RID!!)
         }
     }
 }

@@ -3,7 +3,7 @@ package com.ihdyo.smarthome.data.factory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.ihdyo.smarthome.data.repository.AuthRepository
-import com.ihdyo.smarthome.data.viewmodel.AuthViewModel
+import com.ihdyo.smarthome.ui.viewmodel.AuthViewModel
 
 @Suppress("UNCHECKED_CAST")
 class AuthViewModelFactory(private val authRepository: AuthRepository) : ViewModelProvider.Factory {

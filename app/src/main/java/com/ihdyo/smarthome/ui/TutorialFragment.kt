@@ -1,14 +1,12 @@
-package com.ihdyo.smarthome.ui.tutorial
+package com.ihdyo.smarthome.ui
 
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.text.format.DateFormat
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.google.android.material.slider.Slider
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import com.ihdyo.smarthome.R

@@ -1,4 +1,4 @@
-package com.ihdyo.smarthome.ui.login
+package com.ihdyo.smarthome.ui
 
 import android.annotation.SuppressLint
 import android.app.ActivityOptions
@@ -34,11 +34,10 @@ import com.ihdyo.smarthome.data.factory.MainViewModelFactory
 import com.ihdyo.smarthome.data.repository.AdminRepository
 import com.ihdyo.smarthome.data.repository.AuthRepository
 import com.ihdyo.smarthome.data.repository.MainRepository
-import com.ihdyo.smarthome.data.viewmodel.AdminViewModel
-import com.ihdyo.smarthome.data.viewmodel.AuthViewModel
-import com.ihdyo.smarthome.data.viewmodel.MainViewModel
+import com.ihdyo.smarthome.ui.viewmodel.AdminViewModel
+import com.ihdyo.smarthome.ui.viewmodel.AuthViewModel
+import com.ihdyo.smarthome.ui.viewmodel.MainViewModel
 import com.ihdyo.smarthome.databinding.ActivityLoginBinding
-import com.ihdyo.smarthome.ui.MainActivity
 import com.ihdyo.smarthome.utils.Const.ARG_FORGOT_PASSWORD
 import com.ihdyo.smarthome.utils.Const.RC_SIGN_IN
 import com.ihdyo.smarthome.utils.Const.WEB_CLIENT_ID

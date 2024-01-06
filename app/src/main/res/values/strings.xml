@@ -150,7 +150,6 @@
     <string name="prompt_dynamic_color_failed">Your device does not supported dynamic color</string>
     <string name="prompt_social_link">Open Another Apps</string>
     <string name="prompt_social_link_check">Are you sure want to open another apps?</string>
-    <string name="prompt_social_link">Open Another Apps</string>
 
     <string name="placeholder_email" translatable="false">Email</string>
     <string name="placeholder_username">User</string>

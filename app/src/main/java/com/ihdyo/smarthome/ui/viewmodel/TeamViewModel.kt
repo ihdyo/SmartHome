@@ -1,4 +1,4 @@
-package com.ihdyo.smarthome.data.viewmodel
+package com.ihdyo.smarthome.ui.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.LiveData
