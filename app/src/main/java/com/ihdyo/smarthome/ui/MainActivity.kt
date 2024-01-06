@@ -84,9 +84,9 @@ class MainActivity : AppCompatActivity() {
                 mainViewModel.setCurrentUserId(currentUser.uid)
 
                 mainViewModel.fetchUser()
-                mainViewModel.userLiveData.observe(this) {user ->
+                mainViewModel.userNameLiveData.observe(this) {user ->
                     if (user != null) {
-                        username.text = user.userName
+                        username.text = user
                     }
                 }
 

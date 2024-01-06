@@ -95,7 +95,6 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
 
                 mainViewModel.fetchUser()
                 mainViewModel.fetchRooms()
-                mainViewModel.fetchEnvironments()
                 mainViewModel.fetchTotalPowerConsumption()
             }
         }
@@ -293,7 +292,7 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
 
             // Room Image
             binding.imageRoom.load(selectedRoom.roomImage) {
-                error(R.drawable.bx_landscape)
+                error(R.drawable.bx_error)
                 crossfade(true)
                 memoryCachePolicy(CachePolicy.ENABLED)
             }

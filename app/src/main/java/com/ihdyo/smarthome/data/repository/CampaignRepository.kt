@@ -11,15 +11,15 @@ class CampaignRepository(private val firestore: FirebaseFirestore) {
     suspend fun getAllCampaign(): List<CampaignModel>? {
         return try {
             val querySnapshot = firestore.collection(Const.COLLECTION_CAMPAIGN).get().await()
-            val userList = mutableListOf<CampaignModel>()
+            val campaignList = mutableListOf<CampaignModel>()
 
             for (document in querySnapshot.documents) {
                 val user = document.toObject(CampaignModel::class.java)
-                user?.let { userList.add(it) }
+                user?.let { campaignList.add(it) }
             }
 
-            Log.d(TAG, "Successfully retrieved all campaign.")
-            userList
+            Log.d(TAG, "Successfully retrieved all campaign")
+            campaignList
         } catch (e: Exception) {
             Log.e(TAG, "Error getting all campaign: $e")
             null

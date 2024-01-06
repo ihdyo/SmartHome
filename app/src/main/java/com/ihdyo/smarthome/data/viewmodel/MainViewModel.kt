@@ -6,7 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ihdyo.smarthome.data.repository.MainRepository
-import com.ihdyo.smarthome.data.model.EnvironmentModel
 import com.ihdyo.smarthome.data.model.LampModel
 import com.ihdyo.smarthome.data.model.LampSchedule
 import com.ihdyo.smarthome.data.model.RoomModel
@@ -26,9 +25,6 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
 
     private val _userLiveData = MutableLiveData<UserModel?>()
     val userLiveData: LiveData<UserModel?> get() = _userLiveData
-
-    private val _environmentsLiveData = MutableLiveData<List<EnvironmentModel>?>()
-    val environmentsLiveData: LiveData<List<EnvironmentModel>?> get() = _environmentsLiveData
 
     private val _roomsLiveData = MutableLiveData<List<RoomModel>?>()
     val roomsLiveData: LiveData<List<RoomModel>?> get() = _roomsLiveData
@@ -59,9 +55,6 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
 
     private val _totalPowerConsumptionLiveData = MutableLiveData<Int>()
     val totalPowerConsumptionLiveData: LiveData<Int> get() = _totalPowerConsumptionLiveData
-
-    private val _sensorValueLiveData = MutableLiveData<Boolean>()
-    val sensorValueLiveData: LiveData<Boolean> get() = _sensorValueLiveData
 
     private val _lampBrightnessLiveData = MutableLiveData<Map<String, Int>>()
     val lampBrightnessLiveData: LiveData<Map<String, Int>> get() = _lampBrightnessLiveData
@@ -135,22 +128,6 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
         }
     }
 
-    fun fetchEnvironments() {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val environments = mainRepository.getEnvironments(currentUserIdLiveData.value.orEmpty())
-                _environmentsLiveData.postValue(environments)
-
-                val sensorValueMap = fetchSensorValue(environments)
-                _sensorValueLiveData.postValue(sensorValueMap)
-
-                Log.d(TAG, "Successfully fetched environments for user with ID: ${currentUserIdLiveData.value}")
-            } catch (e: Exception) {
-                Log.e(TAG, "Error fetching environments: $e")
-            }
-        }
-    }
-
     fun fetchRooms() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -173,17 +150,6 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
         } catch (e: Exception) {
             Log.e(TAG, "Error fetching: $roomId", e)
             null
-        }
-    }
-
-    private fun fetchSensorValue(environments: List<EnvironmentModel>): Boolean {
-        return try {
-            val value = environments.firstOrNull()?.sensorValue!!
-            Log.d(TAG, "Successfully fetched sensor value: $environments")
-            value
-        } catch (e: Exception) {
-            Log.e(TAG, "Error fetching sensor value: $e")
-            false
         }
     }
 

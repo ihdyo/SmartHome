@@ -51,7 +51,6 @@ class SmartHome : Application() {
             }
         )
         Locale.setDefault(locale)
-        val resources = this.resources
         val configuration = Configuration(resources.configuration)
         configuration.setLocale(locale)
         configuration.setLayoutDirection(locale)

@@ -1,23 +1,159 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.about.AboutFragment">
 
-    <TextView
-        android:id="@+id/text_about"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/progress_linear"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:indeterminate="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/text_how_to_start"
+            style="@style/TextAppearance.Material3.TitleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/sp_xl"
+            android:layout_marginTop="@dimen/sp_xl"
+            android:text="Our Team"
+            android:textAlignment="textStart"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_team"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/sp_12xl"
+            android:layout_marginTop="@dimen/sp_xl"
+            android:layout_centerInParent="true"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            app:layoutManager="com.google.android.material.carousel.CarouselLayoutManager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_how_to_start"
+            tools:listitem="@layout/item_team" />
+
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/divider_greenify"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/sp_xl"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rv_team" />
+
+        <TextView
+            android:id="@+id/text_about"
+            style="@style/TextAppearance.Material3.TitleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/sp_xl"
+            android:layout_marginStart="@dimen/sp_xl"
+            android:text="About Lumos"
+            android:textAlignment="textStart"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/divider_greenify" />
+
+        <TextView
+            android:id="@+id/text_about_description"
+            style="@style/TextAppearance.Material3.BodySmall"
+            android:layout_width="@dimen/sp_0"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/sp_xl"
+            android:layout_marginHorizontal="@dimen/sp_xl"
+            android:text="Greenify reflects our unwavering commitment to green living and active advocacy for environmental sustainability through ongoing participation in green campaigns, showcasing our dedication to the planet's well-being."
+            android:textAlignment="textStart"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_about" />
+
+        <TextView
+            android:id="@+id/text_about_class"
+            style="@style/TextAppearance.Material3.LabelSmall"
+            android:layout_width="221dp"
+            android:layout_height="14dp"
+            android:layout_marginTop="@dimen/sp_lg"
+            android:text="Pengembangan Piranti Bergerak | Kelas D"
+            android:textAlignment="textStart"
+            app:layout_constraintStart_toStartOf="@+id/text_about_description"
+            app:layout_constraintTop_toBottomOf="@+id/text_about_description" />
+
+        <TextView
+            android:id="@+id/text_about_lecturer"
+            style="@style/TextAppearance.Material3.LabelMedium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Yoga Sahria (dan gelarnya)"
+            android:textAlignment="textStart"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/text_about_class"
+            app:layout_constraintTop_toBottomOf="@+id/text_about_class" />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/image_app_icon"
+            android:layout_width="@dimen/sp_4xl"
+            android:layout_height="@dimen/sp_4xl"
+            android:layout_marginVertical="@dimen/sp_xl"
+            android:layout_marginStart="@dimen/sp_xl"
+            android:background="?attr/colorSurfaceContainerLow"
+            app:layout_constraintBottom_toTopOf="@+id/divider_dev"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_about_lecturer"
+            app:shapeAppearanceOverlay="@style/ImageViewSquircle"
+            app:srcCompat="@drawable/app_icon" />
+
+        <TextView
+            android:id="@+id/text_app_name"
+            style="@style/TextAppearance.Material3.TitleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:layout_marginStart="@dimen/sp_sm"
+            android:layout_marginBottom="@dimen/sp_2xs"
+            android:textColor="?attr/colorPrimary"
+            android:text="@string/app_name"
+            android:textAlignment="textStart"
+            app:layout_constraintBottom_toBottomOf="@+id/image_app_icon"
+            app:layout_constraintStart_toEndOf="@+id/image_app_icon"
+            app:layout_constraintTop_toTopOf="@+id/image_app_icon" />
+
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/divider_dev"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/sp_xl"
+            app:dividerInsetStart="@dimen/sp_xl"
+            app:dividerInsetEnd="@dimen/sp_xl"
+            app:layout_constraintBottom_toTopOf="@id/text_dev_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/text_dev_name"
+            style="@style/TextAppearance.Material3.LabelSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="italic"
+            android:layout_marginBottom="@dimen/sp_xl"
+            android:alpha="0.5"
+            android:text="@string/dev"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

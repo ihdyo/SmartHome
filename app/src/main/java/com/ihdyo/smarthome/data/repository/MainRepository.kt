@@ -1,15 +1,12 @@
 package com.ihdyo.smarthome.data.repository
 
 import android.util.Log
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Source
-import com.ihdyo.smarthome.data.model.EnvironmentModel
 import com.ihdyo.smarthome.data.model.LampModel
 import com.ihdyo.smarthome.data.model.LampSchedule
 import com.ihdyo.smarthome.data.model.RoomModel
 import com.ihdyo.smarthome.data.model.UserModel
-import com.ihdyo.smarthome.utils.Const.COLLECTION_ENVIRONMENTS
 import com.ihdyo.smarthome.utils.Const.COLLECTION_LAMPS
 import com.ihdyo.smarthome.utils.Const.COLLECTION_ROOMS
 import com.ihdyo.smarthome.utils.Const.COLLECTION_USERS
@@ -127,22 +124,6 @@ class MainRepository(private val firestore: FirebaseFirestore) {
         }
     }
 
-    suspend fun getEnvironments(userId: String): List<EnvironmentModel> {
-        return try {
-            val querySnapshot = firestore.collection(COLLECTION_USERS).document(userId)
-                .collection(COLLECTION_ENVIRONMENTS).get(Source.DEFAULT).await()
-
-            val environments = querySnapshot.documents.mapNotNull { documentSnapshot ->
-                documentSnapshot.toObject(EnvironmentModel::class.java)
-            }
-            Log.d(TAG, "Successfully get environments for user with ID: $userId")
-            environments
-        } catch (e: Exception) {
-            Log.e(TAG, "Error getting environments: $e")
-            emptyList()
-        }
-    }
-
 
     // ========================= PUT METHOD ========================= //
 
@@ -156,10 +137,6 @@ class MainRepository(private val firestore: FirebaseFirestore) {
 
     fun putLampIsPowerOn(userId: String, roomId: String, lampId: String, lampIsPowerOn: Boolean) {
         putLampField(userId, roomId, lampId, FIELD_LAMP_IS_POWER_ON, lampIsPowerOn)
-    }
-
-    fun putLampRuntime(userId: String, roomId: String, lampId: String, lampRuntime: Int) {
-        putLampField(userId, roomId, lampId, FIELD_LAMP_RUNTIME, lampRuntime)
     }
 
     fun putLampSchedule(userId: String, roomId: String, lampId: String, lampSchedule: LampSchedule) {
