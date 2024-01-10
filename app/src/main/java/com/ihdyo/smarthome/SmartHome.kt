@@ -11,8 +11,8 @@ import com.ihdyo.smarthome.utils.Const.LOCALE_ENGLISH
 import com.ihdyo.smarthome.utils.Const.LOCALE_INDONESIA
 import com.ihdyo.smarthome.utils.Const.LOCALE_JAVANESE
 import java.util.Locale
-import kotlin.math.log
 
+@Suppress("DEPRECATION")
 class SmartHome : Application() {
     override fun onCreate() {
         super.onCreate()
@@ -20,6 +20,24 @@ class SmartHome : Application() {
         FirebaseApp.initializeApp(applicationContext)
 
         val appPreferences = AppPreferences(this)
+
+        // Push Notification
+        val pushNotification = appPreferences.isPushNotificationOn
+        if (pushNotification) {
+            // TODO("Turn On Push Notification")
+        }
+        else {
+            appPreferences.isPushNotificationOn = false
+        }
+
+        // Subscribe Newsletter
+        val subscribeNewsletter = appPreferences.isSubscribeNewsletterOn
+        if (subscribeNewsletter) {
+            // TODO("Turn On Subscribe Newsletter")
+        }
+        else {
+            appPreferences.isSubscribeNewsletterOn = false
+        }
 
         // Dynamic Color
         val dynamicColor = appPreferences.isDynamicColorOn
@@ -50,6 +68,8 @@ class SmartHome : Application() {
                 else -> DEFAULT
             }
         )
+
+        // TODO("Fix applied language while re-opening apps")
         Locale.setDefault(locale)
         val configuration = Configuration(resources.configuration)
         configuration.setLocale(locale)

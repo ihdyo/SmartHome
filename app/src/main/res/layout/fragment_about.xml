@@ -34,7 +34,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_team"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/sp_12xl"
+            android:layout_height="@dimen/sp_10xl"
             android:layout_marginTop="@dimen/sp_xl"
             android:layout_centerInParent="true"
             android:clipChildren="false"

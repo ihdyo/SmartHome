@@ -29,7 +29,7 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="@dimen/sp_9xl"
+            android:layout_height="@dimen/sp_8xl"
             android:background="@drawable/shape_gradient"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

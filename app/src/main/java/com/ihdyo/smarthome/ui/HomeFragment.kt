@@ -336,14 +336,17 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
             }
         }
 
-        // Lamp Switch Power
-        mainViewModel.lampIsPowerOnLiveData.observe(viewLifecycleOwner) { isPowerOnMap ->
-            val isPowerOn = isPowerOnMap?.get(currentLampId)
-            binding.switchPower.isChecked = isPowerOn == true
-        }
-        binding.switchPower.setOnCheckedChangeListener { _, isChecked ->
-            val lampIsPowerOnMap = mapOf(currentLampId to isChecked)
-            mainViewModel.updateLampIsPowerOn(lampIsPowerOnMap)
+        // Lamp Schedule
+        mainViewModel.lampScheduleLiveData.observe(viewLifecycleOwner) { scheduleMap ->
+            if (scheduleMap != null) {
+                val lampSchedule = scheduleMap[currentLampId]
+                if (lampSchedule != null) {
+                    binding.textScheduleFrom.text = lampSchedule.scheduleFrom
+                    binding.textScheduleTo.text = lampSchedule.scheduleTo
+
+                    updatePowerStateIfInSchedule(currentLampId, lampSchedule.scheduleFrom!!, lampSchedule.scheduleTo!!)
+                }
+            }
         }
 
         // Lamp Selected Mode
@@ -371,32 +374,6 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
             mainViewModel.updateLampSelectedMode(setManual)
         }
 
-        // Lamp Schedule
-        mainViewModel.lampScheduleLiveData.observe(viewLifecycleOwner) { scheduleMap ->
-            if (scheduleMap != null) {
-                val lampSchedule = scheduleMap[currentLampId]
-                if (lampSchedule != null) {
-                    binding.textScheduleFrom.text = lampSchedule.scheduleFrom
-                    binding.textScheduleTo.text = lampSchedule.scheduleTo
-                }
-            }
-        }
-        binding.textScheduleFrom.setOnClickListener {
-            openTimePicker(getString(R.string.text_schedule_title_start)) { selectedTime ->
-                val currentLampSchedule = mainViewModel.lampScheduleLiveData.value?.get(currentLampId)
-                if (currentLampSchedule != null) {
-                    mainViewModel.updateScheduleFrom(currentLampId, selectedTime)
-                }
-            }
-        }
-        binding.textScheduleTo.setOnClickListener {
-            openTimePicker(getString(R.string.text_schedule_title_finish)) { selectedTime ->
-                val currentLampSchedule = mainViewModel.lampScheduleLiveData.value?.get(currentLampId)
-                if (currentLampSchedule != null) {
-                    mainViewModel.updateScheduleTo(currentLampId, selectedTime)
-                }
-            }
-        }
     }
 
 
@@ -405,21 +382,40 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
     private fun getButtonState(currentLampId: String, selectedMode: String) {
 
         val isAutomatic = when (selectedMode) {
-            LAMP_SELECTED_MODE_AUTOMATIC -> {
-                true
-            }
+            LAMP_SELECTED_MODE_AUTOMATIC -> true
             LAMP_SELECTED_MODE_SCHEDULE -> {
-                mainViewModel.lampScheduleLiveData.observe(viewLifecycleOwner) { scheduleMap ->
-                    if (scheduleMap != null) {
-                        val lampSchedule = scheduleMap[currentLampId]
-                        if (lampSchedule != null) {
-                            updatePowerStateIfInSchedule(currentLampId, lampSchedule.scheduleFrom!!, lampSchedule.scheduleTo!!)
+
+                // Lamp Schedule
+                binding.textScheduleFrom.setOnClickListener {
+                    openTimePicker(getString(R.string.text_schedule_title_start)) { selectedTime ->
+                        val currentLampSchedule = mainViewModel.lampScheduleLiveData.value?.get(currentLampId)
+                        if (currentLampSchedule != null) {
+                            mainViewModel.updateScheduleFrom(currentLampId, selectedTime)
                         }
                     }
                 }
+                binding.textScheduleTo.setOnClickListener {
+                    openTimePicker(getString(R.string.text_schedule_title_finish)) { selectedTime ->
+                        val currentLampSchedule = mainViewModel.lampScheduleLiveData.value?.get(currentLampId)
+                        if (currentLampSchedule != null) {
+                            mainViewModel.updateScheduleTo(currentLampId, selectedTime)
+                        }
+                    }
+                }
+
                 false
             }
-            LAMP_SELECTED_MODE_MANUAL -> false
+            LAMP_SELECTED_MODE_MANUAL -> {
+
+                // Lamp Switch Power
+                binding.switchPower.setOnCheckedChangeListener { _, isChecked ->
+                    val lampIsPowerOnMap = mapOf(currentLampId to isChecked)
+                    mainViewModel.updateLampIsPowerOn(lampIsPowerOnMap)
+                }
+
+                false
+            }
+
             else -> return
         }
 
@@ -456,6 +452,7 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
             },
             LocalTime.parse(scheduleTo, formatter)
         )
+
         if (currentTime.isAfter(scheduleFromDateTime) && currentTime.isBefore(scheduleToDateTime)) {
             val lampIsPowerOn = mapOf(currentLampId to true)
             mainViewModel.updateLampIsPowerOn(lampIsPowerOn)

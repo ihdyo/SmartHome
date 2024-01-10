@@ -166,7 +166,7 @@ class SettingsFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
         }
 
 
-        // TODO(" IMPLEMENT THIS NOTIFICATION")
+        // TODO("Implement Notification")
         // ========================= NOTIFICATION ========================= //
 
         // Push Notification
@@ -327,6 +327,7 @@ class SettingsFragment : Fragment(), ModalBottomSheet.BottomSheetListener {
                         Snackbar.make(binding.root, R.string.prompt_change_username_success, Snackbar.LENGTH_SHORT)
                             .setAction(getString(R.string.prompt_ok)) { }
                             .show()
+                        ProgressBarLayout.hideLoading()
                     }
 
                     // Check Email
