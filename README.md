@@ -1,6 +1,6 @@
 # <img src="https://firebasestorage.googleapis.com/v0/b/smart-home-a2d96.appspot.com/o/misc%2Fapp_icon.PNG?alt=media&token=bf1f1a43-7f62-49f0-8dfc-70a39cd32eb2" alt="LUMOS" width="50" height="50" /> Lumos
 
-A prototype concept app brainstormed by Group 6 with [ihd.yo](https://github.com/ihdyo/) as the developer, blends technology and creativity, addressing diverse needs in response to a college assignment. Not just an app, Lumos is a one-stop solution showcasing innovation while prioritizing environmental care through smart lamp design.
+A prototype concept app brainstormed by Group 6 with [ihd.yo](https://github.com/ihdyo/) as the developer, blends technology and creativity, addressing diverse needs in response to a college assignment.
 
 > You can also download the Arduino file [here](https://firebasestorage.googleapis.com/v0/b/smart-home-a2d96.appspot.com/o/misc%2Fsmartlampcontrol.ino?alt=media&token=e4cfd38f-50fb-45f8-8617-dd98e891e19c). Developed by [Dika](https://www.instagram.com/amridika_)
 
@@ -9,7 +9,7 @@ A prototype concept app brainstormed by Group 6 with [ihd.yo](https://github.com
 **Used Tools:**
 - Kotlin | Android Studio
 - Material 3
-- Firebase Firestore
+- Firebase
 
 <br>
 <hr>
