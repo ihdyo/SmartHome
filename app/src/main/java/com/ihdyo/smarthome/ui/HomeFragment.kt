@@ -348,6 +348,23 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
                 }
             }
         }
+        // Lamp Schedule
+        binding.textScheduleFrom.setOnClickListener {
+            openTimePicker(getString(R.string.text_schedule_title_start)) { selectedTime ->
+                val currentLampSchedule = mainViewModel.lampScheduleLiveData.value?.get(currentLampId)
+                if (currentLampSchedule != null) {
+                    mainViewModel.updateScheduleFrom(currentLampId, selectedTime)
+                }
+            }
+        }
+        binding.textScheduleTo.setOnClickListener {
+            openTimePicker(getString(R.string.text_schedule_title_finish)) { selectedTime ->
+                val currentLampSchedule = mainViewModel.lampScheduleLiveData.value?.get(currentLampId)
+                if (currentLampSchedule != null) {
+                    mainViewModel.updateScheduleTo(currentLampId, selectedTime)
+                }
+            }
+        }
 
         // Lamp Selected Mode
         mainViewModel.lampSelectedModeLiveData.observe(viewLifecycleOwner) { selectedModeMap ->
@@ -383,28 +400,7 @@ class HomeFragment : Fragment(), RoomAdapter.OnItemClickListener, LampAdapter.On
 
         val isAutomatic = when (selectedMode) {
             LAMP_SELECTED_MODE_AUTOMATIC -> true
-            LAMP_SELECTED_MODE_SCHEDULE -> {
-
-                // Lamp Schedule
-                binding.textScheduleFrom.setOnClickListener {
-                    openTimePicker(getString(R.string.text_schedule_title_start)) { selectedTime ->
-                        val currentLampSchedule = mainViewModel.lampScheduleLiveData.value?.get(currentLampId)
-                        if (currentLampSchedule != null) {
-                            mainViewModel.updateScheduleFrom(currentLampId, selectedTime)
-                        }
-                    }
-                }
-                binding.textScheduleTo.setOnClickListener {
-                    openTimePicker(getString(R.string.text_schedule_title_finish)) { selectedTime ->
-                        val currentLampSchedule = mainViewModel.lampScheduleLiveData.value?.get(currentLampId)
-                        if (currentLampSchedule != null) {
-                            mainViewModel.updateScheduleTo(currentLampId, selectedTime)
-                        }
-                    }
-                }
-
-                false
-            }
+            LAMP_SELECTED_MODE_SCHEDULE -> false
             LAMP_SELECTED_MODE_MANUAL -> {
 
                 // Lamp Switch Power
